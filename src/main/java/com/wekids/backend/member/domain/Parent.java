@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 
 @Entity
-@DiscriminatorValue("P")
+@DiscriminatorValue("PARENT")
 @Getter
 public class Parent extends Member{
 }
