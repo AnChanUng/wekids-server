@@ -26,14 +26,14 @@ public abstract class Member extends BaseTime {
     @Column(nullable = false)
     private LocalDate birthday;
 
-    @Column(nullable = false)
     private String profile;
 
+    @Column(nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
-    private MemberState memberState;
+    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
+    private MemberState state;
 
     private LocalDate inactiveDate;
 }

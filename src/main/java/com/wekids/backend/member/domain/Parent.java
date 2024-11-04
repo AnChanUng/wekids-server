@@ -15,6 +15,5 @@ import java.util.List;
 @DiscriminatorValue("P")
 @Getter
 public class Parent extends Member{
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<ParentChild> parentChildList = new ArrayList<>();
+
 }
