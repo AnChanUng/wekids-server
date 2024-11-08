@@ -30,6 +30,16 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public ParentAccountResponse getParent_Account(ParentAccountRequest parentAccountRequest) {
+        Long parentId = parentAccountRequest.getParentId();
+
+        Parent parent = memberRepository.findByIdAndMemberType(parentId)
+                .orElseThrow(() -> new RuntimeException("Parent not found with ID: " + parentId));
+
+
+        // 부모 계좌 정보 조회
+        Account parentAccount = accountRepository.findByMember(parent)
+                .orElseThrow(() -> new RuntimeException("Account not found for parent"));
+
         return null;
     }
 
