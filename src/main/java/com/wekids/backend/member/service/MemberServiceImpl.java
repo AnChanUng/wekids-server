@@ -49,7 +49,27 @@ public class MemberServiceImpl implements MemberService{
         response.setDesignType(parentAccount.getDesignType());
         response.setAccountId(parentAccount.getId());
 
-        return null;
+        // 자녀 정보 조회 및 설정
+        List<Child> children = memberRepository.findChildrenByParentId(parentId); // parent_child 테이블을 통해 자녀 목록 조회
+        List<ParentAccountResult> childResults = children.stream().map(child -> {
+            // 각 자녀의 계좌 정보 조회
+            Account childAccount = accountRepository.findByMember(child)
+                    .orElseThrow(() -> new RuntimeException("Account not found for child"));
+
+            ParentAccountResult childResult = new ParentAccountResult();
+            childResult.setChildId(child.getId());
+            childResult.setName(child.getName());
+            childResult.setAccountNumber(childAccount.getAccountNumber());
+            childResult.setProfile(child.getProfile());
+            childResult.setBalance(childAccount.getAmount());
+            childResult.setDesignType(childAccount.getDesignType());
+            childResult.setAccountId(childAccount.getId());
+
+            return childResult;
+        }).collect(Collectors.toList());
+
+        response.setChildren(childResults);
+        return response;
     }
 
 }
