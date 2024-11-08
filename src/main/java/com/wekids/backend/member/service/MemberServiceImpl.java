@@ -2,6 +2,8 @@ package com.wekids.backend.member.service;
 
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
+import com.wekids.backend.exception.ErrorCode;
+import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.dto.request.ParentAccountRequest;
@@ -34,11 +36,11 @@ public class MemberServiceImpl implements MemberService{
         
         // 부모 개인 정보 조회
         Parent parent = memberRepository.findByIdAndMemberType(parentId)
-                .orElseThrow(() -> new RuntimeException("Parent not found with ID: " + parentId));
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "부모 정보를 찾을 수 없습니다."));
 
         // 부모 계좌 정보 조회
         Account parentAccount = accountRepository.findByMember(parent)
-                .orElseThrow(() -> new RuntimeException("Account not found for parent"));
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "부모 계좌를 찾을 수 없습니다."));
 
         // ParentAccountResponse 객체 생성 및 부모 정보 설정
         ParentAccountResponse response = new ParentAccountResponse();
@@ -54,7 +56,7 @@ public class MemberServiceImpl implements MemberService{
         List<ParentAccountResult> childResults = children.stream().map(child -> {
             // 각 자녀의 계좌 정보 조회
             Account childAccount = accountRepository.findByMember(child)
-                    .orElseThrow(() -> new RuntimeException("Account not found for child"));
+                    .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "자식 계좌를 찾을 수 없습니다."));
 
             ParentAccountResult childResult = new ParentAccountResult();
             childResult.setChildId(child.getId());
