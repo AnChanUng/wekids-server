@@ -1,5 +1,6 @@
 package com.wekids.backend.member.domain;
 
+import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.common.entity.BaseTime;
 import com.wekids.backend.member.domain.enums.MemberState;
 import jakarta.persistence.*;
@@ -35,4 +36,8 @@ public abstract class Member extends BaseTime {
     private MemberState state;
 
     private LocalDate inactiveDate;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    private Account account;
+
 }
