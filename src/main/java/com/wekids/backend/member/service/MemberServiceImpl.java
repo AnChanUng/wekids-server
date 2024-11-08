@@ -42,35 +42,17 @@ public class MemberServiceImpl implements MemberService{
         Account parentAccount = accountRepository.findByMember(parent)
                 .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "부모 계좌를 찾을 수 없습니다."));
 
-        // ParentAccountResponse 객체 생성 및 부모 정보 설정
-        ParentAccountResponse response = new ParentAccountResponse();
-        response.setName(parent.getName());
-        response.setAccountNumber(parentAccount.getAccountNumber());
-        response.setProfile(parent.getProfile());
-        response.setBalance(parentAccount.getAmount());
-        response.setDesignType(parentAccount.getDesignType());
-        response.setAccountId(parentAccount.getId());
-
         // 자녀 정보 조회 및 설정
         List<Child> children = memberRepository.findChildrenByParentId(parentId); // parent_child 테이블을 통해 자녀 목록 조회
         List<ParentAccountResult> childResults = children.stream().map(child -> {
             // 각 자녀의 계좌 정보 조회
             Account childAccount = accountRepository.findByMember(child)
                     .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "자식 계좌를 찾을 수 없습니다."));
-
-            ParentAccountResult childResult = new ParentAccountResult();
-            childResult.setChildId(child.getId());
-            childResult.setName(child.getName());
-            childResult.setAccountNumber(childAccount.getAccountNumber());
-            childResult.setProfile(child.getProfile());
-            childResult.setBalance(childAccount.getAmount());
-            childResult.setDesignType(childAccount.getDesignType());
-            childResult.setAccountId(childAccount.getId());
-
-            return childResult;
+            return new ParentAccountResult(childAccount, child);
         }).collect(Collectors.toList());
 
-        response.setChildren(childResults);
+        // ParentAccountResponse 객체 생성 및 부모 정보 설정
+        ParentAccountResponse response = new ParentAccountResponse(parentAccount , parent, childResults);
         return response;
     }
 
