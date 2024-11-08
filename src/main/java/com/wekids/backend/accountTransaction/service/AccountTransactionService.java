@@ -1,7 +1,7 @@
 package com.wekids.backend.accountTransaction.service;
 
-import com.wekids.backend.accountTransaction.domain.AccountTransaction;
+import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 
 public interface AccountTransactionService {
-    AccountTransaction findByTransactionId(Long transactionId);
+    TransactionDetailSearchResponse findByTransactionId(Long transactionId);
 }
