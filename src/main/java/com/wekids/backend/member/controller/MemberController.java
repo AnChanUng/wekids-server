@@ -17,7 +17,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/api/v1/parents")
-    public void getParent_Account(@RequestBody ParentAccountRequest parentAccountRequest){
-
+    public ParentAccountResponse getParent_Account(@RequestBody ParentAccountRequest parentAccountRequest){
+        return memberService.getParent_Account(parentAccountRequest);
     }
 }
