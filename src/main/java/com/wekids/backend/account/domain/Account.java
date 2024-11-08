@@ -6,11 +6,13 @@ import com.wekids.backend.common.entity.BaseTime;
 import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Entity
 @Getter
+@ToString
 public class Account extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,5 +34,6 @@ public class Account extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
+    @ToString.Exclude
     private Member member;
 }

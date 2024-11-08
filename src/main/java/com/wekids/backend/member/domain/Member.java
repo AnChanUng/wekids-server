@@ -4,11 +4,13 @@ import com.wekids.backend.common.entity.BaseTime;
 import com.wekids.backend.member.domain.enums.MemberState;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
+@ToString
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "member_type")
 public abstract class Member extends BaseTime {
