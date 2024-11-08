@@ -1,9 +1,9 @@
 package com.wekids.backend.account.domain;
 
-
 import com.wekids.backend.account.domain.enums.AccountDesignType;
 import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.common.entity.BaseTime;
+import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -29,4 +29,8 @@ public class Account extends BaseTime {
     @Enumerated(EnumType.STRING)
     @Column(name = "design_type", nullable = false)
     private AccountDesignType designType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
+    private Member member;
 }
