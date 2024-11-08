@@ -11,7 +11,7 @@ public class ChildResponseDto {
     private String balance; //
     private String designType;
     private Long accountId;
-
+//
     public ChildResponseDto(Child child) {
         this.name = child.getName();
         this.profile = child.getProfile();

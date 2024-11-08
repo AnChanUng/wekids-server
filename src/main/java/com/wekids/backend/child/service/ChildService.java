@@ -6,7 +6,7 @@ import com.wekids.backend.member.domain.Child;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-//
+
 public interface ChildService {
 
     List<ChildResponseDto> getAllChildren();
