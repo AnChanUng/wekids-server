@@ -31,14 +31,23 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public ParentAccountResponse getParent_Account(ParentAccountRequest parentAccountRequest) {
         Long parentId = parentAccountRequest.getParentId();
-
+        
+        // 부모 개인 정보 조회
         Parent parent = memberRepository.findByIdAndMemberType(parentId)
                 .orElseThrow(() -> new RuntimeException("Parent not found with ID: " + parentId));
-
 
         // 부모 계좌 정보 조회
         Account parentAccount = accountRepository.findByMember(parent)
                 .orElseThrow(() -> new RuntimeException("Account not found for parent"));
+
+        // ParentAccountResponse 객체 생성 및 부모 정보 설정
+        ParentAccountResponse response = new ParentAccountResponse();
+        response.setName(parent.getName());
+        response.setAccountNumber(parentAccount.getAccountNumber());
+        response.setProfile(parent.getProfile());
+        response.setBalance(parentAccount.getAmount());
+        response.setDesignType(parentAccount.getDesignType());
+        response.setAccountId(parentAccount.getId());
 
         return null;
     }
