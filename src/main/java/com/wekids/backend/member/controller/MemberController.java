@@ -15,7 +15,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/api/v1/parents")
-    public ResponseEntity<ParentAccountResponse> getParent_Account(@RequestBody ParentAccountRequest parentAccountRequest){
+    public ResponseEntity<ParentAccountResponse> getParentAccount(@RequestBody ParentAccountRequest parentAccountRequest){
         ParentAccountResponse response = memberService.getParent_Account(parentAccountRequest);
         return ResponseEntity.ok(response);
     }
