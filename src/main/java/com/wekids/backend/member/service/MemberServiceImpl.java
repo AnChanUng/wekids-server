@@ -31,8 +31,8 @@ public class MemberServiceImpl implements MemberService{
     AccountRepository accountRepository;
 
     @Override
-    public ParentAccountResponse getParentAccount(ParentAccountRequest parentAccountRequest) {
-        Long parentId = parentAccountRequest.getParentId();
+    public ParentAccountResponse getParentAccount() {
+        Long parentId = 1L;
         
         // 부모 개인 정보 조회
         Parent parent = memberRepository.findByIdAndMemberType(parentId)

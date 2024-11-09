@@ -28,7 +28,7 @@ class MemberRepositoryTest {
     @Test
     void 부모_정보_가져오기(){
         ParentAccountRequest request = new ParentAccountRequest(1L);
-        ParentAccountResponse response = memberService.getParent_Account(request);
+        ParentAccountResponse response = memberService.getParentAccount();
         assertThat(response.getAccountNumber()).isEqualTo("123-456-7890");
         assertThat(response.getProfile()).isEqualTo("profile1.jpg");
         assertThat(response.getBalance()).isEqualByComparingTo("100000.00");
