@@ -37,7 +37,4 @@ public abstract class Member extends BaseTime {
 
     private LocalDate inactiveDate;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
-    private Account account;
-
 }
