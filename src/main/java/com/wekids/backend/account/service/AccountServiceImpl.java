@@ -20,7 +20,9 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public AccountResponse getAccount(Long account_id) {
-
-        return null;
+        //AccountRepo에서 계좌 조회
+        Account account = accountRepository.findById(account_id)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "계좌를 찾을 수 없습니다."));
+        return new AccountResponse(account);
     }
 }
