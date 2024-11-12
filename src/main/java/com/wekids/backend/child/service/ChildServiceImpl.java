@@ -33,7 +33,7 @@ public class ChildServiceImpl implements ChildService {
         Long childId = 1L;
 
         // 자식 개인 정보 조회
-        Child child = childRepository.findByIdAndMemberType(childId)
+        Child child = childRepository.findById(childId)
                 .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "자식 정보를 찾을 수 없습니다."));
 
         // 자식 계좌 정보 조회
@@ -41,11 +41,11 @@ public class ChildServiceImpl implements ChildService {
                 .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "자식 계좌를 찾을 수 없습니다."));
 
         // 자식 정보 및 자식 계좌 정보를 설정
-        List<ChildAccountResult> children = childRepository.findChildrenByParentId(childId).stream()
+        List<ChildAccountResult> accounts = childRepository.findChildrenByParentId(childId).stream()
                 .map(c -> new ChildAccountResult(childAccount, c))
                 .collect(Collectors.toList());
 
-        return new ChildAccountResponse(childAccount, child, children);
+        return new ChildAccountResponse(childAccount, child, accounts);
 
     }
 

@@ -7,14 +7,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ChildRepository extends JpaRepository<Child, Long> {
 
-    @Query("SELECT p FROM Child p WHERE p.id = :id")
-    Optional<Child> findByIdAndMemberType(@Param("id") Long id);
-
     @Query("SELECT c FROM Child c JOIN FETCH ParentChild pc ON c.id = pc.child.id WHERE pc.parent.id = :parentId")
-    List<Child> findChildrenByParentId(@Param("childId") Long childId);
+    List<Child> findChildrenByParentId(@Param("parentId") Long parentId);
 }

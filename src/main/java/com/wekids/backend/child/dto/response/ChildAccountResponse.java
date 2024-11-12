@@ -19,9 +19,9 @@ public class ChildAccountResponse {
     private BigDecimal balance;
     private AccountDesignType designType;
     private Long accountId;
-    private List<ChildAccountResult> children;
+    private List<ChildAccountResult> accounts;
 
-    public ChildAccountResponse(Account account, Member member, List<ChildAccountResult> children){
+    public ChildAccountResponse(Account account, Member member, List<ChildAccountResult> accounts){
 
         this.name = member.getName();
         this.accountNumber = account.getAccountNumber();
@@ -29,6 +29,6 @@ public class ChildAccountResponse {
         this.balance = account.getAmount();
         this.designType = account.getDesignType();
         this.accountId = account.getId();
-        this.children = children;
+        this.accounts = accounts;
     }
 }
