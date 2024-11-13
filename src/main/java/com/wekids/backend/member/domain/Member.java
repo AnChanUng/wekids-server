@@ -1,12 +1,14 @@
 package com.wekids.backend.member.domain;
 
 import com.wekids.backend.common.entity.BaseTime;
+import com.wekids.backend.member.domain.enums.CardState;
 import com.wekids.backend.member.domain.enums.MemberState;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -32,9 +34,19 @@ public abstract class Member extends BaseTime {
     @Column(nullable = false)
     private String email;
 
+    @Column(length = 20)
+    private String simplePassword;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
     private MemberState state;
 
-    private LocalDate inactiveDate;
+    private LocalDateTime inactiveDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'NONE'")
+    private CardState cardState;
+
+    private Long bankMemberId;
+
 }
