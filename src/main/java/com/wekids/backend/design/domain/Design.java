@@ -22,7 +22,7 @@ public class Design {
     @Column(nullable = false)
     private ColorType color;
 
-    @Column(nullable = false)
+    @Column(name = "`character`", nullable = false)
     private CharacterType character;
 
     @OneToOne(fetch = FetchType.LAZY)

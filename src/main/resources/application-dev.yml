@@ -12,8 +12,13 @@ spring:
     username: ${RDS_USERNAME}
     password: ${RDS_PASSWORD}
   jpa:
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
+
+  sql:
+    init:
+      mode: never
