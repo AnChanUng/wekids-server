@@ -12,11 +12,13 @@ import lombok.ToString;
 @Entity
 @Getter
 @ToString
-@IdClass(DesignId.class)
 public class Design {
     @Id
+    private Long memberId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @MapsId
     private Member member;
 
     @Column(nullable = false)
