@@ -26,8 +26,8 @@ public class ChildAccountResponse {
         this.name = member.getName();
         this.accountNumber = account.getAccountNumber();
         this.profile = member.getProfile();
-        this.balance = account.getAmount();
-        this.designType = account.getDesignType();
+//        this.balance = account.getAmount();
+//        this.designType = account.getDesignType();
         this.accountId = account.getId();
         this.accounts = accounts;
     }
