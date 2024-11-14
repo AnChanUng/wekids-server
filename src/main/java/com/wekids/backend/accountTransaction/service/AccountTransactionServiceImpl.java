@@ -28,8 +28,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     }
 
     private AccountTransaction accountTransactionById(Long transactionId) {
-        return accountTransactionRepository.findById(transactionId).orElseThrow(() -> {
-            throw new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "transactionId : " + transactionId);
-        });
+        return accountTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "transactionId : " + transactionId));
     }
 }
