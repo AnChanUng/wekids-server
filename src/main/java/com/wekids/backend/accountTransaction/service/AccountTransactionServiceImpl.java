@@ -34,7 +34,21 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
 
     public TransactionListResponse getTransactionList(long accountid, String start, String end, String type, int page, int size){
         // 기본은 5개씩 무한스크롤 반영?
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        //String의 start와 end를 날짜타입으로 변경
+        LocalDateTime localDateStartTime = LocalDateTime.parse(start, formatter);
+        LocalDateTime localDateEndTime = LocalDateTime.parse(end, formatter);
+        boolean hasNext = false;
+        Pageable limit = PageRequest.of(page, size);
+        Account account = accountRepository.findById(accountid)
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌를 찾을 수 없습니다."));
+        String account_owner = account.getMember().getName();
+        TransactionType transactionType = TransactionType.valueOf(type);
+
+
         return null;
+
+
 
     }
 }
