@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -19,10 +22,13 @@ public class AccountServiceImpl implements AccountService{
     private final AccountRepository accountRepository;
 
     @Override
-    public AccountResponse getAccount(Long account_id) {
+    public List<AccountResponse> getAccount() {
         //AccountRepo에서 계좌 조회
-        Account account = accountRepository.findById(account_id)
-                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌를 찾을 수 없습니다."));
-        return new AccountResponse(account);
+        List<Account> accountList = accountRepository.findAll();
+        return accountList.stream().map(
+                AccountResponse::new
+        ).collect(Collectors.toList());
     }
 }
+
+

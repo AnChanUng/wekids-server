@@ -40,7 +40,7 @@ public class AccountTransaction {
     private String memo;
 
     @CreatedDate
-    @Column(name = "created_at",updatable = false, nullable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

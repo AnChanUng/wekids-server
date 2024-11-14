@@ -10,19 +10,14 @@ import java.math.BigDecimal;
 @Setter
 @Getter
 public class AccountResponse {
-    private Long id;
-    private String name;
+
     private String account_number;
-    private BigDecimal amount;
-    private AccountState state;
-    private AccountDesignType design_type;
+    private String bankName;
+    private BigDecimal balance;
 
     public AccountResponse(Account account){
-        this.id = account.getId();
-        this.name = account.getMember().getName();
         this.account_number = account.getAccountNumber();
-        this.amount = account.getAmount();
-        this.state = account.getState();
-        this.design_type = account.getDesignType();
+        this.bankName = "우리은행";
+        this.balance = account.getBalance();
     }
 }

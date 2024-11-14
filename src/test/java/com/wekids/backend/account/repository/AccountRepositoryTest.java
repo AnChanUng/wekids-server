@@ -28,14 +28,9 @@ class AccountRepositoryTest {
     }
 
     @Test
-    void 계좌_가져오기(){
-        AccountResponse response = accountService.getAccount(1L);
-        assertThat(response.getId()).isEqualTo(1);
-        assertThat(response.getName()).isEqualTo("김철수");
-        assertThat(response.getAmount()).isEqualTo("100000.00");
-        assertThat(response.getState()).isEqualTo(AccountState.ACTIVE);
-        assertThat(response.getDesign_type()).isEqualTo(AccountDesignType.WEBEE);
-        assertThat(response.getAccount_number()).isEqualTo("123-456-7890");
+    void 계좌를_가져온다(){
+        List<AccountResponse> accountResponseList = accountService.getAccount();
+        assertThat(accountResponseList.size()).isEqualTo(3);
 
     }
 }
