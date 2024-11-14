@@ -52,7 +52,11 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
        if((count / size) > page){
            hasNext = true;
        }
-        return null;
+        List<TransactionListResult> transactionListResultList = accountTransactions.stream()
+                .map(TransactionListResult::new)
+                .toList();
+
+        return new TransactionListResponse(account, transactionListResultList, hasNext);
 
 
 
