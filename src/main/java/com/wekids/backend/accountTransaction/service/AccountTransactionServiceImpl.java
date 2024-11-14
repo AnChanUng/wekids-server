@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,14 +37,24 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
         // 기본은 5개씩 무한스크롤 반영?
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         //String의 start와 end를 날짜타입으로 변경
-        LocalDateTime localDateStartTime = LocalDateTime.parse(start, formatter);
-        LocalDateTime localDateEndTime = LocalDateTime.parse(end, formatter);
+        LocalDateTime localDateStartTime;
+        LocalDateTime localDateEndTime;
+
+        try { // 값이 제대로 들어오지 않았을 경우
+            localDateStartTime = LocalDateTime.parse(start, formatter);
+            localDateEndTime = LocalDateTime.parse(end, formatter);
+        } catch (DateTimeParseException e) {
+            throw new WekidsException(ErrorCode.INVALID_DATE_FORMAT, "날짜 형식이 올바르지 않습니다. 형식은 yyyy-MM-dd'T'HH:mm:ss 여야 합니다.");
+        }
+        
         boolean hasNext = false;
+        // 페이지 검색
         Pageable limit = PageRequest.of(page, size);
         Account account = accountRepository.findById(accountid)
                 .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌를 찾을 수 없습니다."));
         String account_owner = account.getMember().getName();
         TransactionType transactionType = TransactionType.valueOf(type);
+        // 추후에 시간나면 더 좋은 방법을 한번 고민해보자
         Long count = accountTransactionRepository.countBySenderOrReceiverAndCreatedAtBetweenAndType(account_owner, account_owner, localDateStartTime, localDateEndTime, transactionType);
         List<AccountTransaction> accountTransactions = accountTransactionRepository.findBySenderOrReceiverAndCreatedAtBetweenAndType(account_owner, account_owner, localDateStartTime, localDateEndTime, transactionType, limit);
         // 총 개수가 12개 이고 size가 5이고 page가 0이라고 하면 2 > 1
