@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,37 +40,32 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
         //String의 start와 end를 날짜타입으로 변경
         LocalDateTime localDateStartTime;
         LocalDateTime localDateEndTime;
-
         try { // 값이 제대로 들어오지 않았을 경우
             localDateStartTime = LocalDateTime.parse(start, formatter);
             localDateEndTime = LocalDateTime.parse(end, formatter);
         } catch (DateTimeParseException e) {
             throw new WekidsException(ErrorCode.INVALID_DATE_FORMAT, "날짜 형식이 올바르지 않습니다. 형식은 yyyy-MM-dd'T'HH:mm:ss 여야 합니다.");
         }
-        
-        boolean hasNext = false;
         // 페이지 검색
         Pageable limit = PageRequest.of(page, size);
-        Account account = accountRepository.findById(accountid)
-                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌를 찾을 수 없습니다."));
+        Account account = findById(accountid);
         String account_owner = account.getMember().getName();
         TransactionType transactionType = TransactionType.valueOf(type);
-        // 추후에 시간나면 더 좋은 방법을 한번 고민해보자
-        Long count = accountTransactionRepository.countBySenderOrReceiverAndCreatedAtBetweenAndType(account_owner, account_owner, localDateStartTime, localDateEndTime, transactionType);
-        List<AccountTransaction> accountTransactions = accountTransactionRepository.findBySenderOrReceiverAndCreatedAtBetweenAndType(account_owner, account_owner, localDateStartTime, localDateEndTime, transactionType, limit);
-        // 총 개수가 12개 이고 size가 5이고 page가 0이라고 하면 2 > 1
-        // 총 개수가 12개 이고 szie가 5이고 page가 1이라고 하면 2 = 2
-        // 총 개수가 12개 이고 size가 5이고 page가 2이라고 하면 2 < 3
-       if((count / size) > page){
-           hasNext = true;
-       }
+        //Slice로 size개수만큼 추출
+        Slice<AccountTransaction> accountTransactions = accountTransactionRepository.findSliceBySenderOrReceiverAndCreatedAtBetweenAndType(limit, account_owner, account_owner, localDateStartTime, localDateEndTime, transactionType);
         List<TransactionListResult> transactionListResultList = accountTransactions.stream()
                 .map(TransactionListResult::new)
                 .toList();
-
-        return new TransactionListResponse(account, transactionListResultList, hasNext);
+        return new TransactionListResponse(findById(accountid), transactionListResultList, accountTransactions.hasNext());
 
 
 
     }
+
+    private Account findById(long id){
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌를 찾을 수 없습니다."));
+    }
+
+
 }
