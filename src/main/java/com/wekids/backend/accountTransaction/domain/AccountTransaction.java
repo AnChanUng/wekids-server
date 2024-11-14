@@ -3,6 +3,7 @@ package com.wekids.backend.accountTransaction.domain;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @ToString
 public class AccountTransaction {
     @Id
@@ -40,7 +42,7 @@ public class AccountTransaction {
     private String memo;
 
     @CreatedDate
-    @Column(name = "created_at",updatable = false, nullable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

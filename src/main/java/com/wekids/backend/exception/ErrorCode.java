@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.*;
 public enum ErrorCode {
     INVALID_INPUT(BAD_REQUEST, "잘못된 입력 값입니다."),
     MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다."),
+    TRANSACTION_NOT_FOUND(NOT_FOUND, "거래 내역을 찾을 수 없습니다."),
     ACCOUNT_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다."),
     INVALID_DATE_FORMAT(BAD_REQUEST, "잘못된 입력 값입니다.");
 
