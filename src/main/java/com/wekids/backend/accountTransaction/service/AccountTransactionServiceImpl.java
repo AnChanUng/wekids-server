@@ -44,8 +44,14 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
                 .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌를 찾을 수 없습니다."));
         String account_owner = account.getMember().getName();
         TransactionType transactionType = TransactionType.valueOf(type);
-
-
+        Long count = accountTransactionRepository.countBySenderOrReceiverAndCreatedAtBetweenAndType(account_owner, account_owner, localDateStartTime, localDateEndTime, transactionType);
+        List<AccountTransaction> accountTransactions = accountTransactionRepository.findBySenderOrReceiverAndCreatedAtBetweenAndType(account_owner, account_owner, localDateStartTime, localDateEndTime, transactionType, limit);
+        // 총 개수가 12개 이고 size가 5이고 page가 0이라고 하면 2 > 1
+        // 총 개수가 12개 이고 szie가 5이고 page가 1이라고 하면 2 = 2
+        // 총 개수가 12개 이고 size가 5이고 page가 2이라고 하면 2 < 3
+       if((count / size) > page){
+           hasNext = true;
+       }
         return null;
 
 
