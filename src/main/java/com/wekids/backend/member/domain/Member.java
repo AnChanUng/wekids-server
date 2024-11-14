@@ -5,6 +5,7 @@ import com.wekids.backend.member.domain.enums.CardState;
 import com.wekids.backend.member.domain.enums.MemberState;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,10 +15,11 @@ import java.time.LocalDateTime;
 @ToString
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "member_type")
-@Builder
-@AllArgsConstructor
+@SuperBuilder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Member extends BaseTime {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
