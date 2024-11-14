@@ -14,12 +14,14 @@ public class AccountTransactionController {
     private final AccountTransactionService accountTransactionService;
 
     @GetMapping("/api/v1/accounts/{accountId}/transactions")
-    public void getTransactionList(
+    public ResponseEntity<TransactionListResponse> getTransactionList(
             @PathVariable("accountId") Long accountId,
             @RequestParam(value = "start", required = false) String start,
             @RequestParam(value = "end", required = false) String end,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "page", required = false) int page,
             @RequestParam(value = "size", required = false) int size) {
+                TransactionListResponse transactionListResponse = accountTransactionService.getTransactionList(accountId, start, end, type, page, size);
+            return ResponseEntity.ok(transactionListResponse);
     }
 }
