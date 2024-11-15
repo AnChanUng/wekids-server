@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class AccountTransactionServiceImpl implements AccountTransactionService {
 
     private final AccountTransactionRepository accountTransactionRepository;
@@ -29,11 +29,11 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     }
 
     @Override
+    @Transactional
     public void saveMemo(Long transactionId, SaveMemoRequest request) {
         AccountTransaction accountTransaction = accountTransactionRepository.findById(transactionId)
                 .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "memo를 저장 할 transactionId는 " + transactionId));
-        accountTransaction.saveMemo(request.getMemo());
-        accountTransactionRepository.save(accountTransaction);
+        accountTransaction.updateMemo(request.getMemo());
     }
 
 
