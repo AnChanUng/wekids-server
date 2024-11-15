@@ -3,7 +3,6 @@ package com.wekids.backend.accountTransaction.service;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
-import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
 import com.wekids.backend.support.fixture.AccountFixture;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -41,19 +39,8 @@ class AccountTransactionServiceImplTest {
                 .state(AccountState.ACTIVE)
                 .build();
         System.out.println(account);
-        // AccountTransactionFixture를 사용하여 거래 객체를 생성합니다.
-        AccountTransaction transaction = AccountTransactionFixture.builder()
-                .id(transactionId)
-                .title("카카오페이")
-                .type(TransactionType.DEPOSIT)
-                .amount(BigDecimal.valueOf(100.00))
-                .balance(BigDecimal.valueOf(1000.00))
-                .sender("Sender Name")
-                .receiver("Receiver Name")
-                .memo("")
-                .createdAt(LocalDateTime.now())
-                .account(account)
-                .build();
+
+        AccountTransaction transaction = AccountTransactionFixture.builder().build(account);
 
         // Mocking the repository to return the transaction when queried by ID
         given(accountTransactionRepository.findById(transactionId)).willReturn(Optional.of(transaction));
