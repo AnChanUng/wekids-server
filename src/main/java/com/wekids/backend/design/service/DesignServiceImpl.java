@@ -43,6 +43,27 @@ public class DesignServiceImpl implements DesignService {
         return DesignResponse.of(newDesign.getColor().name(), newDesign.getCharacter().name());
     }
 
+    private Design findDesignByMemberId(Long memberId) {
+        return designRepository.findById(memberId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "디자인을 찾을 수 없습니다."));
+    }
+
+    private ColorType validateColorType(String color) {
+        try {
+            return ColorType.valueOf(color);
+        } catch (IllegalArgumentException e) {
+            throw new WekidsException(ErrorCode.INVALID_INPUT, "잘못된 컬러 타입입니다.");
+        }
+    }
+
+    private CharacterType validateCharacterType(String character) {
+        try {
+            return CharacterType.valueOf(character);
+        } catch (IllegalArgumentException e) {
+            throw new WekidsException(ErrorCode.INVALID_INPUT, "잘못된 캐릭터 타입입니다.");
+        }
+    }
+
     // Enum 클래스의 모든 값 문자열 형태로 가져옴
     private <E extends Enum<E>> String getEnumValues(Class<E> enumClass) {
         return Arrays.toString(enumClass.getEnumConstants());
