@@ -53,23 +53,16 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     @Override
     public TransactionListResponse showTransactionList(long accountid, LocalDateTime start, LocalDateTime end, String type, int page, int size){
-        // 기본은 5개씩 무한스크롤 반영?
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        //String의 start와 end를 날짜타입으로 변경
 
-        // 페이지 검색
         Pageable limit = PageRequest.of(page, size);
         Account account = findByAccountId(accountid);
-        String account_owner = account.getMember().getName();
-        Slice<AccountTransaction> transactionList = createTransactionList(limit, account_owner, start, end, type);
+        String owner = account.getMember().getName();
+        Slice<AccountTransaction> transactionList = createTransactionList(limit, owner, start, end, type);
         List<TransactionItemResponse> transactionListResultList = transactionList
                 .stream()
                 .map(TransactionItemResponse::from)
                 .toList();
         return TransactionListResponse.from(findByAccountId(accountid), transactionListResultList, transactionList.hasNext());
-
-
-
 
     }
 
@@ -78,25 +71,19 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                 .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌를 찾을 수 없습니다."));
     }
 
-    private Slice<AccountTransaction> createTransactionList(Pageable limit, String account_owner, LocalDateTime start, LocalDateTime end, String type){
+    private Slice<AccountTransaction> createTransactionList(Pageable limit, String owner, LocalDateTime start, LocalDateTime end, String type){
         Slice<AccountTransaction> accountTransactions;
 
         // "ALL"인 경우와 특정 type인 경우에 따라 다른 쿼리 수행
         if ("ALL".equals(type)) {
             accountTransactions = accountTransactionRepository.findSliceBySenderOrReceiverAndCreatedAtBetween(
-                    limit, account_owner, account_owner, start, end);
+                    limit, owner, owner, start, end);
         } else {
             TransactionType transactionType = TransactionType.valueOf(type);
             accountTransactions = accountTransactionRepository.findSliceBySenderOrReceiverAndCreatedAtBetweenAndType(
-                    limit, account_owner, account_owner, start, end, transactionType);
+                    limit, owner, owner, start, end, transactionType);
         }
 
-        // TransactionListResult 목록을 생성
-        List<TransactionItemResponse> transactionListResultList = accountTransactions.stream()
-                .map(TransactionItemResponse::from)
-                .toList();
-
-        // TransactionListResponse 객체를 생성하여 반환
         return accountTransactions;
     }
 
