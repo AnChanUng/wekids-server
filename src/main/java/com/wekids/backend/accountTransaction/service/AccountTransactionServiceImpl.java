@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
 public class AccountTransactionServiceImpl implements AccountTransactionService {
 
     private final AccountTransactionRepository accountTransactionRepository;
@@ -23,7 +23,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     @Override
     public TransactionDetailSearchResponse findByTransactionId(Long transactionId) {
 
-        AccountTransaction accountTransaction = accountTransactionById(transactionId);
+        AccountTransaction accountTransaction = accountTransactionById(transactionId, "id값은");
         return TransactionDetailSearchResponse.from(accountTransaction);
 
     }
@@ -31,14 +31,14 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     @Override
     @Transactional
     public void saveMemo(Long transactionId, SaveMemoRequest request) {
-        AccountTransaction accountTransaction = accountTransactionRepository.findById(transactionId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "memo를 저장 할 transactionId는 " + transactionId));
+        AccountTransaction accountTransaction = accountTransactionById(transactionId, "memod업데이트를 하는 id");
         accountTransaction.updateMemo(request.getMemo());
     }
 
 
-    private AccountTransaction accountTransactionById(Long transactionId) {
-        return accountTransactionRepository.findById(transactionId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "transactionId : " + transactionId));
+    private AccountTransaction accountTransactionById(Long transactionId, String message) {
+        AccountTransaction accountTransaction = accountTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, message + transactionId));
+        return accountTransaction;
     }
 }
