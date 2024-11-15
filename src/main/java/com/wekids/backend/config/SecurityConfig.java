@@ -1,9 +1,11 @@
 package com.wekids.backend.config;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -11,15 +13,18 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(
-                request -> request.anyRequest().permitAll()
-        );
-
 //        http.authorizeHttpRequests(
-//                request -> request.requestMatchers(PathRequest.toH2Console()).permitAll()
-//                        .anyRequest().permitAll())
-//                .csrf(csrf -> csrf.ignoringRequestMatchers(PathRequest.toH2Console()))
-//                .headers(headers ->  headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+//                request -> request.anyRequest().permitAll()
+//
+//        );
+
+
+
+        http.authorizeHttpRequests(
+                request -> request
+                        .anyRequest().permitAll())
+                .csrf(csrf -> csrf.disable())
+                .headers(headers ->  headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         return http.build();
 
