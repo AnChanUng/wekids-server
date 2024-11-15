@@ -6,23 +6,30 @@ import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Getter
 @ToString
-@IdClass(DesignId.class)
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Design {
     @Id
+    private Long memberId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @MapsId
     private Member member;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ColorType color;
 
     @Column(name = "`character`", nullable = false)
+    @Enumerated(EnumType.STRING)
     private CharacterType character;
 
     @OneToOne(fetch = FetchType.LAZY)
