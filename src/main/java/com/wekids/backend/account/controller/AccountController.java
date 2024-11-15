@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api/v1/accounts")
 @RequiredArgsConstructor
 public class AccountController {
 
     private final AccountService accountService;
 
-    @GetMapping("/api/v1/accounts")
+    @GetMapping()
     public ResponseEntity<List<AccountResponse>> getAccount(){
         List<AccountResponse> responseList = accountService.getAccount();
         return ResponseEntity.ok(responseList);

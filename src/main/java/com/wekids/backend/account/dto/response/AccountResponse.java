@@ -11,12 +11,12 @@ import java.math.BigDecimal;
 @Getter
 public class AccountResponse {
 
-    private String account_number;
+    private String accountNumber;
     private String bankName;
     private BigDecimal balance;
 
     public AccountResponse(Account account){
-        this.account_number = account.getAccountNumber();
+        this.accountNumber = account.getAccountNumber();
         this.bankName = "우리은행";
         this.balance = account.getBalance();
     }
