@@ -1,8 +1,7 @@
 package com.wekids.backend.accountTransaction.dto.response;
 
 import com.wekids.backend.account.domain.Account;
-import com.wekids.backend.accountTransaction.domain.AccountTransaction;
-import com.wekids.backend.accountTransaction.dto.result.TransactionListResult;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,15 +10,13 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class TransactionListResponse {
-    private BigDecimal balance;
-    private boolean hasNext;
-    private List<TransactionListResult> transactions;
+    private final BigDecimal balance;
+    private final boolean hasNext;
+    private final List<TransactionItemResponse> transactions;
 
-    public TransactionListResponse(Account account, List<TransactionListResult> transactionListResults, boolean hasNext){
-        this.balance = account.getBalance();
-        this.hasNext = hasNext;
-        this.transactions = transactionListResults;
-
+    public static TransactionListResponse from(Account account, List<TransactionItemResponse> transactionListResults, boolean hasNext) {
+        return new TransactionListResponse(account.getBalance(), hasNext, transactionListResults);
     }
 }

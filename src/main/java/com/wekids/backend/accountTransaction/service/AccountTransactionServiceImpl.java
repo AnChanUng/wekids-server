@@ -9,7 +9,7 @@ import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
 import com.wekids.backend.accountTransaction.dto.response.TransactionListResponse;
-import com.wekids.backend.accountTransaction.dto.result.TransactionListResult;
+import com.wekids.backend.accountTransaction.dto.response.TransactionItemResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -51,37 +52,52 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
 
     @Override
-    public TransactionListResponse getTransactionList(long accountid, String start, String end, String type, int page, int size){
+    public TransactionListResponse showTransactionList(long accountid, LocalDateTime start, LocalDateTime end, String type, int page, int size){
         // 기본은 5개씩 무한스크롤 반영?
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         //String의 start와 end를 날짜타입으로 변경
-        LocalDateTime localDateStartTime;
-        LocalDateTime localDateEndTime;
-        try { // 값이 제대로 들어오지 않았을 경우
-            localDateStartTime = LocalDateTime.parse(start, formatter);
-            localDateEndTime = LocalDateTime.parse(end, formatter);
-        } catch (DateTimeParseException e) {
-            throw new WekidsException(ErrorCode.INVALID_DATE_FORMAT, "날짜 형식이 올바르지 않습니다. 형식은 yyyy-MM-dd'T'HH:mm:ss 여야 합니다.");
-        }
+
         // 페이지 검색
         Pageable limit = PageRequest.of(page, size);
-        Account account = findById(accountid);
+        Account account = findByAccountId(accountid);
         String account_owner = account.getMember().getName();
-        TransactionType transactionType = TransactionType.valueOf(type);
-        //Slice로 size개수만큼 추출
-        Slice<AccountTransaction> accountTransactions = accountTransactionRepository.findSliceBySenderOrReceiverAndCreatedAtBetweenAndType(limit, account_owner, account_owner, localDateStartTime, localDateEndTime, transactionType);
-        List<TransactionListResult> transactionListResultList = accountTransactions.stream()
-                .map(TransactionListResult::new)
+        Slice<AccountTransaction> transactionList = createTransactionList(limit, account_owner, start, end, type);
+        List<TransactionItemResponse> transactionListResultList = transactionList
+                .stream()
+                .map(TransactionItemResponse::from)
                 .toList();
-        return new TransactionListResponse(findById(accountid), transactionListResultList, accountTransactions.hasNext());
+        return TransactionListResponse.from(findByAccountId(accountid), transactionListResultList, transactionList.hasNext());
+
 
 
 
     }
 
-    private Account findById(long id){
+    private Account findByAccountId(long id){
         return accountRepository.findById(id)
                 .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌를 찾을 수 없습니다."));
+    }
+
+    private Slice<AccountTransaction> createTransactionList(Pageable limit, String account_owner, LocalDateTime start, LocalDateTime end, String type){
+        Slice<AccountTransaction> accountTransactions;
+
+        // "ALL"인 경우와 특정 type인 경우에 따라 다른 쿼리 수행
+        if ("ALL".equals(type)) {
+            accountTransactions = accountTransactionRepository.findSliceBySenderOrReceiverAndCreatedAtBetween(
+                    limit, account_owner, account_owner, start, end);
+        } else {
+            TransactionType transactionType = TransactionType.valueOf(type);
+            accountTransactions = accountTransactionRepository.findSliceBySenderOrReceiverAndCreatedAtBetweenAndType(
+                    limit, account_owner, account_owner, start, end, transactionType);
+        }
+
+        // TransactionListResult 목록을 생성
+        List<TransactionItemResponse> transactionListResultList = accountTransactions.stream()
+                .map(TransactionItemResponse::from)
+                .toList();
+
+        // TransactionListResponse 객체를 생성하여 반환
+        return accountTransactions;
     }
 
 

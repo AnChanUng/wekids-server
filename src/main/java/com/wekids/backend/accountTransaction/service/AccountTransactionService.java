@@ -4,8 +4,10 @@ import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearc
 
 import com.wekids.backend.accountTransaction.dto.response.TransactionListResponse;
 
+import java.time.LocalDateTime;
+
 public interface AccountTransactionService {
     TransactionDetailSearchResponse findByTransactionId(Long transactionId);
-    TransactionListResponse getTransactionList(long accountid, String start, String end, String type, int page, int size);
+    TransactionListResponse showTransactionList(long accountid, LocalDateTime start, LocalDateTime end, String type, int page, int size);
 
 }

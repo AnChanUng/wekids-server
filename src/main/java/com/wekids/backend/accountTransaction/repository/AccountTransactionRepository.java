@@ -15,4 +15,6 @@ public interface AccountTransactionRepository extends JpaRepository<AccountTrans
 
     Slice<AccountTransaction> findSliceBySenderOrReceiverAndCreatedAtBetweenAndType(
             Pageable limit, String sender, String receiver, LocalDateTime startTime, LocalDateTime endTime, TransactionType type);
+    Slice<AccountTransaction> findSliceBySenderOrReceiverAndCreatedAtBetween(
+            Pageable limit, String sender, String receiver, LocalDateTime startTime, LocalDateTime endTime);
 }

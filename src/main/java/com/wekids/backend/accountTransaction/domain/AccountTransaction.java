@@ -3,9 +3,7 @@ package com.wekids.backend.accountTransaction.domain;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
@@ -15,6 +13,8 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccountTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

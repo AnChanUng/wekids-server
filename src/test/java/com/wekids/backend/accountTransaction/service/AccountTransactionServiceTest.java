@@ -49,23 +49,18 @@ public class AccountTransactionServiceTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         LocalDateTime localDateStartTime = LocalDateTime.parse(start, formatter);
         LocalDateTime localDateEndTime = LocalDateTime.parse(end, formatter);
-        new ChildFixture();
         Member member = ChildFixture.builder().id(3L).name("박민수").build();
-        new AccountFixture();
         Account account = AccountFixture.builder().member(member).build();
-        System.out.println("asd");
 
 
         Pageable pageable = PageRequest.of(page, size);
         Slice<AccountTransaction> expectedSlice = new PageImpl<>(List.of(accountTransaction), pageable, pageable.getPageSize() + 1);
-        System.out.println(account.getId());
-        System.out.println(accountRepository.findById(account.getId()));
         given(accountRepository.findById(account.getId())).willReturn(Optional.of(account));
         given(accountTransactionRepository.findSliceBySenderOrReceiverAndCreatedAtBetweenAndType(
                 pageable, "박민수", "박민수", localDateStartTime, localDateEndTime, accountTransaction.getType()))
                 .willReturn(expectedSlice);
 
-        TransactionListResponse response = accountTransactionService.getTransactionList(account.getId(), start, end, String.valueOf(accountTransaction.getType()), page, size);
+        TransactionListResponse response = accountTransactionService.showTransactionList(account.getId(), localDateStartTime, localDateEndTime, String.valueOf(accountTransaction.getType()), page, size);
 
         assertThat(response.getTransactions().size()).isEqualTo(1);
         assertThat(response.getBalance()).isEqualTo("50000.00");
