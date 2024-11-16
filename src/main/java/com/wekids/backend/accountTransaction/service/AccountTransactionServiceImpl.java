@@ -1,7 +1,7 @@
 package com.wekids.backend.accountTransaction.service;
 
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
-import com.wekids.backend.accountTransaction.dto.request.SaveMemoRequest;
+import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
 import com.wekids.backend.exception.ErrorCode;
@@ -30,9 +30,10 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     @Override
     @Transactional
-    public void saveMemo(Long transactionId, SaveMemoRequest request) {
+    public void saveMemo(Long transactionId, UpdateMemoRequest request) {
         AccountTransaction accountTransaction = accountTransactionById(transactionId, "memod업데이트를 하는 id");
         accountTransaction.updateMemo(request.getMemo());
+        accountTransactionRepository.save(accountTransaction);
     }
 
 
