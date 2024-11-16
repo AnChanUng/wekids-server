@@ -4,7 +4,7 @@ import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
-import com.wekids.backend.accountTransaction.dto.request.SaveMemoRequest;
+import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
 import com.wekids.backend.support.fixture.AccountFixture;
@@ -82,7 +82,7 @@ class AccountTransactionServiceImplTest {
     @Test
     void 메모를_업데이트한다() {
         Long transactionId = 1L;
-        // AccountTransactionFixture를 사용하여 거래 객체를 생성합니다.
+        // AccountTransactionFixture를 사용하여 거래 객체를 생성
         AccountTransaction transaction = AccountTransactionFixture.builder()
                 .id(transactionId)
                 .title("카카오페이")
@@ -91,21 +91,22 @@ class AccountTransactionServiceImplTest {
                 .balance(BigDecimal.valueOf(1000.00))
                 .sender("Sender Name")
                 .receiver("Receiver Name")
-                .memo("되나?")
+                .memo("")
                 .createdAt(LocalDateTime.now())
                 .build(account);
 
-
-        // Mocking the repository to return the transaction when queried by ID
         given(accountTransactionRepository.findById(transactionId)).willReturn(Optional.of(transaction));
 
-        // Call the service method to retrieve the transaction details
+        String newMemo = "메모 업데이트";
+        UpdateMemoRequest request = new UpdateMemoRequest(newMemo);
 
-        transaction.updateMemo("되나?");
-        SaveMemoRequest request = new SaveMemoRequest();
-        request.getMemo();
+        accountTransactionService.saveMemo(transactionId, request);
 
-        TransactionDetailSearchResponse response = accountTransactionService.saveMemo(1L, );
+        // 메모가 업데이트되었는지 확인
+        assertThat(transaction.getMemo()).isEqualTo(newMemo);
+
+        // 메모를 저장하는 메서드가 호출되었는지 확인
+        verify(accountTransactionRepository, times(1)).save(transaction);
     }
 
 }
