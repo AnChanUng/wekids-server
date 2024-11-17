@@ -1,13 +1,11 @@
 package com.wekids.backend.accountTransaction.controller;
 
+import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.service.AccountTransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/transactions")
@@ -20,5 +18,11 @@ public class AccountTransactionController {
     public ResponseEntity<TransactionDetailSearchResponse> getTransactionDetails(@PathVariable Long transactionId) {
         TransactionDetailSearchResponse result = accountTransactionService.findByTransactionId(transactionId);
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> postTransaction(@RequestBody TransactionRequest transactionRequest) {
+        accountTransactionService.saveTransaction(transactionRequest);
+        return ResponseEntity.ok().build();
     }
 }
