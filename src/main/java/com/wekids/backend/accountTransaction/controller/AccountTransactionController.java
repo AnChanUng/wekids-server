@@ -18,7 +18,7 @@ public class AccountTransactionController {
     @PostMapping("/{transactionId}/memo")
     public ResponseEntity<Void> saveMemo(@PathVariable("transactionId") Long transactionId, @RequestBody @Valid UpdateMemoRequest request) {
         accountTransactionService.saveMemo(transactionId, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{transactionId}")
