@@ -18,6 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Parent> findByIdAndMemberType(@Param("id") Long id);
 
     @Query("SELECT c FROM Child c JOIN FETCH ParentChild pc ON c.id = pc.child.id WHERE pc.parent.id = :parentId")
-    List<Child> findChildrenByParentId(@Param("parentId") Long parentId);
+    Optional<List<Child>> findChildrenByParentId(@Param("parentId") Long parentId);
 
 }

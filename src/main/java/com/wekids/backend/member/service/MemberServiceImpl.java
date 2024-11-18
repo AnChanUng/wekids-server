@@ -47,7 +47,8 @@ public class MemberServiceImpl implements MemberService{
 
         ParentResponse parentResponse = ParentResponse.from(parent, parentAccount, design);
         // 자녀 정보 조회 및 설정
-        List<Child> children = memberRepository.findChildrenByParentId(parentId); // parent_child 테이블을 통해 자녀 목록 조회
+        List<Child> children = memberRepository.findChildrenByParentId(parentId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, parentId + "의 자식들 정보를 찾을 수 없습니다.")); // parent_child 테이블을 통해 자녀 목록 조회
         List<ChildResponse> childResponse = children.stream().map(child -> {
             // 각 자녀의 계좌 정보 조회
             Account childAccount = accountRepository.findByMember(child)
