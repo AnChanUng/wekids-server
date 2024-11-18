@@ -10,5 +10,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class CardServiceImpl implements AccountService {
+public class CardServiceImpl implements CardService {
 }
