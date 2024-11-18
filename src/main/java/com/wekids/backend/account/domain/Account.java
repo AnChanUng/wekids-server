@@ -38,4 +38,7 @@ public class Account extends BaseTime {
     @ToString.Exclude
     private Member member;
 
+    public void updateAccountAmount(BigDecimal amount) {
+        this.balance = amount;
+    }
 }
