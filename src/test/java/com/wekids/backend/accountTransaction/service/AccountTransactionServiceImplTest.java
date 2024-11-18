@@ -27,8 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -313,5 +312,46 @@ class AccountTransactionServiceImplTest {
         assertThat(exception.getMessage()).contains("부모 계좌와 자식 계좌가 동일할 수 없습니다.");
     }
 
+    @Test
+    void 이체가_성공적으로_업데이트_된_경우() {
+        BigDecimal transactionAmount = BigDecimal.valueOf(100.00);  //이체 금액
+
+        Account childAccount = Account.builder()
+                .accountNumber("CHILD1234567890")
+                .balance(BigDecimal.valueOf(250.00))
+                .state(AccountState.ACTIVE)
+                .member(childMember)
+                .build();
+
+        Account parentAccount = Account.builder()
+                .accountNumber("PARENT1234567890")
+                .balance(BigDecimal.valueOf(500.00))
+                .state(AccountState.ACTIVE)
+                .member(parentMember)
+                .build();
+
+        TransactionRequest transactionRequest = TransactionRequest.builder()
+                .parentAccountNumber(parentAccount.getAccountNumber())
+                .childAccountNumber(childAccount.getAccountNumber())
+                .amount(transactionAmount)
+                .sender(parentMember.getName())
+                .receiver(childMember.getName())
+                .build();
+
+        // Arrange
+        when(accountRepository.findAccountByAccountNumber("PARENT1234567890")).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber("CHILD1234567890")).thenReturn(Optional.of(childAccount));
+
+        // Act
+        accountTransactionService.saveTransaction(transactionRequest);
+
+        // Assert
+//        (new BigDecimal("400.00"), parentAccount.getBalance()); // 부모 계좌 잔액 확인
+        assertEquals(new BigDecimal("350.0"), childAccount.getBalance()); // 자식 계좌 잔액 확인
+        assertEquals(new BigDecimal("400.0"), parentAccount.getBalance());
+
+        verify(accountTransactionRepository, times(2)).save(any(AccountTransaction.class)); // 트랜잭션 저장 확인
+        verify(accountRepository, never()).save(any(Account.class)); // Account는 변경 감지로 저장됨
+    }
 
 }
