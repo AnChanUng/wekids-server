@@ -1,10 +1,13 @@
 package com.wekids.backend.account.controller;
 
 import com.wekids.backend.account.dto.response.AccountResponse;
+import com.wekids.backend.account.dto.response.BaasAccountResponse;
 import com.wekids.backend.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -13,7 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountController {
 
-    private final AccountService accountService;
+    @Autowired
+    private AccountService accountService;
 
     @GetMapping()
     public ResponseEntity<List<AccountResponse>> getAccount(){

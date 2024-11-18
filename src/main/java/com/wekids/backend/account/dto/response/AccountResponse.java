@@ -15,9 +15,9 @@ public class AccountResponse {
     private String bankName;
     private BigDecimal balance;
 
-    public AccountResponse(Account account){
-        this.accountNumber = account.getAccountNumber();
+    public AccountResponse(BaasAccountResponse baasAccountResponse){
+        this.accountNumber = baasAccountResponse.getAccountNumber();
         this.bankName = "우리은행";
-        this.balance = account.getBalance();
+        this.balance = baasAccountResponse.getBalance();
     }
 }
