@@ -1,17 +1,14 @@
-package com.wekids.backend.member.repository;
+package com.wekids.backend.member.service;
 
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.design.domain.Design;
-import com.wekids.backend.design.domain.enums.CharacterType;
-import com.wekids.backend.exception.ErrorCode;
-import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.dto.response.ChildResponse;
 import com.wekids.backend.member.dto.response.ParentAccountResponse;
 import com.wekids.backend.member.dto.response.ParentResponse;
-import com.wekids.backend.member.service.MemberServiceImpl;
+import com.wekids.backend.member.repository.MemberRepository;
 import com.wekids.backend.support.fixture.AccountFixture;
 import com.wekids.backend.support.fixture.ChildFixture;
 import com.wekids.backend.support.fixture.DesignFixture;
@@ -25,11 +22,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
@@ -66,7 +61,7 @@ public class MemberServiceTest {
 
         ParentResponse parentResponse = ParentResponse.from(parent, account, design);
 
-        given(memberRepository.findChildrenByParentId(parentId)).willReturn(children);
+        given(memberRepository.findChildrenByParentId(parentId)).willReturn(Optional.of(children));
 
 
 

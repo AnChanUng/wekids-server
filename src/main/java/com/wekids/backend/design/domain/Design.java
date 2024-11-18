@@ -25,7 +25,7 @@ public class Design {
     @Enumerated(EnumType.STRING)
     private ColorType color;
 
-    @Column(name = "character", nullable = false)
+    @Column(name = "`character`", nullable = false)
     @Enumerated(EnumType.STRING)
     private CharacterType character;
 
