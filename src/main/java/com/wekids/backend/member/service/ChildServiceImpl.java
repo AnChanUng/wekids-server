@@ -37,9 +37,9 @@ public class ChildServiceImpl implements ChildService {
                 .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "자식 계정 아이디 : " + childId));
 
         Account childAccount = accountRepository.findByMember(child)
-                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계정 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계정 정보를 찾을 수 없습니다." ));
 
-        Design design = designRepository.findById(childId).orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "자식 계좌를 찾을 수 없습니다."));
+        Design design = designRepository.findById(childId).orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "자식 계좌를 찾을 수 없습니다." + childId));
 
         ChildResponse childResponse = ChildResponse.from(child, childAccount, design);
 
