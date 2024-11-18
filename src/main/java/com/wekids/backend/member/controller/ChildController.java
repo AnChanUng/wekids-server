@@ -1,7 +1,7 @@
-package com.wekids.backend.child.controller;
+package com.wekids.backend.member.controller;
 
-import com.wekids.backend.child.dto.response.ChildAccountResponse;
-import com.wekids.backend.child.service.ChildService;
+import com.wekids.backend.member.dto.response.ChildResponse;
+import com.wekids.backend.member.service.ChildService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ChildController {
 
     private final ChildService childService;
 
-    @GetMapping("/api/v1/children")
-    public ResponseEntity<ChildAccountResponse> getParentAccount(){
-        ChildAccountResponse response = childService.getChildAccount();
+    @GetMapping("/children")
+    public ResponseEntity<ChildResponse> getParentAccount() {
+        ChildResponse response = childService.getChildAccount();
         return ResponseEntity.ok(response);
     }
 
