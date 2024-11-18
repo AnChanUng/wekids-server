@@ -3,6 +3,7 @@ package com.wekids.backend.member.service;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.design.domain.Design;
+import com.wekids.backend.design.repository.DesignRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
@@ -29,6 +30,8 @@ public class MemberServiceImpl implements MemberService{
     MemberRepository memberRepository;
     @Autowired
     AccountRepository accountRepository;
+    @Autowired
+    DesignRepository designRepository;
 
     @Override
     public ParentAccountResponse getParentAccount() {
@@ -43,7 +46,7 @@ public class MemberServiceImpl implements MemberService{
                 .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "id가" + parent.getId() + "부모 계좌를 찾을 수 없습니다."));
 
         // 부모 디자인 정보 조회
-        Design design = accountRepository.findDesignByAccountId(parentId);
+        Design design = designRepository.findByMemberId(parentId);
 
         ParentResponse parentResponse = ParentResponse.from(parent, parentAccount, design);
         // 자녀 정보 조회 및 설정
@@ -53,7 +56,7 @@ public class MemberServiceImpl implements MemberService{
             // 각 자녀의 계좌 정보 조회
             Account childAccount = accountRepository.findByMember(child)
                     .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "id가" + child.getId() + "자식 계좌를 찾을 수 없습니다."));
-            Design childDesign = accountRepository.findDesignByAccountId(child.getId());
+            Design childDesign = designRepository.findByMemberId(child.getId());
             return ChildResponse.from(child, childAccount, childDesign);
         }).collect(Collectors.toList());
 

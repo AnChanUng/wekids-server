@@ -8,20 +8,23 @@ import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Getter
-@ToString
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@IdClass(DesignId.class)
-public class Design {
+@Builder
+public class Design implements Serializable {
     @Id
+    private long id;
+
+    @MapsId
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false)
+    @Column(name = "color", nullable = false)
     @Enumerated(EnumType.STRING)
     private ColorType color;
 

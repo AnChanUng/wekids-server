@@ -16,15 +16,15 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 public class ChildResponse {
-    long childId;
+    Long childId;
     String name;
     String accountNumber;
     String profile;
     BigDecimal balance;
     Long accountId;
     AccountState cardState;
-    ColorType color = null;
-    CharacterType character = null;
+    ColorType color;
+    CharacterType character;
 
     public static ChildResponse from(Child child, Account account, Design design){
         return new ChildResponse(
