@@ -4,8 +4,8 @@ import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.common.entity.BaseTime;
 import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Account extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,4 +37,5 @@ public class Account extends BaseTime {
     @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
     @ToString.Exclude
     private Member member;
+
 }
