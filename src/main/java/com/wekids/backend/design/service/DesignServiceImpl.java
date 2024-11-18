@@ -51,19 +51,4 @@ public class DesignServiceImpl implements DesignService {
                 .orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "디자인을 찾을 수 없습니다."));
     }
 
-    private ColorType validateColorType(String color) {
-        try {
-            return ColorType.valueOf(color);
-        } catch (IllegalArgumentException e) {
-            throw new WekidsException(ErrorCode.INVALID_INPUT, "잘못된 컬러 타입입니다.");
-        }
-    }
-
-    private CharacterType validateCharacterType(String character) {
-        try {
-            return CharacterType.valueOf(character);
-        } catch (IllegalArgumentException e) {
-            throw new WekidsException(ErrorCode.INVALID_INPUT, "잘못된 캐릭터 타입입니다.");
-        }
-    }
 }
