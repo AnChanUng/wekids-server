@@ -16,13 +16,13 @@ public class AccountTransactionController {
 
     @GetMapping("/{transactionId}")
     public ResponseEntity<TransactionDetailSearchResponse> getTransactionDetails(@PathVariable Long transactionId) {
-        TransactionDetailSearchResponse result = accountTransactionService.findByTransactionId(transactionId);
-        return ResponseEntity.ok(result);
+        accountTransactionService.findByTransactionId(transactionId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
     public ResponseEntity<Void> postTransaction(@RequestBody TransactionRequest transactionRequest) {
         accountTransactionService.saveTransaction(transactionRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
