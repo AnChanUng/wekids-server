@@ -8,9 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT c FROM Child c JOIN FETCH ParentChild pc ON c.id = pc.child.id WHERE pc.parent.id = :parentId")
-    List<Child> findChildrenByParentId(@Param("parentId") Long parentId);
+    Optional<List<Child>> findChildrenByParentId(@Param("parentId") Long parentId);
 }

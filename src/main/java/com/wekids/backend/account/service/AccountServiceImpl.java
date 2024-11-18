@@ -32,7 +32,8 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public List<AccountChildListResponse> findAccountChildList(long parentId){
-        List<Child> children = memberRepository.findChildrenByParentId(parentId); // parent_child 테이블을 통해 자녀 목록 조회
+        List<Child> children = memberRepository.findChildrenByParentId(parentId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "자식들 정보를 찾을 수 없습니다."));// parent_child 테이블을 통해 자녀 목록 조회
         // 각 자녀의 계좌 정보 조회
         return children.stream().map(child -> {
             // 각 자녀의 계좌 정보 조회
