@@ -54,4 +54,23 @@ public class DesignServiceImplTest {
         assertThat(foundDesign.getCharacter()).isEqualTo(design.getCharacter().name());
     }
 
+    @Test
+    void 디자인을_저장한다() {
+        Long memberId = 2L;
+        DesignCreateRequest request = new DesignCreateRequest();
+        request.setColor("PINK1");
+        request.setCharacter("HEARTSPRING");
+
+        Design design = DesignFixture.builder()
+                .withMemberId(memberId)
+                .withColor(ColorType.valueOf(request.getColor()))
+                .withCharacter(CharacterType.valueOf(request.getCharacter()))
+                .build();
+
+        when(designRepository.save(any(Design.class))).thenReturn(design);
+        DesignResponse createdDesign = designService.createDesign(memberId, request);
+
+        assertThat(createdDesign.getColor()).isEqualTo(design.getColor().name());
+        assertThat(createdDesign.getCharacter()).isEqualTo(design.getCharacter().name());
+    }
 }
