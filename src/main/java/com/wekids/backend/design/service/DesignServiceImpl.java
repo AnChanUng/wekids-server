@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.util.Arrays;
 
 @Service
@@ -33,8 +34,8 @@ public class DesignServiceImpl implements DesignService {
     @Transactional
     public void createDesign(Long memberId, DesignCreateRequest request) {
 
-        ColorType color = validateColorType(request.getColor());
-        CharacterType character = validateCharacterType(request.getCharacter());
+        ColorType color = ColorType.valueOf(request.getColor());
+        CharacterType character = CharacterType.valueOf(request.getCharacter());
 
         Design newDesign = Design.builder()
                 .memberId(memberId)
@@ -64,11 +65,5 @@ public class DesignServiceImpl implements DesignService {
         } catch (IllegalArgumentException e) {
             throw new WekidsException(ErrorCode.INVALID_INPUT, "잘못된 캐릭터 타입입니다.");
         }
-    }
-
-    // Enum 클래스의 모든 값 문자열 형태로 가져옴
-    private <E extends Enum<E>> String getEnumValues(Class<E> enumClass) {
-        return Arrays.toString(enumClass.getEnumConstants());
-        // [RED, BLUE, GREEN]
     }
 }
