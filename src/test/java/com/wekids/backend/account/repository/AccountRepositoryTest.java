@@ -37,11 +37,6 @@ class AccountRepositoryTest {
                 .name("강현우")
                 .email("5678")
                 .build();
-
-
-        // 모킹된 memberRepository에서 member가 저장되면 실제 객체가 반환되도록 설정
-//        when(memberRepository.save(any(Member.class))).thenReturn(childMember);
-//        when(memberRepository.save(any(Member.class))).thenReturn(parentMember);
     }
 
     @Test
@@ -73,7 +68,7 @@ class AccountRepositoryTest {
     @Test
     public void 계좌번호로_부모_account_table에_있는_값_조회하기() {
         // Account 더미데이터 넣기
-        Account parnetAccount = Account.builder()
+        Account parentAccount = Account.builder()
                 .accountNumber("PARENT1234567890")
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
@@ -81,7 +76,7 @@ class AccountRepositoryTest {
                 .build();
 
         // accountRepository에서 부모 accountNumber로 조회하면 해당 account를 반환하도록 설정
-        when(accountRepository.findAccountByAccountNumber("PARENT1234567890")).thenReturn(Optional.of(parnetAccount));
+        when(accountRepository.findAccountByAccountNumber("PARENT1234567890")).thenReturn(Optional.of(parentAccount));
 
         // When: Account를 accountNumber로 조회
         Optional<Account> foundAccount = accountRepository.findAccountByAccountNumber("PARENT1234567890");
@@ -102,7 +97,7 @@ class AccountRepositoryTest {
         when(accountRepository.findAccountByAccountNumber("INVALID_ACCOUNT")).thenReturn(Optional.empty());
 
         // Then: Account가 존재하지 않으면 Optional.empty()가 반환됨.
-        // TODO empty가 반환되는게 맞음? 아니면 여기도 wekidserror터쳐야됨?
+        // TODO empty가 반환되는게 맞음? 아니면 여기도 wekidsError터쳐야됨?
 
         Optional<Account> foundAccount = accountRepository.findAccountByAccountNumber("INVALID_ACCOUNT");
 
