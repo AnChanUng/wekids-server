@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/design")
@@ -25,8 +27,9 @@ public class DesignController {
     }
 
     @PostMapping()
-    public ResponseEntity<DesignResponse> createDesign(@RequestBody DesignCreateRequest request) {
-        DesignResponse response = designService.createDesign(DEFAULT_MEMBER_ID, request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Void> createDesign(@RequestBody DesignCreateRequest request) {
+        designService.createDesign(DEFAULT_MEMBER_ID, request);
+        URI location = URI.create("http://localhost:8080/api/v1/design");
+        return ResponseEntity.created(location).build();
     }
 }

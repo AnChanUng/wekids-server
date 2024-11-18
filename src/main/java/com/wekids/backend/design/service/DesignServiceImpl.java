@@ -31,16 +31,18 @@ public class DesignServiceImpl implements DesignService {
 
     @Override
     @Transactional
-    public DesignResponse createDesign(Long memberId, DesignCreateRequest request) {
+    public void createDesign(Long memberId, DesignCreateRequest request) {
 
-        Design newDesign = new Design();
-        newDesign.setMemberId(memberId);
+        ColorType color = validateColorType(request.getColor());
+        CharacterType character = validateCharacterType(request.getCharacter());
 
-        newDesign.setColor(validateColorType(request.getColor()));
-        newDesign.setCharacter(validateCharacterType(request.getCharacter()));
+        Design newDesign = Design.builder()
+                .memberId(memberId)
+                .color(color)
+                .character(character)
+                .build();
 
         designRepository.save(newDesign);
-        return DesignResponse.of(newDesign.getColor().name(), newDesign.getCharacter().name());
     }
 
     private Design findDesignByMemberId(Long memberId) {
