@@ -68,14 +68,12 @@ public class MemberServiceTest {
 
         given(memberRepository.findChildrenByParentId(parentId)).willReturn(children);
 
-        Design wrongChildDesign = DesignFixture.builder().member(child2).account(account).character(CharacterType.DADAPING).build();
-        given(accountRepository.findDesignByAccountId(child2.getId())).willReturn(wrongChildDesign);
+
 
         List<ChildResponse> childResponse = children.stream().map(child -> {
+            // 각 자녀의 계좌 정보 조회
             given(accountRepository.findByMember(child)).willReturn(Optional.of(account));
-            if (child.getId().equals(2L)) {
-                return ChildResponse.from(child, account, wrongChildDesign);
-            }
+            given(accountRepository.findDesignByAccountId(child.getId())).willReturn(childdesign);
             return ChildResponse.from(child, account, childdesign);
         }).toList();
 
@@ -84,8 +82,7 @@ public class MemberServiceTest {
                 .isEqualTo(new ParentAccountResponse(parentResponse, childResponse).getParent().getAccountId());
         assertThat(memberService.getParentAccount().getChildren().get(1).getAccountId())
                 .isEqualTo(new ParentAccountResponse(parentResponse, childResponse).getChildren().get(1).getAccountId());
-//        assertThat(memberService.getParentAccount().getChildren().get(0).getCharacter())
-//                .isEqualTo(childResponse.get(1).getCharacter()); // 테스트 실패 코드
+
 
     }
 }
