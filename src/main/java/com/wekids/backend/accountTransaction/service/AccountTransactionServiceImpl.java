@@ -23,7 +23,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     @Override
     public TransactionDetailSearchResponse findByTransactionId(Long transactionId) {
 
-        AccountTransaction accountTransaction = accountTransactionById(transactionId, "id값은");
+        AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "transaction id값");
         return TransactionDetailSearchResponse.from(accountTransaction);
 
     }
@@ -31,13 +31,13 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     @Override
     @Transactional
     public void saveMemo(Long transactionId, UpdateMemoRequest request) {
-        AccountTransaction accountTransaction = accountTransactionById(transactionId, "memod업데이트를 하는 id");
+        AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "memo업데이트를 하는 거래내역id");
         accountTransaction.updateMemo(request.getMemo());
         accountTransactionRepository.save(accountTransaction);
     }
 
 
-    private AccountTransaction accountTransactionById(Long transactionId, String message) {
+    private AccountTransaction findAccountTransactionById(Long transactionId, String message) {
         AccountTransaction accountTransaction = accountTransactionRepository.findById(transactionId)
                 .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, message + transactionId));
         return accountTransaction;
