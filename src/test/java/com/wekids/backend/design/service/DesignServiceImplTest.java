@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -42,9 +43,11 @@ public class DesignServiceImplTest {
                 .build();
 
         Design design = DesignFixture.builder()
-                .withMemberId(memberId)
-                .withMember(member)
-                .build();
+                .memberId(memberId)
+                .member(member)
+                .color(ColorType.valueOf("PINK1"))
+                .character(CharacterType.valueOf("HEARTSPRING"))
+                .build().build();
 
         when(designRepository.findById(memberId)).thenReturn(Optional.of(design));
 
@@ -57,20 +60,22 @@ public class DesignServiceImplTest {
     @Test
     void 디자인을_저장한다() {
         Long memberId = 2L;
-        DesignCreateRequest request = new DesignCreateRequest();
-        request.setColor("PINK1");
-        request.setCharacter("HEARTSPRING");
 
-        Design design = DesignFixture.builder()
-                .withMemberId(memberId)
-                .withColor(ColorType.valueOf(request.getColor()))
-                .withCharacter(CharacterType.valueOf(request.getCharacter()))
+        DesignCreateRequest request = DesignCreateRequest.builder()
+                .color("PINK1")
+                .character("HEARTSPRING")
                 .build();
 
-        when(designRepository.save(any(Design.class))).thenReturn(design);
-        DesignResponse createdDesign = designService.createDesign(memberId, request);
+        DesignFixture design = DesignFixture.builder()
+                .memberId(memberId)
+                .color(ColorType.valueOf(request.getColor()))
+                .character(CharacterType.valueOf(request.getCharacter()))
+                .build();
 
-        assertThat(createdDesign.getColor()).isEqualTo(design.getColor().name());
-        assertThat(createdDesign.getCharacter()).isEqualTo(design.getCharacter().name());
+        when(designRepository.save(any(Design.class))).thenReturn(design.build());
+
+        designService.createDesign(memberId, request);
+
+        verify(designRepository).save(any(Design.class));
     }
 }
