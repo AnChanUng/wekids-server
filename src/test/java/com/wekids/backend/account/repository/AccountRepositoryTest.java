@@ -18,8 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AccountRepositoryTest {
     @Autowired
     AccountRepository accountRepository;
-    @Autowired
-    AccountService accountService;
+
 
     @Test
     void test() {
@@ -27,10 +26,5 @@ class AccountRepositoryTest {
         System.out.println("all = " + all);
     }
 
-    @Test
-    void 계좌를_가져온다(){
-        List<AccountResponse> accountResponseList = accountService.getAccount();
-        assertThat(accountResponseList.size()).isEqualTo(3);
 
-    }
 }

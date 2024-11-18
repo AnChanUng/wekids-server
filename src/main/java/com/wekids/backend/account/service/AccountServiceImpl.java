@@ -25,16 +25,16 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public List<AccountResponse> getAccount() {
         //AccountRepo에서 계좌 조회
-        List<Account> accountList = getAllAccounts();
+        List<Account> accountList = getAllAccounts(1L);
         return accountList.stream().map(
                 AccountResponse::new
         ).collect(Collectors.toList());
     }
 
-    public List<Account> getAllAccounts() {
+    public List<Account> getAllAccounts(long id) {
         return Optional.of(accountRepository.findAll())
                 .filter(accounts -> !accounts.isEmpty())
-                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌를 찾을 수 없습니다."));
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌가 한개도 존재하지 않습니다."));
     }
 }
 
