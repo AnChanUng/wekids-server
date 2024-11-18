@@ -3,6 +3,7 @@ package com.wekids.backend.member.repository;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.design.domain.Design;
+import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
@@ -66,10 +68,14 @@ public class MemberServiceTest {
 
         given(memberRepository.findChildrenByParentId(parentId)).willReturn(children);
 
+        Design wrongChildDesign = DesignFixture.builder().member(child2).account(account).character(CharacterType.DADAPING).build();
+        given(accountRepository.findDesignByAccountId(child2.getId())).willReturn(wrongChildDesign);
+
         List<ChildResponse> childResponse = children.stream().map(child -> {
-            // 각 자녀의 계좌 정보 조회
             given(accountRepository.findByMember(child)).willReturn(Optional.of(account));
-            given(accountRepository.findDesignByAccountId(child.getId())).willReturn(childdesign);
+            if (child.getId().equals(2L)) {
+                return ChildResponse.from(child, account, wrongChildDesign);
+            }
             return ChildResponse.from(child, account, childdesign);
         }).toList();
 
@@ -78,6 +84,8 @@ public class MemberServiceTest {
                 .isEqualTo(new ParentAccountResponse(parentResponse, childResponse).getParent().getAccountId());
         assertThat(memberService.getParentAccount().getChildren().get(1).getAccountId())
                 .isEqualTo(new ParentAccountResponse(parentResponse, childResponse).getChildren().get(1).getAccountId());
+//        assertThat(memberService.getParentAccount().getChildren().get(0).getCharacter())
+//                .isEqualTo(childResponse.get(1).getCharacter()); // 테스트 실패 코드
 
     }
 }
