@@ -16,7 +16,7 @@ public class TransactionListResponse {
     private final boolean hasNext;
     private final List<TransactionItemResponse> transactions;
 
-    public static TransactionListResponse from(Account account, List<TransactionItemResponse> transactionListResults, boolean hasNext) {
-        return new TransactionListResponse(account.getBalance(), hasNext, transactionListResults);
+    public static TransactionListResponse from(BigDecimal balance, List<TransactionItemResponse> transactionListResults, boolean hasNext) {
+        return new TransactionListResponse(balance, hasNext, transactionListResults);
     }
 }

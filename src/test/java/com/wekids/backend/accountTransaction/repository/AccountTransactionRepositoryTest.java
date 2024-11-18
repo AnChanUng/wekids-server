@@ -8,14 +8,6 @@ import java.util.List;
 
 @SpringBootTest
 class AccountTransactionRepositoryTest {
-    @Autowired
-    AccountTransactionRepository accountTransactionRepository;
 
-    @Test
-    void test() {
-        List<AccountTransaction> all = accountTransactionRepository.findAll();
-        System.out.println("all = " + all);
-
-    }
 
 }

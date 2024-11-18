@@ -62,7 +62,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                 .stream()
                 .map(TransactionItemResponse::from)
                 .toList();
-        return TransactionListResponse.from(findByAccountId(accountid), transactionListResultList, transactionList.hasNext());
+        return TransactionListResponse.from(findByAccountId(accountid).getBalance(), transactionListResultList, transactionList.hasNext());
 
     }
 

@@ -20,52 +20,52 @@ public class AccountTransactionFixture {
     private LocalDateTime createdAt = LocalDateTime.now();
     private Account account;
 
-    public AccountTransactionFixture withId(Long id) {
+    public AccountTransactionFixture id(Long id) {
         this.id = id;
         return this;
     }
 
-    public AccountTransactionFixture withTitle(String title) {
+    public AccountTransactionFixture title(String title) {
         this.title = title;
         return this;
     }
 
-    public AccountTransactionFixture withType(String type) {
+    public AccountTransactionFixture type(String type) {
         this.type = type;
         return this;
     }
 
-    public AccountTransactionFixture withAmount(BigDecimal amount) {
+    public AccountTransactionFixture amount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }
 
-    public AccountTransactionFixture withBalance(BigDecimal balance) {
+    public AccountTransactionFixture balance(BigDecimal balance) {
         this.balance = balance;
         return this;
     }
 
-    public AccountTransactionFixture withSender(String sender) {
+    public AccountTransactionFixture sender(String sender) {
         this.sender = sender;
         return this;
     }
 
-    public AccountTransactionFixture withReceiver(String receiver) {
+    public AccountTransactionFixture receiver(String receiver) {
         this.receiver = receiver;
         return this;
     }
 
-    public AccountTransactionFixture withMemo(String memo) {
+    public AccountTransactionFixture memo(String memo) {
         this.memo = memo;
         return this;
     }
 
-    public AccountTransactionFixture withCreatedAt(LocalDateTime createdAt) {
+    public AccountTransactionFixture createdAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
 
-    public AccountTransactionFixture withAccount(Account account){
+    public AccountTransactionFixture account(Account account){
         this.account = account;
         return this;
     }
