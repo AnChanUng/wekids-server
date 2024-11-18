@@ -6,14 +6,14 @@ import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Getter
 @ToString
 @Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(DesignId.class)
 public class Design {
     @Id
