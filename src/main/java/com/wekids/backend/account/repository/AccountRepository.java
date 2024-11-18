@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByMember(Member member);
-    @Query("SELECT d FROM Design d WHERE d.account.id = :account_id")
-    Design findDesignByAccountId(@Param("account_id") Long accountId);
+    @Query("SELECT a FROM Account a WHERE a.member.id IN (SELECT c.child.id FROM ParentChild c WHERE c.parent.id = :parentId)")
+    List<Account> findAccountsByParentId(@Param("parentId") Long parentId);
 
 }

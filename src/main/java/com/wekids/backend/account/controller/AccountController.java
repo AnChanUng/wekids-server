@@ -1,6 +1,6 @@
 package com.wekids.backend.account.controller;
 
-import com.wekids.backend.account.dto.response.AccountChildListResponse;
+import com.wekids.backend.account.dto.response.AccountChildResponse;
 import com.wekids.backend.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,9 @@ public class AccountController {
     AccountService accountService;
 
     @GetMapping("/children")
-    public ResponseEntity<List<AccountChildListResponse>> findAccountChildList(){
+    public ResponseEntity<List<AccountChildResponse>> findAccountChildList(){
         long parentId = 1L;
         //추후에 토큰값으로 검사
-        return ResponseEntity.ok(accountService.findAccountChildList(1L));
+        return ResponseEntity.ok(accountService.findChildrenAccountList(1L));
     }
 }

@@ -1,10 +1,9 @@
 package com.wekids.backend.account.service;
 
 import com.wekids.backend.account.domain.Account;
-import com.wekids.backend.account.dto.response.AccountChildListResponse;
+import com.wekids.backend.account.dto.response.AccountChildResponse;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.member.domain.Child;
-import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.repository.MemberRepository;
 import com.wekids.backend.support.fixture.AccountFixture;
 import com.wekids.backend.support.fixture.ChildFixture;
@@ -44,17 +43,17 @@ public class AccountServiceTest {
         children.add(child1);
         children.add(child2);
         Account account = AccountFixture.builder().member(child1).build();
-        given(memberRepository.findChildrenByParentId(parentId)).willReturn(Optional.of(children));
+        given(memberRepository.findChildrenByParentId(parentId)).willReturn(children);
 
-        List<AccountChildListResponse> childListResponseList = children.stream().map(child -> {
+        List<AccountChildResponse> childListResponseList = children.stream().map(child -> {
             // 각 자녀의 계좌 정보 조회
             given(accountRepository.findByMember(child)).willReturn(Optional.of(account));
-            return AccountChildListResponse.from(account);
+            return AccountChildResponse.from(account);
         }).toList();
 
-        assertThat(accountService.findAccountChildList(1L).get(0).getAccountId())
+        assertThat(accountService.findChildrenAccountList(1L).get(0).getAccountId())
                 .isEqualTo(childListResponseList.get(0).getAccountId());
-        assertThat(accountService.findAccountChildList(1L).size())
+        assertThat(accountService.findChildrenAccountList(1L).size())
                 .isEqualTo(2);
 
 

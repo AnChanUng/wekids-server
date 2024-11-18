@@ -5,20 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Locale;
-
 @Getter
 @Setter
 @AllArgsConstructor
-public class AccountChildListResponse {
+public class AccountChildResponse {
 
     private final String name;
     private final String acocuntNumber;
     private final String profile;
     private final long accountId;
 
-    public static AccountChildListResponse from(Account account){
-        return new AccountChildListResponse(
+    public static AccountChildResponse from(Account account){
+        return new AccountChildResponse(
                 account.getMember().getName(),
                 account.getAccountNumber(),
                 account.getMember().getProfile(),
