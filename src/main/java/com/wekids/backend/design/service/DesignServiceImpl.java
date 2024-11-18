@@ -13,9 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
-import java.util.Arrays;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -48,7 +45,7 @@ public class DesignServiceImpl implements DesignService {
 
     private Design findDesignByMemberId(Long memberId) {
         return designRepository.findById(memberId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "디자인을 찾을 수 없습니다."));
+                .orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "디자인을 저장 할 memberId는 " + memberId));
     }
 
 }
