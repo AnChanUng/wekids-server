@@ -1,15 +1,14 @@
 package com.wekids.backend.accountTransaction.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TransactionRequest {
-    @NonNull
     private String parentAccountNumber;
     private String childAccountNumber;
     private BigDecimal amount;    //이체 금액
