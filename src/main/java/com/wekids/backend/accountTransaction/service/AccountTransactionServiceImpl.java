@@ -42,6 +42,9 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         Account parentAccount = findAccountByAccountNumber(transactionRequest.getParentAccountNumber());
         Account childAccount = findAccountByAccountNumber(transactionRequest.getChildAccountNumber());
 
+        log.info(String.valueOf(parentAccount));
+        log.info(String.valueOf(childAccount));
+
         validateTransaction(transactionRequest, parentAccount, childAccount);
 
         AccountTransaction parentTransaction = createParentAccountTransaction(transactionRequest, parentAccount);
@@ -49,6 +52,47 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
         accountTransactionRepository.save(parentTransaction);
         accountTransactionRepository.save(childTransaction);
+    }
+
+
+    private Account findAccountByAccountNumber(String accountNumber) {
+        log.debug("Searching for account with account number: {}", accountNumber);  // 로그 추가
+        return accountRepository.findAccountByAccountNumber(accountNumber)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND,
+                        "회원 계좌번호: " + accountNumber));
+
+    }
+
+    private AccountTransaction createParentAccountTransaction(TransactionRequest request, Account parentAccount) {
+        BigDecimal newBalance = parentAccount.getBalance().subtract(request.getAmount());
+        parentAccount.updateAccountAmount(newBalance);
+        return createTransaction(request, TransactionType.WITHDRAWAL, newBalance, parentAccount);
+    }
+
+    private AccountTransaction createChildAccountTransaction(TransactionRequest request, Account childAccount) {
+        BigDecimal newBalance = childAccount.getBalance().add(request.getAmount());
+        childAccount.updateAccountAmount(newBalance);
+        return createTransaction(request, TransactionType.DEPOSIT, newBalance, childAccount);
+    }
+
+
+    private AccountTransaction createTransaction(TransactionRequest request, TransactionType type, BigDecimal balance, Account account) {
+        return AccountTransaction.builder()
+                .title(request.getSender())
+                .type(type)
+                .amount(request.getAmount())
+                .balance(balance)
+                .sender(request.getSender())
+                .receiver(request.getReceiver())
+                .memo("")
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
+    }
+
+    private AccountTransaction accountTransactionById(Long transactionId) {
+        return accountTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "transactionId : " + transactionId));
     }
 
     private void validateTransaction(TransactionRequest transactionRequest, Account parentAccount, Account childAccount) {
@@ -78,42 +122,6 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
             throw new WekidsException(ErrorCode.INVALID_ACCOUNT_NUMBER,
                     "부모 계좌와 자식 계좌가 동일할 수 없습니다.");
         }
-
-    }
-
-    private Account findAccountByAccountNumber(String accountNumber) {
-        log.debug("Searching for account with account number: {}", accountNumber);  // 로그 추가
-        return accountRepository.findAccountByAccountNumber(accountNumber)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND,
-                        "회원 계좌번호: " + accountNumber));
-
-    }
-
-    private AccountTransaction createParentAccountTransaction(TransactionRequest request, Account parentAccount) {
-        BigDecimal newBalance = parentAccount.getBalance().subtract(request.getAmount());
-        return createTransaction(request, TransactionType.WITHDRAWAL, newBalance);
-    }
-
-    private AccountTransaction createChildAccountTransaction(TransactionRequest request, Account childAccount) {
-        BigDecimal newBalance = childAccount.getBalance().add(request.getAmount());
-        return createTransaction(request, TransactionType.DEPOSIT, newBalance);
-    }
-
-    private AccountTransaction createTransaction(TransactionRequest request, TransactionType type, BigDecimal balance) {
-        return AccountTransaction.builder()
-                .title(request.getSender())
-                .type(type)
-                .amount(request.getAmount())
-                .balance(balance)
-                .sender(request.getSender())
-                .receiver(request.getReceiver())
-                .memo("")
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-
-    private AccountTransaction accountTransactionById(Long transactionId) {
-        return accountTransactionRepository.findById(transactionId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "transactionId : " + transactionId));
     }
 }
+
