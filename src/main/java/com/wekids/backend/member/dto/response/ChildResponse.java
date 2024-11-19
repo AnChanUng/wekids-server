@@ -26,7 +26,7 @@ public class ChildResponse {
     ColorType color;
     CharacterType character;
 
-    public static ChildResponse from(Child child, Account account, Design design){
+    public static ChildResponse of(Child child, Account account, Design design){
         return new ChildResponse(
                 child.getId(),
                 child.getName(),

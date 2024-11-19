@@ -7,6 +7,7 @@ import com.wekids.backend.design.repository.DesignRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
+import com.wekids.backend.member.domain.Member;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.dto.response.ChildResponse;
 import com.wekids.backend.member.dto.response.ParentAccountResponse;
@@ -26,42 +27,55 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class MemberServiceImpl implements MemberService{
-    @Autowired
-    MemberRepository memberRepository;
-    @Autowired
-    AccountRepository accountRepository;
-    @Autowired
-    DesignRepository designRepository;
+
+    private final MemberRepository memberRepository;
+    private final AccountRepository accountRepository;
+    private final DesignRepository designRepository;
 
     @Override
     public ParentAccountResponse getParentAccount() {
         Long parentId = 1L;
 
         // 부모 개인 정보 조회
-        Parent parent = memberRepository.findByIdAndMemberType(parentId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "parentId가" + parentId + "인 부모 정보를 찾을 수 없습니다."));
+        Parent parent = (Parent)findMemberByMemberId(parentId);
 
         // 부모 계좌 정보 조회
-        Account parentAccount = accountRepository.findByMember(parent)
-                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "id가" + parent.getId() + "부모 계좌를 찾을 수 없습니다."));
+        Account parentAccount = findAccountByMember(parent);
 
         // 부모 디자인 정보 조회
-        Design design = designRepository.findByMemberId(parentId);
+        Design design = findDesignByMemberId(parentId);
 
-        ParentResponse parentResponse = ParentResponse.from(parent, parentAccount, design);
+        ParentResponse parentResponse = ParentResponse.of(parent, parentAccount, design);
         // 자녀 정보 조회 및 설정
-        List<Child> children = memberRepository.findChildrenByParentId(parentId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "parentId가" + parentId + "인 자식들 정보를 찾을 수 없습니다.")); // parent_child 테이블을 통해 자녀 목록 조회
+        List<Child> children = findChildrenByByParentId(parentId);
         List<ChildResponse> childResponse = children.stream().map(child -> {
             // 각 자녀의 계좌 정보 조회
-            Account childAccount = accountRepository.findByMember(child)
-                    .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "id가" + child.getId() + "자식 계좌를 찾을 수 없습니다."));
-            Design childDesign = designRepository.findByMemberId(child.getId());
-            return ChildResponse.from(child, childAccount, childDesign);
+            Account childAccount = findAccountByMember(child);
+            Design childDesign = findDesignByMemberId(child.getId());
+            return ChildResponse.of(child, childAccount, childDesign);
         }).collect(Collectors.toList());
 
         // ParentAccountResponse 객체 생성 및 부모 정보 설정
         return new ParentAccountResponse(parentResponse, childResponse);
+    }
+
+    public Member findMemberByMemberId(Long id){
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "id가" + id + "인 정보를 찾을 수 없습니다."));
+    }
+
+    public Account findAccountByMember(Member member){
+        return accountRepository.findByMember(member)
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "id가" + member.getId() + "인 사람의 계좌를 찾을 수 없습니다."));
+    }
+
+    public Design findDesignByMemberId(Long id){
+        return designRepository.findByMemberId(id)
+                .orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "id가" + id + "의 디자인 정보를 찾을 수 없습니다."));
+    }
+    public List<Child> findChildrenByByParentId(Long id){
+        return memberRepository.findChildrenByParentId(id)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "parentId가" + id + "인 자식들 정보를 찾을 수 없습니다."));
     }
 
 }

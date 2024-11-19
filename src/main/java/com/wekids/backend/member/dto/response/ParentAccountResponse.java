@@ -14,7 +14,7 @@ public class ParentAccountResponse {
     ParentResponse parent;
     List<ChildResponse> children;
 
-    public static ParentAccountResponse from(ParentResponse parent, List<ChildResponse> children){
+    public static ParentAccountResponse of(ParentResponse parent, List<ChildResponse> children){
         return new ParentAccountResponse(parent, children);
     }
 

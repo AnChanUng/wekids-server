@@ -55,13 +55,13 @@ public class MemberServiceTest {
 
         Design childdesign = DesignFixture.builder().member(child1).account(account).build().from();
 
-        given(memberRepository.findByIdAndMemberType(parentId)).willReturn(Optional.ofNullable(parent));
+        given(memberRepository.findById(parentId)).willReturn(Optional.ofNullable(parent));
 
         given(accountRepository.findByMember(parent)).willReturn(Optional.ofNullable(account));
 
-        given(designRepository.findByMemberId(parentId)).willReturn(design);
+        given(designRepository.findByMemberId(parentId)).willReturn(Optional.ofNullable(design));
 
-        ParentResponse parentResponse = ParentResponse.from(parent, account, design);
+        ParentResponse parentResponse = ParentResponse.of(parent, account, design);
 
         given(memberRepository.findChildrenByParentId(parentId)).willReturn(Optional.of(children));
 
@@ -70,8 +70,8 @@ public class MemberServiceTest {
         List<ChildResponse> childResponse = children.stream().map(child -> {
             // 각 자녀의 계좌 정보 조회
             given(accountRepository.findByMember(child)).willReturn(Optional.of(account));
-            given(designRepository.findByMemberId(child.getId())).willReturn(childdesign);
-            return ChildResponse.from(child, account, childdesign);
+            given(designRepository.findByMemberId(child.getId())).willReturn(Optional.ofNullable(childdesign));
+            return ChildResponse.of(child, account, childdesign);
         }).toList();
 
 

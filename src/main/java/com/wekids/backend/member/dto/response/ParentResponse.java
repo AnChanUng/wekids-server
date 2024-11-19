@@ -21,7 +21,7 @@ public class ParentResponse {
     ColorType designType;
     long accountId;
 
-    public static ParentResponse from(Parent parent, Account account, Design design){
+    public static ParentResponse of(Parent parent, Account account, Design design){
         return new ParentResponse(parent.getName(), account.getAccountNumber(), parent.getProfile(), account.getBalance(), design.getColor(), account.getId());
     }
 }
