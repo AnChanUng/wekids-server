@@ -33,7 +33,6 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     public void saveMemo(Long transactionId, UpdateMemoRequest request) {
         AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "memo업데이트를 하는 거래내역id");
         accountTransaction.updateMemo(request.getMemo());
-        accountTransactionRepository.save(accountTransaction);
     }
 
 
