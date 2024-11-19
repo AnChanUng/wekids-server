@@ -35,44 +35,21 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public List<AccountResponse> getAccount() {
-        //String baasMemberId;
-        //String bankMemberId;
-        //Map<String, String> uriVariables = new HashMap<>();
-        //uriVariables.put("baasMemberId", baasMemberId);
-        //uriVariables.put("bankMemberId", bankMemberId);
-        //String url = "http://localhost:8080/api/v1/bass-members/{baasMemberId}/bank-members/{bankMemberId}/accounts";
-        //ResponseEntity<BaasAccountResponse[]> response = restTemplate.getForEntity(url, BaasAccountResponse[].class, uriVariables);
-        //BaasAccountResponse[] responseArray = response.getBody();
-        //List<BaasAccountResponse> responseList = Arrays.asList(responseArray);
-        List<BaasAccountResponse> responseList = createDummyData(); // 임시
+        Long baasMemberId = 1L;
+        Long bankMemberId = 1L;
+
+        Map<String, String> uriVariables = new HashMap<>();
+        uriVariables.put("baasMemberId", String.valueOf(baasMemberId));
+        uriVariables.put("bankMemberId", String.valueOf(bankMemberId));
+        String url = "http://localhost:9090/api/v1/baas-members/{baasMemberId}/bank-members/{bankMemberId}/accounts";
+        ResponseEntity<BaasAccountResponse[]> response = restTemplate.getForEntity(url, BaasAccountResponse[].class, uriVariables);
+        BaasAccountResponse[] responseArray = response.getBody();
+        List<BaasAccountResponse> responseList = Arrays.asList(responseArray);
+        System.out.println(responseList);
+
         return responseList.stream().map(
                 AccountResponse::new
         ).collect(Collectors.toList());
-    }
-
-    public List<BaasAccountResponse> createDummyData(){
-        List<BaasAccountResponse> accounts = new ArrayList<>();
-
-        accounts.add(new BaasAccountResponse(
-                "111-111-1111",
-                "우리은행",
-                BigDecimal.valueOf(999999),
-                "",
-                "고객명",
-                "상품명",
-                "입출금통장"
-        ));
-        accounts.add(new BaasAccountResponse(
-                "222-222-2222",
-                "우리은행",
-                BigDecimal.valueOf(888888),
-                "",
-                "고객명",
-                "상품명",
-                "입출금통장"
-        ));
-        return accounts;
-
     }
 }
 
