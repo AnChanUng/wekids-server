@@ -41,6 +41,11 @@ public abstract class Member extends BaseTime {
     @Column(length = 20)
     private String simplePassword;
 
+    @Column(nullable = false)
+    private String social;
+
+    private String role;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
     private MemberState state;
@@ -52,5 +57,13 @@ public abstract class Member extends BaseTime {
     private CardState cardState;
 
     private Long bankMemberId;
+
+    public void updateSocialInfo(String name, String phone, String email, LocalDate birthday, String profile){
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.birthday = birthday;
+        this.profile = profile;
+    }
 
 }
