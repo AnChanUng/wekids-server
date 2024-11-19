@@ -39,7 +39,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<Member> member = memberRepository.findByEmail(oAuth2Response.getEmail());
 
         if(member.isEmpty()){
-            return CustomOAuth2User.of(LoginState.JOIN, oAuth2Response.getName(), oAuth2Response.getEmail());
+            return CustomOAuth2User.of(LoginState.JOIN, oAuth2Response.getName(), oAuth2Response.getEmail(), oAuth2Response.getBirthday().toString());
         }
 
         member.get().updateSocialInfo(oAuth2Response.getName(), oAuth2Response.getPhone(),

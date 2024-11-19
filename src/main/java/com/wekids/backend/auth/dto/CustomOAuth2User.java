@@ -18,12 +18,14 @@ public class CustomOAuth2User implements OAuth2User {
     private Long memberId;
     private String name;
     private String email;
+    private String birthday;
 
-    public static CustomOAuth2User of(LoginState loginState, String name, String email){
+    public static CustomOAuth2User of(LoginState loginState, String name, String email, String birthday){
         return CustomOAuth2User.builder()
                 .loginState(loginState)
                 .name(name)
                 .email(email)
+                .birthday(birthday)
                 .build();
     }
 
@@ -66,6 +68,10 @@ public class CustomOAuth2User implements OAuth2User {
 
     public String getRole() {
         return role;
+    }
+
+    public String getBirthday() {
+        return birthday;
     }
 
     public Long getMemberId() {

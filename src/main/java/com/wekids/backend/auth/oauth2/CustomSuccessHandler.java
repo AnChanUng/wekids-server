@@ -29,6 +29,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if(loginState.equals(LoginState.JOIN)){
             response.addCookie(createCookie("name", customUserDetails.getName()));
             response.addCookie(createCookie("email", customUserDetails.getEmail()));
+            response.addCookie(createCookie("birthday", customUserDetails.getBirthday()));
             response.sendRedirect("http://localhost:3000/join");
             return;
         }
@@ -37,7 +38,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
-        String token = jwtUtil.createJwt(customUserDetails.getMemberId(), role, 60*60*60L);
+        String token = jwtUtil.createJwt(customUserDetails.getMemberId(), role,60*60*60L);
         response.addCookie(createCookie("Authorization", token));
         response.sendRedirect("http://localhost:3000/");
     }
