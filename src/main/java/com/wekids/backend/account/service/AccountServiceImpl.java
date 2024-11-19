@@ -20,13 +20,11 @@ import java.util.List;
 @Slf4j
 public class AccountServiceImpl implements AccountService{
 
-    @Autowired
-    AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     public List<AccountChildResponse> findChildrenAccountList(long parentId){
         List<Account> childrenAccountList = accountRepository.findAccountsByParentId(parentId);
-        // 각 자녀의 계좌 정보 조회
-        return  childrenAccountList.stream().map(AccountChildResponse::from).toList();
+        return childrenAccountList.stream().map(AccountChildResponse::from).toList();
     }
 }
