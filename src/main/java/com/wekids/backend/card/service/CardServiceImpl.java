@@ -1,5 +1,6 @@
 package com.wekids.backend.card.service;
 
+import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,4 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class CardServiceImpl implements AccountService {
+    @Override
+    public Account findAccountById(Long accountId) {
+        return null;
+    }
 }
