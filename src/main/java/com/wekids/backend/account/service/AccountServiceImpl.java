@@ -50,12 +50,6 @@ public class AccountServiceImpl implements AccountService{
         ).collect(Collectors.toList());
     }
 
-    public List<Account> getAllAccounts(long id) {
-        return Optional.of(accountRepository.findAll())
-                .filter(accounts -> !accounts.isEmpty())
-                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌가 한개도 존재하지 않습니다."));
-    }
-
     public List<BaasAccountResponse> createDummyData(){
         List<BaasAccountResponse> accounts = new ArrayList<>();
 

@@ -17,7 +17,7 @@ public class AccountResponse {
 
     public AccountResponse(BaasAccountResponse baasAccountResponse){
         this.accountNumber = baasAccountResponse.getAccountNumber();
-        this.bankName = "우리은행";
+        this.bankName = baasAccountResponse.getBankName();
         this.balance = baasAccountResponse.getBalance();
     }
 }
