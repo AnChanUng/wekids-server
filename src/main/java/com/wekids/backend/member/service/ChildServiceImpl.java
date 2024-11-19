@@ -20,29 +20,35 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class ChildServiceImpl implements ChildService {
-    @Autowired
-    ChildRepository childRepository;
 
-    @Autowired
-    AccountRepository accountRepository;
+    private final ChildRepository childRepository;
 
-    @Autowired
-    DesignRepository designRepository;
+    private final AccountRepository accountRepository;
+
+    private final DesignRepository designRepository;
 
     @Override
     public ChildResponse getChildAccount() {
         Long childId = 2L;
 
-        Child child = childRepository.findById(childId)
+        Child child = findChildById(childId);
+        Account childAccount = findChildAccountByMember(child);
+        Design design = findDesignById(childId);
+
+        return ChildResponse.from(child, childAccount, design);
+    }
+
+    private Child findChildById(Long childId) {
+        return childRepository.findById(childId)
                 .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "자식 계정 아이디 : " + childId));
+    }
 
-        Account childAccount = accountRepository.findByMember(child)
+    private Account findChildAccountByMember(Child child) {
+        return accountRepository.findByMember(child)
                 .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계정 정보를 찾을 수 없습니다." ));
+    }
 
-        Design design = designRepository.findById(childId).orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "자식 계좌를 찾을 수 없습니다." + childId));
-
-        ChildResponse childResponse = ChildResponse.from(child, childAccount, design);
-
-        return childResponse;
+    private Design findDesignById(Long childId) {
+        return designRepository.findById(childId).orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "자식 계좌를 찾을 수 없습니다." + childId));
     }
 }
