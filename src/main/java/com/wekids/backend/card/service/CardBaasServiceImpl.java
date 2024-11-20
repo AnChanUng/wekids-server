@@ -105,4 +105,8 @@ public class CardBaasServiceImpl implements CardBaasService {
         return savedCard;
     }
 
+    private String getLastTwoCharacters(String name) {
+        return name.substring(name.length() - 2);
+    }
+
 }
