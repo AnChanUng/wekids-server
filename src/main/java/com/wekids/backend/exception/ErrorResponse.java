@@ -18,11 +18,22 @@ public class ErrorResponse {
 
     private int status;
     private String message;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String details;
     private LocalDateTime timestamp;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<ValidErrorResponse> errors;
+
+
+    public static ErrorResponse of(int status, String message) {
+        return ErrorResponse.builder()
+                .status(status)
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
 
     public static ErrorResponse of(ErrorCode errorCode, String details) {
         return ErrorResponse.builder()
