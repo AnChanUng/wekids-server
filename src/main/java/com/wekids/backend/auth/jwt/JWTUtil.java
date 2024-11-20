@@ -14,6 +14,9 @@ public class JWTUtil {
 
     private SecretKey secretKey;
 
+    @Value("${spring.jwt.expiration.access}")
+    private Long expirationSeconds;
+
     public JWTUtil(@Value("${spring.jwt.secret}")String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
@@ -30,12 +33,12 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(Long memberId, String role, Long expiredMs) {
+    public String createJwt(Long memberId, String role) {
         return Jwts.builder()
                 .claim("memberId", memberId)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiredMs))
+                .expiration(new Date(System.currentTimeMillis() + expirationSeconds))
                 .signWith(secretKey)
                 .compact();
     }

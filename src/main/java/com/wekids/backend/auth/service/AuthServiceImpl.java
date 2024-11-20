@@ -26,7 +26,7 @@ public class AuthServiceImpl implements AuthService{
         Member member = (signUpRequest.getMemberType().equals(MemberType.PARENT)) ?
                 signUpRequest.toParent() : signUpRequest.toChild();
         Long memberId = memberRepository.save(member).getId();
-        return SignUpResponse.from(jwtUtil.createJwt(memberId, "ROLE_"+MemberType.PARENT.toString(),60*60*60L));
+        return SignUpResponse.from(jwtUtil.createJwt(memberId, "ROLE_"+MemberType.PARENT.toString()));
     }
 
     private void validateAlreadyExistEmail(SignUpRequest request){
