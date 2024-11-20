@@ -1,4 +1,4 @@
-    package com.wekids.backend.auth.dto;
+    package com.wekids.backend.auth.dto.response;
 
     import com.wekids.backend.auth.enums.LoginState;
     import lombok.AllArgsConstructor;

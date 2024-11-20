@@ -1,6 +1,6 @@
 package com.wekids.backend.auth.jwt;
 
-import com.wekids.backend.auth.dto.CustomOAuth2User;
+import com.wekids.backend.auth.dto.response.CustomOAuth2User;
 import com.wekids.backend.auth.enums.LoginState;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

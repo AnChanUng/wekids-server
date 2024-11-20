@@ -1,6 +1,6 @@
 package com.wekids.backend.auth.service;
 
-import com.wekids.backend.auth.dto.SignUpRequest;
+import com.wekids.backend.auth.dto.request.SignUpRequest;
 import com.wekids.backend.auth.enums.MemberType;
 import com.wekids.backend.auth.jwt.JWTUtil;
 import com.wekids.backend.exception.WekidsException;

@@ -1,8 +1,8 @@
 package com.wekids.backend.auth.service;
 
-import com.wekids.backend.auth.dto.CustomOAuth2User;
-import com.wekids.backend.auth.dto.NaverResponse;
-import com.wekids.backend.auth.dto.OAuth2Response;
+import com.wekids.backend.auth.dto.response.CustomOAuth2User;
+import com.wekids.backend.auth.dto.response.NaverResponse;
+import com.wekids.backend.auth.dto.response.OAuth2Response;
 import com.wekids.backend.auth.enums.LoginState;
 import com.wekids.backend.member.domain.Member;
 import com.wekids.backend.member.repository.MemberRepository;

@@ -1,4 +1,4 @@
-package com.wekids.backend.auth.dto;
+package com.wekids.backend.auth.dto.response;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

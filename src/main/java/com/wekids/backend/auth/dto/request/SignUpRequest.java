@@ -1,4 +1,4 @@
-package com.wekids.backend.auth.dto;
+package com.wekids.backend.auth.dto.request;
 
 import com.wekids.backend.auth.enums.MemberType;
 

@@ -1,6 +1,6 @@
 package com.wekids.backend.auth.controller;
 
-import com.wekids.backend.auth.dto.CustomOAuth2User;
+import com.wekids.backend.auth.dto.response.CustomOAuth2User;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

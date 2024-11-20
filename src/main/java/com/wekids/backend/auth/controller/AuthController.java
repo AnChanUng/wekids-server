@@ -1,7 +1,7 @@
 package com.wekids.backend.auth.controller;
 
-import com.wekids.backend.auth.dto.SignUpRequest;
-import com.wekids.backend.auth.dto.SignUpResponse;
+import com.wekids.backend.auth.dto.request.SignUpRequest;
+import com.wekids.backend.auth.dto.response.SignUpResponse;
 import com.wekids.backend.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

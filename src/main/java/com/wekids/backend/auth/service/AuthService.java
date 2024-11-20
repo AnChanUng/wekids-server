@@ -1,7 +1,7 @@
 package com.wekids.backend.auth.service;
 
-import com.wekids.backend.auth.dto.SignUpRequest;
-import com.wekids.backend.auth.dto.SignUpResponse;
+import com.wekids.backend.auth.dto.request.SignUpRequest;
+import com.wekids.backend.auth.dto.response.SignUpResponse;
 
 public interface AuthService {
     SignUpResponse signup(SignUpRequest signUpRequest);

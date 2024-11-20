@@ -1,6 +1,6 @@
 package com.wekids.backend.auth.oauth2;
 
-import com.wekids.backend.auth.dto.CustomOAuth2User;
+import com.wekids.backend.auth.dto.response.CustomOAuth2User;
 import com.wekids.backend.auth.enums.LoginState;
 import com.wekids.backend.auth.jwt.JWTUtil;
 import jakarta.servlet.http.Cookie;
