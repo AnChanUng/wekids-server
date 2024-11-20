@@ -67,7 +67,7 @@ public class SignUpRequest {
                 .birthday(birthday)
                 .name(name)
                 .simplePassword(simplePassword)
-                .role("ROLE_PARENT")
+                .role("ROLE_CHILD")
                 .social(social)
                 .state(MemberState.ACTIVE)
                 .build();
