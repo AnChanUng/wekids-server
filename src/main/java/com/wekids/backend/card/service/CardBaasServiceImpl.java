@@ -42,10 +42,10 @@ public class CardBaasServiceImpl implements CardBaasService {
     public void issueAccountAndCard(PasswordRequest passwordRequest) {
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "" + memberId));
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("자식 계정 아이디: %d를 찾을 수 없습니다.", memberId)));
 
         Parent parent = memberRepository.findParentByChildId(memberId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "" + memberId));
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("부모 계정 아이디: %d를 찾을 수 없습니다.", memberId)));
 
         AccountBaasRequest accountBaasRequest = AccountBaasRequest.builder()
                 .bankMemberId(member.getBankMemberId())
