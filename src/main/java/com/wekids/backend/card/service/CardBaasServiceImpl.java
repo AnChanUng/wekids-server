@@ -44,6 +44,9 @@ public class CardBaasServiceImpl implements CardBaasService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "" + memberId));
 
+        Parent parent = memberRepository.findParentByChildId(memberId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "" + memberId));
+
         AccountBaasRequest accountBaasRequest = AccountBaasRequest.builder()
                 .bankMemberId(member.getBankMemberId())
                 .productId(productId)
@@ -52,6 +55,13 @@ public class CardBaasServiceImpl implements CardBaasService {
 
         Account account = createAccount(accountBaasRequest, member);
 
+        CardBaasRequest cardBaasRequest = CardBaasRequest.builder()
+                .accountNumber(account.getAccountNumber())
+                .bankMemberId(member.getBankMemberId())
+                .password(passwordRequest.getPassword())
+                .build();
+
+        Card card = createCard(cardBaasRequest, account);
     }
 
     private Account createAccount(AccountBaasRequest accountRequest, Member member) {
@@ -72,6 +82,27 @@ public class CardBaasServiceImpl implements CardBaasService {
         return savedAccount;
     }
 
+    private Card createCard(CardBaasRequest cardRequest, Account account) {
+        String cardBaasUrl = "http://localhost:8081/api/v1/cards";
 
+        CardBaasResponse cardResponse = restTemplate.postForObject(cardBaasUrl, cardRequest, CardBaasResponse.class);
+
+        log.info("cardResponse {}", cardResponse);
+
+        Card card = Card.builder()
+                .cardNumber(cardResponse.getCardNumber())
+                .validThru(cardResponse.getValidThru())
+                .cvc(cardResponse.getCvc())
+                .memberName(cardResponse.getBankMemberName())
+                .cardName(getLastTwoCharacters(account.getMember().getName()) + "핑")
+                .newDate(cardResponse.getNewDate())
+                .password(cardRequest.getPassword())
+                .account(account)
+                .state(CardState.ACTIVE)
+                .build();
+
+        Card savedCard = cardRepository.save(card);
+        return savedCard;
+    }
 
 }
