@@ -6,8 +6,7 @@ import com.wekids.backend.card.domain.enums.CardState;
 import com.wekids.backend.common.entity.BaseTime;
 import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
@@ -17,6 +16,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @ToString
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Card extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
