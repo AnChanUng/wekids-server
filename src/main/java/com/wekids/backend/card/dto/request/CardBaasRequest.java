@@ -7,6 +7,6 @@ import lombok.Getter;
 @Builder
 public class CardBaasRequest {
     private String password;
-    private String bankMemberName;
+    private Long bankMemberId;
     private String accountNumber;
 }
