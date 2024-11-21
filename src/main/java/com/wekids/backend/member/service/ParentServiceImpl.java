@@ -38,7 +38,7 @@ public class ParentServiceImpl implements ParentService {
         ParentResponse parentResponse = ParentResponse.of(parent, parentAccount, design);
         List<ChildResponse> childResponses = showChildAccount(parentId);
 
-        return new ParentAccountResponse(parentResponse, childResponses);
+        return ParentAccountResponse.of(parentResponse, childResponses);
     }
 
     private List<ChildResponse> showChildAccount(Long parentId){
@@ -54,7 +54,7 @@ public class ParentServiceImpl implements ParentService {
 
     private Parent findParentByMemberId(Long parentId){
         return (Parent) parentRepository.findById(parentId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "parentId가" + parentId + "인 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "parentId가 " + parentId + "인 정보를 찾을 수 없습니다."));
     }
 
     private Account findAccountByMember(Member member){
