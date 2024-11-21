@@ -48,7 +48,7 @@ class AccountTransactionServiceImplTest {
                 .accountNumber("123-456-789")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
-                .build();
+                .build().from();
     }
 
     private AccountTransaction createAccountTransaction(Account account) {
