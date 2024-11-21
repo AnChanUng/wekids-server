@@ -23,14 +23,11 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 @Slf4j
 public class AccountTransactionServiceImpl implements AccountTransactionService {
-
     private final AccountTransactionRepository accountTransactionRepository;
     private final AccountRepository accountRepository;
 
-
     @Override
     public TransactionDetailSearchResponse findByTransactionId(Long transactionId) {
-
         AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "transaction id값");
         return TransactionDetailSearchResponse.from(accountTransaction);
 
@@ -72,33 +69,24 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     private AccountTransaction createParentAccountTransaction(TransactionRequest request, Account parentAccount) {
         BigDecimal newBalance = parentAccount.getBalance().subtract(request.getAmount());
         parentAccount.updateAccountAmount(newBalance);
-        return createTransaction(request, TransactionType.WITHDRAWAL, newBalance, parentAccount);
+        return AccountTransaction.createTransaction(request, TransactionType.WITHDRAWAL, newBalance, parentAccount);
     }
 
     private AccountTransaction createChildAccountTransaction(TransactionRequest request, Account childAccount) {
         BigDecimal newBalance = childAccount.getBalance().add(request.getAmount());
         childAccount.updateAccountAmount(newBalance);
-        return createTransaction(request, TransactionType.DEPOSIT, newBalance, childAccount);
+        return AccountTransaction.createTransaction(request, TransactionType.DEPOSIT, newBalance, childAccount);
     }
 
-
-    private AccountTransaction createTransaction(TransactionRequest request, TransactionType type, BigDecimal
-            balance, Account account) {
-
-        // AccountTransaction 생성
-        return AccountTransaction.createTransaction(request, type, balance, account);
-
-    }
 
     private AccountTransaction findAccountTransactionById(Long transactionId, String message) {
         return accountTransactionRepository.findById(transactionId)
                 .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, message + transactionId));
     }
 
-    private void validateTransaction(TransactionRequest transactionRequest, Account parentAccount, Account
-            childAccount) {
+    private void validateTransaction(TransactionRequest transactionRequest, Account parentAccount, Account childAccount) {
         if (transactionRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new WekidsException(ErrorCode.INVALID_TRANSACTION_AMOUNT, "거래하려는 금액 " + transactionRequest.getAmount());
+            throw new WekidsException(ErrorCode.INVALID_TRANSACTION_AMOUNT, " 거래하려는 금액 " + transactionRequest.getAmount());
         }
 
         if (parentAccount.getBalance().compareTo(transactionRequest.getAmount()) < 0) {
