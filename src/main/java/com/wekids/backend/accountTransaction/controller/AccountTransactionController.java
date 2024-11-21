@@ -1,8 +1,10 @@
 package com.wekids.backend.accountTransaction.controller;
 
+import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.service.AccountTransactionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,15 +16,21 @@ public class AccountTransactionController {
 
     private final AccountTransactionService accountTransactionService;
 
-    @GetMapping("/{transactionId}")
-    public ResponseEntity<TransactionDetailSearchResponse> getTransactionDetails(@PathVariable Long transactionId) {
-        accountTransactionService.findByTransactionId(transactionId);
+    @PostMapping("/{transactionId}/memo")
+    public ResponseEntity<Void> saveMemo(@PathVariable("transactionId") Long transactionId, @RequestBody @Valid UpdateMemoRequest request) {
+        accountTransactionService.saveMemo(transactionId, request);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{transactionId}")
+    public ResponseEntity<TransactionDetailSearchResponse> getTransactionDetails(@PathVariable("transactionId") Long transactionId) {
+        TransactionDetailSearchResponse result = accountTransactionService.findByTransactionId(transactionId);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping
     public ResponseEntity<Void> postTransaction(@RequestBody TransactionRequest transactionRequest) {
         accountTransactionService.saveTransaction(transactionRequest);
         return ResponseEntity.noContent().build();
-    }
+   }
 }

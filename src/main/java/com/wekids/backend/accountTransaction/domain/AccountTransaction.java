@@ -50,4 +50,9 @@ public class AccountTransaction {
     @JoinColumn(name = "account_id", nullable = false)
     @ToString.Exclude
     private Account account;
+
+
+    public void updateMemo(String memo) {
+        this.memo = memo;
+    }
 }

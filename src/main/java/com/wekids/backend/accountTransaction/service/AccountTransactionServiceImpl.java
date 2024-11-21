@@ -6,6 +6,7 @@ import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
 import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
+import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
 import com.wekids.backend.exception.ErrorCode;
@@ -31,9 +32,16 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     @Override
     public TransactionDetailSearchResponse findByTransactionId(Long transactionId) {
 
-        AccountTransaction accountTransaction = accountTransactionById(transactionId);
+        AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "transaction id값");
         return TransactionDetailSearchResponse.from(accountTransaction);
 
+    }
+
+    @Override
+    @Transactional
+    public void saveMemo(Long transactionId, UpdateMemoRequest request) {
+        AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "memo업데이트를 하는 거래내역id");
+        accountTransaction.updateMemo(request.getMemo());
     }
 
     @Override
@@ -60,7 +68,6 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         return accountRepository.findAccountByAccountNumber(accountNumber)
                 .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND,
                         "회원 계좌번호: " + accountNumber));
-
     }
 
     private AccountTransaction createParentAccountTransaction(TransactionRequest request, Account parentAccount) {
@@ -76,7 +83,8 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     }
 
 
-    private AccountTransaction createTransaction(TransactionRequest request, TransactionType type, BigDecimal balance, Account account) {
+    private AccountTransaction createTransaction(TransactionRequest request, TransactionType type, BigDecimal
+            balance, Account account) {
         return AccountTransaction.builder()
                 .title(request.getSender())
                 .type(type)
@@ -90,12 +98,13 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                 .build();
     }
 
-    private AccountTransaction accountTransactionById(Long transactionId) {
+    private AccountTransaction findAccountTransactionById(Long transactionId, String message) {
         return accountTransactionRepository.findById(transactionId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "transactionId : " + transactionId));
+                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, message + transactionId));
     }
 
-    private void validateTransaction(TransactionRequest transactionRequest, Account parentAccount, Account childAccount) {
+    private void validateTransaction(TransactionRequest transactionRequest, Account parentAccount, Account
+            childAccount) {
         if (transactionRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new WekidsException(ErrorCode.INVALID_TRANSACTION_AMOUNT, "거래하려는 금액 " + transactionRequest.getAmount());
         }
