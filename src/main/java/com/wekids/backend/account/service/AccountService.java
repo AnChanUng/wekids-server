@@ -5,5 +5,5 @@ import com.wekids.backend.account.dto.response.AccountChildResponse;
 import java.util.List;
 
 public interface AccountService {
-    public List<AccountChildResponse> findChildrenAccountList(long parentId);
+    public List<AccountChildResponse> showChildrenAccountList(Long parentId);
 }
