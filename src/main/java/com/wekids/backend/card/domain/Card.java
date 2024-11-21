@@ -1,15 +1,12 @@
 package com.wekids.backend.card.domain;
 
 import com.wekids.backend.account.domain.Account;
-import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.card.domain.enums.CardState;
+import com.wekids.backend.card.dto.request.CardBaasRequest;
+import com.wekids.backend.card.dto.response.CardBaasResponse;
 import com.wekids.backend.common.entity.BaseTime;
-import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.cglib.core.Local;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -54,4 +51,18 @@ public class Card extends BaseTime {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
+
+    public static Card createFromResponse( CardBaasResponse cardResponse, CardBaasRequest cardRequest, Account account, String cardName) {
+        return Card.builder()
+                .cardNumber(cardResponse.getCardNumber())
+                .validThru(cardResponse.getValidThru())
+                .cvc(cardResponse.getCvc())
+                .memberName(cardResponse.getBankMemberName())
+                .cardName(cardName)
+                .newDate(cardResponse.getNewDate())
+                .password(cardRequest.getPassword())
+                .account(account)
+                .state(CardState.ACTIVE)
+                .build();
+    }
 }
