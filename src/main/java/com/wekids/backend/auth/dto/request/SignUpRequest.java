@@ -45,7 +45,7 @@ public class SignUpRequest {
     @Email(message = "올바른 이메일 형식이어야 합니다.")
     private String email;
 
-    public Member toParent(){
+    public Member toParent(String simplePassword){
         return Parent.builder()
                 .email(email)
                 .phone(phone)
@@ -59,7 +59,7 @@ public class SignUpRequest {
                 .build();
     }
 
-    public Member toChild(){
+    public Member toChild(String simplePassword){
         return Child.builder()
                 .email(email)
                 .phone(phone)
