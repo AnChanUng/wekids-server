@@ -17,7 +17,7 @@ public class AccountTransactionFixture {
     private String receiver = "Receiver Name"; // 더미 수신자
     private String memo; // 메모
     private LocalDateTime createdAt = LocalDateTime.now(); // 생성 시간
-    private Account account; // 계좌 정보
+//    private Account account;
 
     public static AccountTransactionFixture builder() {
         return new AccountTransactionFixture();
@@ -68,12 +68,12 @@ public class AccountTransactionFixture {
         return this;
     }
 
-    public AccountTransactionFixture account(Account account) {
-        this.account = account;
-        return this;
-    }
+//    public AccountTransactionFixture account(Account account) {
+//        this.account = account;
+//        return this;
+//    }
 
-    public AccountTransaction build() {
+    public AccountTransaction build(Account account) {
         return AccountTransaction.builder()
                 .id(id)
                 .title(title)
