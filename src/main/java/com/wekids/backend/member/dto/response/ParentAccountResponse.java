@@ -1,6 +1,5 @@
 package com.wekids.backend.member.dto.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,5 +16,4 @@ public class ParentAccountResponse {
     public static ParentAccountResponse of(ParentResponse parent, List<ChildResponse> children){
         return new ParentAccountResponse(parent, children);
     }
-
 }
