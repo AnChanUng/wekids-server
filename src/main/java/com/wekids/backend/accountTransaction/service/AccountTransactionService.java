@@ -4,12 +4,13 @@ import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearc
 
 import com.wekids.backend.accountTransaction.dto.response.TransactionGetResponse;
 import com.wekids.backend.accountTransaction.dto.response.TransactionListResponse;
+import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AccountTransactionService {
     TransactionDetailSearchResponse findByTransactionId(Long transactionId);
-    List<TransactionGetResponse> showTransactionList(long accountid, LocalDateTime start, LocalDateTime end, String type, int page, int size);
+    Slice<TransactionGetResponse> showTransactionList(long accountid, LocalDateTime start, LocalDateTime end, String type, int page, int size);
 
 }

@@ -6,6 +6,7 @@ import com.wekids.backend.accountTransaction.service.AccountTransactionService;
 import com.wekids.backend.accountTransaction.dto.response.TransactionListResponse;
 import com.wekids.backend.accountTransaction.service.AccountTransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +39,7 @@ public class AccountTransactionController {
             @RequestParam(value = "type", required = false, defaultValue = "ALL") String type,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
-        List<TransactionGetResponse> responseList = accountTransactionService.showTransactionList(accountId, start, end, type, page, size);
-            return ResponseEntity.ok(responseList);
+        Slice<TransactionGetResponse> responseList = accountTransactionService.showTransactionList(accountId, start, end, type, page, size);
+            return ResponseEntity.ok(responseList.getContent());
     }
 }
