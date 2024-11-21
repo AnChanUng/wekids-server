@@ -57,18 +57,13 @@ public class CardBaasServiceImpl implements CardBaasService {
 
         Account account = Account.createFromResponse(accountResponse, member);
 
-        Account savedAccount = accountRepository.save(account);
-        log.info("Saved account {}", savedAccount);
-
-        return savedAccount;
+        return accountRepository.save(account);
     }
 
     private Card createCard(CardBaasRequest cardRequest, Account account) {
         String cardBaasUrl = "http://localhost:8081/api/v1/cards";
 
         CardBaasResponse cardResponse = restTemplate.postForObject(cardBaasUrl, cardRequest, CardBaasResponse.class);
-
-        log.info("cardResponse {}", cardResponse);
 
         String cardName = getLastTwoCharacters(account.getMember().getName()) + "핑";
         Card card = Card.createFromResponse(cardResponse, cardRequest, account, cardName);
