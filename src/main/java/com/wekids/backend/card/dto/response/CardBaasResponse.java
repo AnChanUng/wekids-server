@@ -1,9 +1,7 @@
 package com.wekids.backend.card.dto.response;
 
 import com.wekids.backend.card.domain.Card;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +9,8 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class CardBaasResponse {
     private String cardNumber;
     private LocalDate validThru;
