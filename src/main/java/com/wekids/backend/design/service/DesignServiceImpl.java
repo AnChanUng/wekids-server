@@ -30,11 +30,7 @@ public class DesignServiceImpl implements DesignService {
     @Override
     @Transactional
     public void createDesign(Long memberId, DesignCreateRequest request) {
-
-        ColorType color = ColorType.valueOf(request.getColor());
-        CharacterType character = CharacterType.valueOf(request.getCharacter());
-
-        Design newDesign = Design.create(memberId, color, character);
+        Design newDesign = Design.create(memberId, request.getColor(), request.getCharacter());
         designRepository.save(newDesign);
     }
 
