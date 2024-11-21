@@ -48,20 +48,6 @@ class AccountTransactionServiceImplTest {
                 .accountNumber("123-456-789")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
-                .build().from();
-        System.out.println(account);
-        // AccountTransactionFixture를 사용하여 거래 객체를 생성합니다.
-        AccountTransaction transaction = AccountTransactionFixture.builder()
-                .id(transactionId)
-                .title("카카오페이")
-                .type(TransactionType.DEPOSIT)
-                .amount(BigDecimal.valueOf(100.00))
-                .balance(BigDecimal.valueOf(1000.00))
-                .sender("Sender Name")
-                .receiver("Receiver Name")
-                .memo("")
-                .createdAt(LocalDateTime.now())
-                .account(account)
                 .build();
     }
 
