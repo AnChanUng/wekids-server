@@ -1,6 +1,7 @@
 package com.wekids.backend.account.domain;
 
 import com.wekids.backend.account.domain.enums.AccountState;
+import com.wekids.backend.card.dto.response.AccountBaasResponse;
 import com.wekids.backend.common.entity.BaseTime;
 import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
@@ -38,4 +39,12 @@ public class Account extends BaseTime {
     @ToString.Exclude
     private Member member;
 
+    public static Account createFromResponse(AccountBaasResponse accountResponse, Member member) {
+        return Account.builder()
+                .accountNumber(accountResponse.getAccountNumber())
+                .balance(BigDecimal.ZERO)
+                .state(AccountState.ACTIVE)
+                .member(member)
+                .build();
+    }
 }
