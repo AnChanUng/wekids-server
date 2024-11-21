@@ -9,6 +9,7 @@ import com.wekids.backend.exception.WekidsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +25,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AccountServiceImpl implements AccountService{
 
-    @Autowired
-    private AccountRepository accountRepository;
 
-    private final RestTemplate restTemplate;
-
-    public AccountServiceImpl() {
-        this.restTemplate = new RestTemplate();
-    }
+    private final AccountRepository accountRepository; // 유지
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public List<AccountResponse> getAccount() {
@@ -45,7 +41,6 @@ public class AccountServiceImpl implements AccountService{
         ResponseEntity<BaasAccountResponse[]> response = restTemplate.getForEntity(url, BaasAccountResponse[].class, uriVariables);
         BaasAccountResponse[] responseArray = response.getBody();
         List<BaasAccountResponse> responseList = Arrays.asList(responseArray);
-        System.out.println(responseList);
 
         return responseList.stream().map(
                 AccountResponse::new
