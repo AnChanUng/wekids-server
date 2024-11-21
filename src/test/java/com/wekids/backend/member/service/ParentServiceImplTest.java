@@ -4,6 +4,8 @@ import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.design.domain.Design;
 import com.wekids.backend.design.repository.DesignRepository;
+import com.wekids.backend.exception.ErrorCode;
+import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.dto.response.ChildResponse;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,5 +90,92 @@ public class ParentServiceImplTest {
         assertThat(childResponse2.getAccountNumber()).isEqualTo(childAccount2.getAccountNumber());
         assertThat(childResponse2.getColor()).isEqualTo(childDesign2.getColor());
     }
+
+    @Test
+    void 부모_계좌만_존재하고_자식이_없다() {
+        // Parent 객체 생성
+        Parent parent = ParentFixture.builder().id(1L).build().from();
+
+        // Account 객체 생성
+        Account parentAccount = AccountFixture.builder().id(1L).member(parent).build().from();
+
+        // Design 객체 생성
+        Design parentDesign = DesignFixture.builder().id(1L).member(parent).account(parentAccount).build().from();
+
+        // Mock 동작 정의
+        given(parentRepository.findById(parent.getId())).willReturn(Optional.of(parent));
+        given(parentRepository.findChildrenByParentId(parent.getId())).willReturn(List.of());
+        given(accountRepository.findByMember(parent)).willReturn(Optional.of(parentAccount));
+        given(designRepository.findByMemberId(parent.getId())).willReturn(Optional.of(parentDesign));
+
+        // 서비스 호출
+        ParentAccountResponse response = parentService.showParentAccount(parent.getId());
+
+        // 검증
+        assertThat(response).isNotNull();
+        assertThat(response.getParent()).isNotNull();
+        assertThat(response.getParent().getName()).isEqualTo(parent.getName());
+        assertThat(response.getChildren()).isEmpty(); // 자식이 없음을 검증
+    }
+
+    @Test
+    void 부모_정보를_찾을_수_없다() {
+        Long parentId = 1L;
+
+        // Mock 동작 정의
+        given(parentRepository.findById(parentId))
+                .willThrow(new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "parentId가 " + parentId + "인 정보를 찾을 수 없습니다."));
+
+        // 예외 검증
+        assertThatThrownBy(() -> parentService.showParentAccount(parentId))
+                .isInstanceOf(WekidsException.class)
+                .hasMessageContaining("parentId가 " + parentId + "인 정보를 찾을 수 없습니다.");
+    }
+
+    @Test
+    void 자식_계좌나_디자인_정보가_없는_경우() {
+        // Parent 및 Child 객체 생성
+        Parent parent = ParentFixture.builder().id(1L).build().from();
+        Child child = ChildFixture.builder().id(2L).build().from();
+        List<Child> children = List.of(child);
+
+        // Account 및 Design 객체 생성
+        Account parentAccount = AccountFixture.builder().id(1L).member(parent).build().from();
+        Design parentDesign = DesignFixture.builder().id(1L).member(parent).account(parentAccount).build().from();
+
+        // Mock 동작 정의
+        given(parentRepository.findById(parent.getId())).willReturn(Optional.of(parent));
+        given(parentRepository.findChildrenByParentId(parent.getId())).willReturn(children);
+        given(accountRepository.findByMember(parent)).willReturn(Optional.of(parentAccount));
+        given(designRepository.findByMemberId(parent.getId())).willReturn(Optional.of(parentDesign));
+        given(accountRepository.findByMember(child)).willReturn(Optional.empty()); // 자식 계좌 없음
+        given(designRepository.findByMemberId(child.getId())).willReturn(Optional.empty()); // 자식 디자인 없음
+
+        // 서비스 호출
+        ParentAccountResponse response = parentService.showParentAccount(parent.getId());
+
+        // 검증
+        assertThat(response).isNotNull();
+        assertThat(response.getChildren()).hasSize(1);
+
+        ChildResponse childResponse = response.getChildren().get(0);
+        assertThat(childResponse.getChildId()).isEqualTo(child.getId());
+        assertThat(childResponse.getAccountNumber()).isNull(); // 계좌 정보 없음
+        assertThat(childResponse.getColor()).isNull(); // 디자인 정보 없음
+    }
+
+    @Test
+    void 부모와_자식_정보가_모두_없는_경우() {
+        Long parentId = 1L;
+
+        // Mock 동작 정의
+        given(parentRepository.findById(parentId)).willReturn(Optional.empty());
+
+        // 예외 검증
+        assertThatThrownBy(() -> parentService.showParentAccount(parentId))
+                .isInstanceOf(WekidsException.class)
+                .hasMessageContaining("parentId가 " + parentId + "인 정보를 찾을 수 없습니다.");
+    }
+
 }
 
