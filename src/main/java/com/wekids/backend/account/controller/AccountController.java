@@ -14,14 +14,11 @@ import java.util.List;
 @RequestMapping("/api/v1/accounts")
 @RequiredArgsConstructor
 public class AccountController {
-
-
     private final AccountService accountService;
 
     @GetMapping("/children")
     public ResponseEntity<List<AccountChildResponse>> findAccountChildList(){
         long parentId = 1L;
-        //추후에 토큰값으로 검사
-        return ResponseEntity.ok(accountService.findChildrenAccountList(1L));
+        return ResponseEntity.ok(accountService.showChildrenAccountList(1L));
     }
 }
