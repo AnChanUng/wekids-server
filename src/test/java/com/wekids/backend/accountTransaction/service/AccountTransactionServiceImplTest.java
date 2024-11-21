@@ -39,7 +39,7 @@ class AccountTransactionServiceImplTest {
                 .accountNumber("123-456-789")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
-                .build();
+                .build().from();
         System.out.println(account);
         // AccountTransactionFixture를 사용하여 거래 객체를 생성합니다.
         AccountTransaction transaction = AccountTransactionFixture.builder()

@@ -6,28 +6,31 @@ import com.wekids.backend.design.domain.Design;
 import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.member.domain.Member;
-import jakarta.persistence.*;
 import lombok.Builder;
 
 @Builder
 public class DesignFixture {
-
-    private Member member;
+    @Builder.Default
+    private long id = 1L;
+    @Builder.Default
+    private Member member = null;
     @Builder.Default
     private ColorType color = ColorType.PINK1;
     @Builder.Default
     private CharacterType character = CharacterType.HEARTSPRING;
+    @Builder.Default
+    private Account account = null;
+    @Builder.Default
+    private Card card = null;
 
-    private Account account;
-
-    private Card card;
-
-
-
-    public Design from(){
-        return Design.builder().member(member).color(color).character(character).account(account).card(card).build();
+    public Design from() {
+        return Design.builder()
+                .id(id)
+                .member(member)
+                .color(color)
+                .character(character)
+                .account(account)
+                .card(card)
+                .build();
     }
-
-
-
 }

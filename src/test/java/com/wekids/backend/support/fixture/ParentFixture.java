@@ -10,28 +10,26 @@ import java.time.LocalDateTime;
 
 @Builder
 public class ParentFixture {
-
-    private Long id;
     @Builder.Default
-    private String name = "조예은"; // 더미 데이터 이름
+    private Long id = 1L;
     @Builder.Default
-    private String email = "1234"; // 더미 데이터 이메일
+    private String name = "조예은";
     @Builder.Default
-    private String simplePassword = "12345"; // 더미 데이터 비밀번호
+    private String email = "test@test.com";
     @Builder.Default
-    private String phone = "1"; // 예시 전화번호
+    private String simplePassword = "123456";
     @Builder.Default
-    private LocalDate birthday = LocalDate.of(1998, 5, 1); // 예시 생일
+    private String phone = "010-1111-1111";
     @Builder.Default
-    private String profile = "https://image.com/virtual.png"; // 프로필 이미지 URL
+    private LocalDate birthday = LocalDate.of(1998, 5, 1);
     @Builder.Default
-    private MemberState state = MemberState.ACTIVE; // 상태
+    private String profile = "https://image.com/virtual.png";
     @Builder.Default
-    private LocalDateTime inactiveDate = null; // 비활성화 날짜는 null로 설정
+    private MemberState state = MemberState.ACTIVE;
+    private LocalDateTime inactiveDate;
     @Builder.Default
     private CardState cardState = CardState.NONE; // 카드 상태
-    @Builder.Default
-    private Long bankMemberId = null; // 은행 회원 ID는 null로 설정
+    private Long bankMemberId;
 
     public Parent from() {
         return Parent.builder()
