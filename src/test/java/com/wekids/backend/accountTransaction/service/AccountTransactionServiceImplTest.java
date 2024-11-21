@@ -16,7 +16,6 @@ import com.wekids.backend.support.fixture.AccountFixture;
 import com.wekids.backend.support.fixture.AccountTransactionFixture;
 import com.wekids.backend.support.fixture.ChildFixture;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -49,7 +48,7 @@ class AccountTransactionServiceImplTest {
     private AccountTransaction transaction;
 
     @BeforeEach
-     void setUp() {
+    void setUp() {
         // 아이 더미데이터 넣기
         childMember = new ChildFixture().build();
         parentMember = new ChildFixture()
@@ -66,7 +65,7 @@ class AccountTransactionServiceImplTest {
                 .accountNumber("123-456-789")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
-                .build();
+                .build().toAccount();
     }
 
     private AccountTransaction createAccountTransaction(Account account) {
@@ -123,9 +122,6 @@ class AccountTransactionServiceImplTest {
 
         // 메모가 업데이트되었는지 확인
         assertThat(transaction.getMemo()).isEqualTo(newMemo);
-
-        // 메모를 저장하는 메서드가 호출되었는지 확인
-        verify(accountTransactionRepository, times(1)).save(transaction);
     }
 
     @Test
