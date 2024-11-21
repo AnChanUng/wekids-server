@@ -1,6 +1,7 @@
 package com.wekids.backend.accountTransaction.controller;
 
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
+import com.wekids.backend.accountTransaction.dto.response.TransactionGetResponse;
 import com.wekids.backend.accountTransaction.service.AccountTransactionService;
 import com.wekids.backend.accountTransaction.dto.response.TransactionListResponse;
 import com.wekids.backend.accountTransaction.service.AccountTransactionService;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/transactions")
@@ -29,14 +31,14 @@ public class AccountTransactionController {
     }
 
     @GetMapping("/{accountId}/transactions")
-    public ResponseEntity<TransactionListResponse> getTransactionList(
+    public ResponseEntity<List<TransactionGetResponse>> getTransactionList(
             @PathVariable("accountId") Long accountId,
             @RequestParam(value = "start", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime start,
             @RequestParam(value = "end", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime end,
             @RequestParam(value = "type", required = false, defaultValue = "ALL") String type,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
-                TransactionListResponse transactionListResponse = accountTransactionService.showTransactionList(accountId, start, end, type, page, size);
-            return ResponseEntity.ok(transactionListResponse);
+        List<TransactionGetResponse> responseList = accountTransactionService.showTransactionList(accountId, start, end, type, page, size);
+            return ResponseEntity.ok(responseList);
     }
 }
