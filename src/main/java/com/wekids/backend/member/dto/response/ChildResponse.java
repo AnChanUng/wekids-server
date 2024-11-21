@@ -1,12 +1,15 @@
 package com.wekids.backend.member.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.design.domain.Design;
 import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.member.domain.Child;
+import com.wekids.backend.member.domain.enums.CardState;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +18,8 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChildResponse {
     Long childId;
     String name;
@@ -22,21 +27,28 @@ public class ChildResponse {
     String profile;
     BigDecimal balance;
     Long accountId;
-    AccountState cardState;
+    CardState cardState;
     ColorType color;
     CharacterType character;
 
-    public static ChildResponse of(Child child, Account account, Design design){
-        return new ChildResponse(
-                child.getId(),
-                child.getName(),
-                account.getAccountNumber(),
-                child.getProfile(),
-                account.getBalance(),
-                account.getId(),
-                account.getState(),
-                design.getColor(),
-                design.getCharacter()
-        );
+    public static ChildResponse of(Child child, Account account, Design design) {
+        ChildResponse.ChildResponseBuilder builder = ChildResponse.builder()
+                .childId(child.getId())
+                .name(child.getName())
+                .profile(child.getProfile())
+                .cardState(child.getCardState());
+
+        if(account != null){
+            builder.accountNumber(account.getAccountNumber())
+                .balance(account.getBalance())
+                .accountId(account.getId());
+        }
+
+        if (design != null) {
+            builder.color(design.getColor())
+                    .character(design.getCharacter());
+        }
+
+        return builder.build();
     }
 }
