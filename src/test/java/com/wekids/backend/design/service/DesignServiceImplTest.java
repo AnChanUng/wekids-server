@@ -62,14 +62,14 @@ public class DesignServiceImplTest {
         Long memberId = 2L;
 
         DesignCreateRequest request = DesignCreateRequest.builder()
-                .color("PINK1")
-                .character("HEARTSPRING")
+                .color(ColorType.valueOf("PINK1"))
+                .character(CharacterType.valueOf("HEARTSPRING"))
                 .build();
 
         DesignFixture design = DesignFixture.builder()
                 .memberId(memberId)
-                .color(ColorType.valueOf(request.getColor()))
-                .character(CharacterType.valueOf(request.getCharacter()))
+                .color(request.getColor())
+                .character(request.getCharacter())
                 .build();
 
         when(designRepository.save(any(Design.class))).thenReturn(design.build());
