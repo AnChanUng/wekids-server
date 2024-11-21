@@ -40,28 +40,14 @@ public class CardBaasServiceImpl implements CardBaasService {
     @Override
     @Transactional
     public void issueAccountAndCard(PasswordRequest passwordRequest) {
+        Member member = findByBankMemberId(memberId);
+        Parent parent = findParentByChildId(memberId);
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("자식 계정 아이디: %d를 찾을 수 없습니다.", memberId)));
-
-        Parent parent = memberRepository.findParentByChildId(memberId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("부모 계정 아이디: %d를 찾을 수 없습니다.", memberId)));
-
-        AccountBaasRequest accountBaasRequest = AccountBaasRequest.builder()
-                .bankMemberId(member.getBankMemberId())
-                .productId(productId)
-                .password(parent.getSimplePassword())
-                .build();
-
+        AccountBaasRequest accountBaasRequest = AccountBaasRequest.createFromMemberAndParent(member, parent, productId);
         Account account = createAccount(accountBaasRequest, member);
 
-        CardBaasRequest cardBaasRequest = CardBaasRequest.builder()
-                .accountNumber(account.getAccountNumber())
-                .bankMemberId(member.getBankMemberId())
-                .password(passwordRequest.getPassword())
-                .build();
-
-        Card card = createCard(cardBaasRequest, account);
+        CardBaasRequest cardBaasRequest = CardBaasRequest.createFromAccountAndMember(account, member, passwordRequest);
+        createCard(cardBaasRequest, account);
     }
 
     private Account createAccount(AccountBaasRequest accountRequest, Member member) {
@@ -69,12 +55,7 @@ public class CardBaasServiceImpl implements CardBaasService {
 
         AccountBaasResponse accountResponse = restTemplate.postForObject(accountBaasUrl, accountRequest, AccountBaasResponse.class);
 
-        Account account = Account.builder()
-                .accountNumber(accountResponse.getAccountNumber())
-                .balance(BigDecimal.ZERO)
-                .state(AccountState.ACTIVE)
-                .member(member)
-                .build();
+        Account account = Account.createFromResponse(accountResponse, member);
 
         Account savedAccount = accountRepository.save(account);
         log.info("Saved account {}", savedAccount);
@@ -89,24 +70,24 @@ public class CardBaasServiceImpl implements CardBaasService {
 
         log.info("cardResponse {}", cardResponse);
 
-        Card card = Card.builder()
-                .cardNumber(cardResponse.getCardNumber())
-                .validThru(cardResponse.getValidThru())
-                .cvc(cardResponse.getCvc())
-                .memberName(cardResponse.getBankMemberName())
-                .cardName(getLastTwoCharacters(account.getMember().getName()) + "핑")
-                .newDate(cardResponse.getNewDate())
-                .password(cardRequest.getPassword())
-                .account(account)
-                .state(CardState.ACTIVE)
-                .build();
+        String cardName = getLastTwoCharacters(account.getMember().getName()) + "핑";
+        Card card = Card.createFromResponse(cardResponse, cardRequest, account, cardName);
 
-        Card savedCard = cardRepository.save(card);
-        return savedCard;
+        return cardRepository.save(card);
     }
 
     private String getLastTwoCharacters(String name) {
         return name.substring(name.length() - 2);
+    }
+
+    private Member findByBankMemberId(Long memberId) {
+        return memberRepository.findByBankMemberId(memberId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("자식 계정 아이디: %d를 찾을 수 없습니다.", memberId)));
+    }
+
+    private Parent findParentByChildId(Long memberId) {
+        return memberRepository.findParentByChildId(memberId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("부모 계정 아이디: %d를 찾을 수 없습니다.", memberId)));
     }
 
 }
