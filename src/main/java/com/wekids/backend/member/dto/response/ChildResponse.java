@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChildResponse {
     Long childId;
     String name;

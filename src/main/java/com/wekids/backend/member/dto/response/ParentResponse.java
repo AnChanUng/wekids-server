@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ParentResponse {
     String name;
     String accountNumber;
