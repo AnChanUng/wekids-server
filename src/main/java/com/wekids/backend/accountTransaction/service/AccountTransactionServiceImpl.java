@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Service
 @Transactional(readOnly = true)
@@ -50,8 +49,8 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         Account parentAccount = findAccountByAccountNumber(transactionRequest.getParentAccountNumber());
         Account childAccount = findAccountByAccountNumber(transactionRequest.getChildAccountNumber());
 
-        log.info("부모계좌번호 "+parentAccount);
-        log.info("자식계좌번호 "+childAccount);
+        log.info("부모계좌번호 " + parentAccount);
+        log.info("자식계좌번호 " + childAccount);
 
         validateTransaction(transactionRequest, parentAccount, childAccount);
 
@@ -85,17 +84,10 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     private AccountTransaction createTransaction(TransactionRequest request, TransactionType type, BigDecimal
             balance, Account account) {
-        return AccountTransaction.builder()
-                .title(request.getSender())
-                .type(type)
-                .amount(request.getAmount())
-                .balance(balance)
-                .sender(request.getSender())
-                .receiver(request.getReceiver())
-                .memo("")
-                .createdAt(LocalDateTime.now())
-                .account(account)
-                .build();
+
+        // AccountTransaction 생성
+        return AccountTransaction.createTransaction(request, type, balance, account);
+
     }
 
     private AccountTransaction findAccountTransactionById(Long transactionId, String message) {

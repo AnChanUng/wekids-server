@@ -2,6 +2,7 @@ package com.wekids.backend.accountTransaction.domain;
 
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
+import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -54,5 +55,20 @@ public class AccountTransaction {
 
     public void updateMemo(String memo) {
         this.memo = memo;
+    }
+
+    public static AccountTransaction createTransaction(TransactionRequest request, TransactionType type, BigDecimal
+            balance, Account account) {
+        return AccountTransaction.builder()
+                .title(request.getSender())
+                .type(type)
+                .amount(request.getAmount())
+                .balance(balance)
+                .sender(request.getSender())
+                .receiver(request.getReceiver())
+                .memo("")
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
     }
 }
