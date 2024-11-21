@@ -5,10 +5,9 @@ import com.wekids.backend.design.dto.response.DesignResponse;
 import com.wekids.backend.design.service.DesignService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @Slf4j
 @RestController
@@ -29,7 +28,6 @@ public class DesignController {
     @PostMapping()
     public ResponseEntity<Void> createDesign(@RequestBody DesignCreateRequest request) {
         designService.createDesign(DEFAULT_MEMBER_ID, request);
-        URI location = URI.create("http://localhost:8080/api/v1/design");
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
