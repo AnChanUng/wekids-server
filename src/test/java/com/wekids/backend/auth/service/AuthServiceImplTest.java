@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
@@ -23,6 +24,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
+    @Mock PasswordEncoder passwordEncoder;
     @Mock JWTUtil jwtUtil;
     @Mock private MemberRepository memberRepository;
     @InjectMocks private AuthServiceImpl authService;
