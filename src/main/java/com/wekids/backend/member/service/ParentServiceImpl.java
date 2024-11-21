@@ -13,7 +13,7 @@ import com.wekids.backend.member.domain.enums.MemberState;
 import com.wekids.backend.member.dto.response.ChildResponse;
 import com.wekids.backend.member.dto.response.ParentAccountResponse;
 import com.wekids.backend.member.dto.response.ParentResponse;
-import com.wekids.backend.member.repository.MemberRepository;
+import com.wekids.backend.member.repository.ParentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,14 +26,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class MemberServiceImpl implements MemberService{
-
-    private final MemberRepository memberRepository;
+public class ParentServiceImpl implements ParentService {
+    private final ParentRepository parentRepository;
     private final AccountRepository accountRepository;
     private final DesignRepository designRepository;
 
     public ParentAccountResponse showParentAccount(Long parentId) {
-        Parent parent = (Parent)findMemberByMemberId(parentId);
+        Parent parent = findParentByMemberId(parentId);
         Account parentAccount = findAccountByMember(parent);
         Design design = findDesignByMemberId(parentId);
         ParentResponse parentResponse = ParentResponse.of(parent, parentAccount, design);
@@ -43,7 +42,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     private List<ChildResponse> showChildAccount(Long parentId){
-        return findChildrenByByParentId(parentId).stream()
+        return parentRepository.findChildrenByParentId(parentId).stream()
                 .filter(child -> child.getState().equals(MemberState.ACTIVE))
                 .map(child -> {
                     Account childAccount = findAccountByMember(child);
@@ -53,9 +52,9 @@ public class MemberServiceImpl implements MemberService{
                 .collect(Collectors.toList());
     }
 
-    private Member findMemberByMemberId(Long parentId){
-        return memberRepository.findById(parentId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "id가" + parentId + "인 정보를 찾을 수 없습니다."));
+    private Parent findParentByMemberId(Long parentId){
+        return (Parent) parentRepository.findById(parentId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "parentId가" + parentId + "인 정보를 찾을 수 없습니다."));
     }
 
     private Account findAccountByMember(Member member){
@@ -64,9 +63,5 @@ public class MemberServiceImpl implements MemberService{
 
     private Design findDesignByMemberId(Long parentId){
         return designRepository.findByMemberId(parentId).orElse(null);
-    }
-    private List<Child> findChildrenByByParentId(Long parentId){
-        return memberRepository.findChildrenByParentId(parentId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "parentId가" + parentId + "인 자식들 정보를 찾을 수 없습니다."));
     }
 }
