@@ -19,7 +19,7 @@ public class AccountTransactionController {
 
     @PostMapping("/{transactionId}/memo")
     public ResponseEntity<Void> saveMemo(@PathVariable("transactionId") Long transactionId, @RequestBody @Valid UpdateMemoRequest request) {
-        accountTransactionService.saveMemo(transactionId, request);
+        accountTransactionService.updateMemo(transactionId, request);
         return ResponseEntity.noContent().build();
     }
 
@@ -31,7 +31,7 @@ public class AccountTransactionController {
 
     @PostMapping
     public ResponseEntity<Void> postTransaction(@RequestBody TransactionRequest transactionRequest) {
-        accountTransactionService.saveTransaction(transactionRequest);
+        accountTransactionService.transfer(transactionRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

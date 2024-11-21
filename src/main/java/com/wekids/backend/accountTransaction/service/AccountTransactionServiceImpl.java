@@ -39,19 +39,19 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     @Override
     @Transactional
-    public void saveMemo(Long transactionId, UpdateMemoRequest request) {
+    public void updateMemo(Long transactionId, UpdateMemoRequest request) {
         AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "memo업데이트를 하는 거래내역id");
         accountTransaction.updateMemo(request.getMemo());
     }
 
     @Override
     @Transactional
-    public void saveTransaction(TransactionRequest transactionRequest) {
+    public void transfer(TransactionRequest transactionRequest) {
         Account parentAccount = findAccountByAccountNumber(transactionRequest.getParentAccountNumber());
         Account childAccount = findAccountByAccountNumber(transactionRequest.getChildAccountNumber());
 
-        log.info(String.valueOf(parentAccount));
-        log.info(String.valueOf(childAccount));
+        log.info("부모계좌번호 "+parentAccount);
+        log.info("자식계좌번호 "+childAccount);
 
         validateTransaction(transactionRequest, parentAccount, childAccount);
 

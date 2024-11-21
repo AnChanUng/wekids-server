@@ -7,7 +7,7 @@ import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearc
 public interface AccountTransactionService {
     TransactionDetailSearchResponse findByTransactionId(Long transactionId);
 
-    void saveTransaction(TransactionRequest transactionRequest);
+    void transfer(TransactionRequest transactionRequest);
 
-    void saveMemo(Long transactionId, UpdateMemoRequest request);
+    void updateMemo(Long transactionId, UpdateMemoRequest request);
 }

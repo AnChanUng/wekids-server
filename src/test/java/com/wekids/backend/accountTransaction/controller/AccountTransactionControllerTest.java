@@ -55,6 +55,6 @@ class AccountTransactionControllerTest {
                 .andExpect(status().isNoContent());
 
         //부모 자식 한번씩 하는거기에 1번 호출되는게 맞
-        verify(accountTransactionService, times(1)).saveTransaction(refEq(request));
+        verify(accountTransactionService, times(1)).transfer(refEq(request));
     }
 }

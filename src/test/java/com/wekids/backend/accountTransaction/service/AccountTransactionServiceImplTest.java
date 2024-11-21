@@ -118,7 +118,7 @@ class AccountTransactionServiceImplTest {
         String newMemo = "메모 업데이트";
         UpdateMemoRequest request = new UpdateMemoRequest(newMemo);
 
-        accountTransactionService.saveMemo(transactionId, request);
+        accountTransactionService.updateMemo(transactionId, request);
 
         // 메모가 업데이트되었는지 확인
         assertThat(transaction.getMemo()).isEqualTo(newMemo);
@@ -157,7 +157,7 @@ class AccountTransactionServiceImplTest {
         when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
 
         // When
-        accountTransactionService.saveTransaction(transactionRequest);
+        accountTransactionService.transfer(transactionRequest);
 
         // Then
         ArgumentCaptor<AccountTransaction> transactionCaptor = ArgumentCaptor.forClass(AccountTransaction.class);
@@ -211,7 +211,7 @@ class AccountTransactionServiceImplTest {
 
         // When & Then
         WekidsException exception = assertThrows(WekidsException.class, () ->
-                accountTransactionService.saveTransaction(transactionRequest)
+                accountTransactionService.transfer(transactionRequest)
         );
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_TRANSACTION_AMOUNT);
@@ -253,7 +253,7 @@ class AccountTransactionServiceImplTest {
 
         // When & Then
         WekidsException exception = assertThrows(WekidsException.class, () ->
-                accountTransactionService.saveTransaction(transactionRequest)
+                accountTransactionService.transfer(transactionRequest)
         );
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_TRANSACTION_AMOUNT);
@@ -294,7 +294,7 @@ class AccountTransactionServiceImplTest {
 
         // When & Then
         WekidsException exception = assertThrows(WekidsException.class, () ->
-                accountTransactionService.saveTransaction(transactionRequest)
+                accountTransactionService.transfer(transactionRequest)
         );
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_ACTIVE);
@@ -334,7 +334,7 @@ class AccountTransactionServiceImplTest {
 
         // When & Then
         WekidsException exception = assertThrows(WekidsException.class, () ->
-                accountTransactionService.saveTransaction(transactionRequest)
+                accountTransactionService.transfer(transactionRequest)
         );
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_ACCOUNT_NUMBER);
@@ -372,7 +372,7 @@ class AccountTransactionServiceImplTest {
         when(accountRepository.findAccountByAccountNumber("CHILD1234567890")).thenReturn(Optional.of(childAccount));
 
         // Act
-        accountTransactionService.saveTransaction(transactionRequest);
+        accountTransactionService.transfer(transactionRequest);
 
         // Assert
 //        (new BigDecimal("400.00"), parentAccount.getBalance()); // 부모 계좌 잔액 확인
