@@ -6,6 +6,7 @@ import com.wekids.backend.member.domain.enums.MemberState;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,15 +42,17 @@ public abstract class Member extends BaseTime {
     @Column(length = 20)
     private String simplePassword;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
-    private MemberState state;
+    @Enumerated(EnumType.STRING) // 이거 default값 왜 안먹지??
+    @Column(nullable = false)
+    @Builder.Default
+    private MemberState state = MemberState.ACTIVE;
 
     private LocalDateTime inactiveDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'NONE'")
-    private CardState cardState;
+    @Column(nullable = false)
+    @Builder.Default
+    private CardState cardState = CardState.CREATED;
 
     private Long bankMemberId;
 
