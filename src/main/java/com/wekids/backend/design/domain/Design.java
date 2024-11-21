@@ -38,4 +38,12 @@ public class Design {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id")
     private Card card;
+
+    public static Design create(Long memberId, ColorType color, CharacterType character) {
+        return Design.builder()
+                .memberId(memberId)
+                .color(color)
+                .character(character)
+                .build();
+    }
 }

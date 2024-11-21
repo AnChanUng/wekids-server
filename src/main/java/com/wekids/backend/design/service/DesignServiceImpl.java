@@ -34,12 +34,7 @@ public class DesignServiceImpl implements DesignService {
         ColorType color = ColorType.valueOf(request.getColor());
         CharacterType character = CharacterType.valueOf(request.getCharacter());
 
-        Design newDesign = Design.builder()
-                .memberId(memberId)
-                .color(color)
-                .character(character)
-                .build();
-
+        Design newDesign = Design.create(memberId, color, character);
         designRepository.save(newDesign);
     }
 
