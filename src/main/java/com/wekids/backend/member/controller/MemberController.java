@@ -7,15 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/parents")
 @RequiredArgsConstructor
 public class MemberController {
-
     private final MemberService memberService;
 
-    @GetMapping("/parents")
-    public ResponseEntity<ParentAccountResponse> getParentAccount(){
-        ParentAccountResponse response = memberService.getParentAccount();
+    @GetMapping
+    public ResponseEntity<ParentAccountResponse> showParentInfo(){
+        ParentAccountResponse response = memberService.showParentAccount(1L);
         return ResponseEntity.ok(response);
     }
 }
