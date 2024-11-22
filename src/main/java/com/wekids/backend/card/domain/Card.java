@@ -40,8 +40,9 @@ public class Card extends BaseTime {
     private String cardName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
-    private CardState state;
+    @Column(nullable = false)
+    @Builder.Default
+    private CardState state = CardState.ACTIVE;
 
     private LocalDateTime inactiveDate;
 
@@ -62,7 +63,6 @@ public class Card extends BaseTime {
                 .newDate(cardResponse.getNewDate())
                 .password(cardPassword)
                 .account(account)
-                .state(CardState.ACTIVE)
                 .build();
     }
 }

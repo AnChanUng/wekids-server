@@ -6,6 +6,7 @@ import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -21,11 +22,13 @@ public class Design {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ColorType color;
+    @Builder.Default
+    private ColorType color = ColorType.BLUE;
 
     @Column(name = "`character`", nullable = false)
     @Enumerated(EnumType.STRING)
-    private CharacterType character;
+    @Builder.Default
+    private CharacterType character = CharacterType.DADAPING;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")

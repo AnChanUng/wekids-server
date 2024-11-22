@@ -1,7 +1,6 @@
 package com.wekids.backend.account.domain;
 
 import com.wekids.backend.account.domain.enums.AccountState;
-import com.wekids.backend.card.dto.response.AccountBaasResponse;
 import com.wekids.backend.common.entity.BaseTime;
 import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
@@ -29,8 +28,9 @@ public class Account extends BaseTime {
     private BigDecimal balance;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
-    private AccountState state;
+    @Column(name = "state", nullable = false)
+    @Builder.Default
+    private AccountState state = AccountState.ACTIVE;
 
     private LocalDateTime inactiveDate;
 
@@ -43,7 +43,6 @@ public class Account extends BaseTime {
         return Account.builder()
                 .accountNumber(accountNumber)
                 .balance(BigDecimal.ZERO)
-                .state(AccountState.ACTIVE)
                 .member(member)
                 .build();
     }

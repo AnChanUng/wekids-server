@@ -42,19 +42,24 @@ public abstract class Member extends BaseTime {
     private String simplePassword;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
-    private MemberState state;
+    @Column(nullable = false)
+    @Builder.Default
+    private MemberState state  = MemberState.ACTIVE;
 
     private LocalDateTime inactiveDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'NONE'")
-    private CardState cardState;
+    @Column(nullable = false)
+    @Builder.Default
+    private CardState cardState = CardState.NONE;
 
     private Long bankMemberId;
 
     public void saveBankMemberId(Long bankMemberId) {
         this.bankMemberId = bankMemberId;
+    }
+    public void saveSimplePassword(String simplePassword) {
+        this.simplePassword = simplePassword;
     }
 
 }
