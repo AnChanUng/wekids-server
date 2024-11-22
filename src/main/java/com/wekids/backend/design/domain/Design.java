@@ -20,9 +20,11 @@ public class Design {
     private Member member;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ColorType color;
 
     @Column(name = "`character`", nullable = false)
+    @Enumerated(EnumType.STRING)
     private CharacterType character;
 
     @OneToOne(fetch = FetchType.LAZY)

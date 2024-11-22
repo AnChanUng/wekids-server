@@ -3,8 +3,8 @@ package com.wekids.backend.accountTransaction.domain;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @ToString
+@SuperBuilder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccountTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,4 +50,9 @@ public class AccountTransaction {
     @JoinColumn(name = "account_id", nullable = false)
     @ToString.Exclude
     private Account account;
+
+
+    public void updateMemo(String memo) {
+        this.memo = memo;
+    }
 }
