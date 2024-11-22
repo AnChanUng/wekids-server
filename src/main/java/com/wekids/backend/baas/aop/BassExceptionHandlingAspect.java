@@ -16,7 +16,7 @@ public class BassExceptionHandlingAspect {
     @Around("@annotation(com.wekids.backend.baas.aop.BassLogAndHandleException)")
     public Object logAndHandleException(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
-            return joinPoint.proceed();  // 원래 메서드 실행
+            return joinPoint.proceed();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             String errorMessage = "BaaS 요청 실패: " + e.getMessage();
             throw new WekidsException(ErrorCode.BAAS_REQUEST_FAILED, errorMessage);
