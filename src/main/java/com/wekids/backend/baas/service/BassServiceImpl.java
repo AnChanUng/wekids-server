@@ -42,7 +42,7 @@ public class BassServiceImpl implements BaasService {
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<BaasAccountResponse>>() {},
-                baasMemberId + 1000L,
+                baasMemberId,
                 member.getBankMemberId()
         );
         return response.getBody().stream()
