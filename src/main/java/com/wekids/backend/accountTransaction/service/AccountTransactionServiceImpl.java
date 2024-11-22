@@ -10,6 +10,7 @@ import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
+import com.wekids.backend.baas.aop.BassLogAndHandleException;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     @Override
     @Transactional
+    @BassLogAndHandleException
     public void transfer(TransactionRequest transactionRequest) {
         Account parentAccount = findAccountByAccountNumber(transactionRequest.getParentAccountNumber());
         Account childAccount = findAccountByAccountNumber(transactionRequest.getChildAccountNumber());
@@ -77,15 +79,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                 transactionRequest.getAmount()
         );
 
-        try {
-            template.postForLocation(baasURL + "/api/v1/transactions", request);
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            String errorMessage = "BaaS 요청 실패: " + e.getMessage();
-            throw new WekidsException(ErrorCode.BAAS_REQUEST_FAILED, errorMessage);
-        } catch (RestClientException e) {
-            String errorMessage = "BaaS 요청 실패: 네트워크 오류 또는 알 수 없는 문제 - " + e.getMessage();
-            throw new WekidsException(ErrorCode.BAAS_REQUEST_FAILED, errorMessage);
-        }
+        template.postForLocation(baasURL + "/api/v1/transactions", request);
     }
 
 
