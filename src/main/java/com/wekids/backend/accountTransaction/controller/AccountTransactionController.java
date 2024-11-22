@@ -25,7 +25,7 @@ public class AccountTransactionController {
 
     @GetMapping("/{transactionId}")
     public ResponseEntity<TransactionDetailSearchResponse> showTransactionDetails(@PathVariable("transactionId") Long transactionId) {
-        TransactionDetailSearchResponse result = accountTransactionService.findByTransactionId(transactionId);
+        TransactionDetailSearchResponse result = accountTransactionService.showTransaction(transactionId);
         return ResponseEntity.ok(result);
     }
 

@@ -37,7 +37,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     private final RestTemplate template;
 
     @Override
-    public TransactionDetailSearchResponse findByTransactionId(Long transactionId) {
+    public TransactionDetailSearchResponse showTransaction(Long transactionId) {
         AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "transaction id값");
         return TransactionDetailSearchResponse.from(accountTransaction);
 

@@ -5,7 +5,7 @@ import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 
 public interface AccountTransactionService {
-    TransactionDetailSearchResponse findByTransactionId(Long transactionId);
+    TransactionDetailSearchResponse showTransaction(Long transactionId);
 
     void transfer(TransactionRequest transactionRequest);
 

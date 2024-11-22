@@ -76,7 +76,7 @@ class AccountTransactionServiceImplTest {
 
         given(accountTransactionRepository.findById(transactionId)).willReturn(Optional.of(transaction));
 
-        TransactionDetailSearchResponse response = accountTransactionService.findByTransactionId(transactionId);
+        TransactionDetailSearchResponse response = accountTransactionService.showTransaction(transactionId);
 
         assertAll(
                 () -> verify(accountTransactionRepository, times(1)).findById(transactionId),
