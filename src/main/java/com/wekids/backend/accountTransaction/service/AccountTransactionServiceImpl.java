@@ -80,7 +80,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         try {
             template.postForLocation(baasURL + "/api/v1/transactions", request);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            String errorMessage = "BaaS 요청 실패: " + e.getStatusCode() + " - " + e.getMessage();
+            String errorMessage = "BaaS 요청 실패: " + e.getMessage();
             throw new WekidsException(ErrorCode.BAAS_REQUEST_FAILED, errorMessage);
         } catch (RestClientException e) {
             String errorMessage = "BaaS 요청 실패: 네트워크 오류 또는 알 수 없는 문제 - " + e.getMessage();
