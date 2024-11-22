@@ -5,6 +5,7 @@ import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
+import com.wekids.backend.accountTransaction.dto.request.BaaSTransferRequest;
 import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
@@ -22,6 +23,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,12 +40,14 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AccountTransactionServiceImplTest {
-    @Mock
-    private AccountTransactionRepository accountTransactionRepository;
-    @Mock
-    private AccountRepository accountRepository;
+    @Mock private AccountTransactionRepository accountTransactionRepository;
+    @Mock private AccountRepository accountRepository;
+    @Mock private RestTemplate restTemplate;
     @InjectMocks
     private AccountTransactionServiceImpl accountTransactionService;
+
+    @Value("${baas.api.baas-url}")
+    private String baasURL;
 
     private Member childMember;
     private Member parentMember;
@@ -381,6 +389,139 @@ class AccountTransactionServiceImplTest {
 
         verify(accountTransactionRepository, times(2)).save(any(AccountTransaction.class)); // 트랜잭션 저장 확인
         verify(accountRepository, never()).save(any(Account.class)); // Account는 변경 감지로 저장됨
+    }
+
+    @Test
+    void BaaS_이체요청_성공() {
+        // Given
+        String parentAccountNumber = "PARENT123456";
+        String childAccountNumber = "CHILD123456";
+        BigDecimal transactionAmount = BigDecimal.valueOf(100);
+
+        Account parentAccount = Account.builder()
+                .accountNumber(parentAccountNumber)
+                .balance(BigDecimal.valueOf(500))
+                .state(AccountState.ACTIVE)
+                .member(parentMember)
+                .build();
+
+        Account childAccount = Account.builder()
+                .accountNumber(childAccountNumber)
+                .balance(BigDecimal.valueOf(200))
+                .state(AccountState.ACTIVE)
+                .member(childMember)
+                .build();
+
+        TransactionRequest transactionRequest = TransactionRequest.builder()
+                .parentAccountNumber(parentAccountNumber)
+                .childAccountNumber(childAccountNumber)
+                .amount(transactionAmount)
+                .sender(parentMember.getName())
+                .receiver(childMember.getName())
+                .build();
+
+        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+        when(restTemplate.postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class)))
+                .thenReturn(null);
+
+        // When
+        accountTransactionService.transfer(transactionRequest);
+
+        // Then
+        verify(restTemplate, times(1)).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
+    }
+
+    @Test
+    void BaaS_이체요청_클라이언트_오류() {
+        // Given
+        String parentAccountNumber = "PARENT123456";
+        String childAccountNumber = "CHILD123456";
+        BigDecimal transactionAmount = BigDecimal.valueOf(100);
+
+        Account parentAccount = Account.builder()
+                .accountNumber(parentAccountNumber)
+                .balance(BigDecimal.valueOf(500))
+                .state(AccountState.ACTIVE)
+                .member(parentMember)
+                .build();
+
+        Account childAccount = Account.builder()
+                .accountNumber(childAccountNumber)
+                .balance(BigDecimal.valueOf(200))
+                .state(AccountState.ACTIVE)
+                .member(childMember)
+                .build();
+
+        TransactionRequest transactionRequest = TransactionRequest.builder()
+                .parentAccountNumber(parentAccountNumber)
+                .childAccountNumber(childAccountNumber)
+                .amount(transactionAmount)
+                .sender(parentMember.getName())
+                .receiver(childMember.getName())
+                .build();
+
+        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+
+        doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "잘못된 요청"))
+                .when(restTemplate).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
+
+        // When & Then
+        WekidsException exception = assertThrows(WekidsException.class, () ->
+                accountTransactionService.transfer(transactionRequest)
+        );
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.BAAS_REQUEST_FAILED);
+        assertThat(exception.getMessage()).contains("BaaS 요청 실패: 400 잘못된 요청");
+
+        verify(restTemplate, times(1)).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
+    }
+
+    @Test
+    void BaaS_이체요청_네트워크_오류() {
+        // Given
+        String parentAccountNumber = "PARENT123456";
+        String childAccountNumber = "CHILD123456";
+        BigDecimal transactionAmount = BigDecimal.valueOf(100);
+
+        Account parentAccount = Account.builder()
+                .accountNumber(parentAccountNumber)
+                .balance(BigDecimal.valueOf(500))
+                .state(AccountState.ACTIVE)
+                .member(parentMember)
+                .build();
+
+        Account childAccount = Account.builder()
+                .accountNumber(childAccountNumber)
+                .balance(BigDecimal.valueOf(200))
+                .state(AccountState.ACTIVE)
+                .member(childMember)
+                .build();
+
+        TransactionRequest transactionRequest = TransactionRequest.builder()
+                .parentAccountNumber(parentAccountNumber)
+                .childAccountNumber(childAccountNumber)
+                .amount(transactionAmount)
+                .sender(parentMember.getName())
+                .receiver(childMember.getName())
+                .build();
+
+        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+
+        doThrow(new RestClientException("네트워크 오류"))
+                .when(restTemplate).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
+
+        // When & Then
+        WekidsException exception = assertThrows(WekidsException.class, () ->
+                accountTransactionService.transfer(transactionRequest)
+        );
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.BAAS_REQUEST_FAILED);
+        assertThat(exception.getMessage()).contains("BaaS 요청 실패: 네트워크 오류 또는 알 수 없는 문제 - 네트워크 오류");
+
+        verify(restTemplate, times(1)).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
     }
 
 }
