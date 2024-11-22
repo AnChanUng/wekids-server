@@ -9,6 +9,8 @@ import com.wekids.backend.exception.WekidsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,15 +43,26 @@ public class AccountServiceImpl implements AccountService{
         Map<String, String> uriVariables = new HashMap<>();
         uriVariables.put("baasMemberId", String.valueOf(baasMemberId));
         uriVariables.put("bankMemberId", String.valueOf(bankMemberId));
-        String url = "http://localhost:9090/api/v1/baas-members/{baasMemberId}/bank-members/{bankMemberId}/accounts";
-        ResponseEntity<BaasAccountResponse[]> response = restTemplate.getForEntity(url, BaasAccountResponse[].class, uriVariables);
-        BaasAccountResponse[] responseArray = response.getBody();
-        List<BaasAccountResponse> responseList = Arrays.asList(responseArray);
-        System.out.println(responseList);
 
-        return responseList.stream().map(
-                AccountResponse::new
-        ).collect(Collectors.toList());
+        String url = "http://localhost:9090/api/v1/baas-members/{baasMemberId}/bank-members/{bankMemberId}/accounts";
+
+
+        ResponseEntity<List<BaasAccountResponse>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<BaasAccountResponse>>() {}, // List
+                uriVariables
+        );
+
+        if (response == null || response.getBody() == null) {
+            throw new WekidsException(ErrorCode.INVALID_INPUT, "응답이 없습니다.");
+        }
+
+
+        return response.getBody().stream()
+                .map(AccountResponse::new)
+                .collect(Collectors.toList());
     }
 }
 
