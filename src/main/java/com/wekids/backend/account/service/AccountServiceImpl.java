@@ -65,5 +65,3 @@ public class AccountServiceImpl implements AccountService{
                 .collect(Collectors.toList());
     }
 }
-
-
