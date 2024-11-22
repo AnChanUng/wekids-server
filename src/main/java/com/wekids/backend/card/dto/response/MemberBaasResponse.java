@@ -1,10 +1,12 @@
 package com.wekids.backend.card.dto.response;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Setter
 @Builder
-public class MemberBaasRespone {
+@AllArgsConstructor
+@NoArgsConstructor
+public class MemberBaasResponse {
     private Long bankMemberId;
 }

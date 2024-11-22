@@ -9,7 +9,7 @@ import com.wekids.backend.card.dto.request.IssueRequest;
 import com.wekids.backend.card.dto.response.AccountBaasResponse;
 import com.wekids.backend.card.dto.response.CardBaasResponse;
 import com.wekids.backend.card.domain.Card;
-import com.wekids.backend.card.dto.response.MemberBaasRespone;
+import com.wekids.backend.card.dto.response.MemberBaasResponse;
 import com.wekids.backend.card.repository.CardRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
@@ -35,7 +35,7 @@ public class CardIssueServiceImpl implements CardIssueService {
     private final AccountRepository accountRepository;
     private final ChildRepository childRepository;
     private final ParentRepository parentRepository;
-    private Long memberId = 2L;
+    private Long memberId = 3L;
     private Long productId = 5L;
     private Long baasMemberId = 1L;
 
@@ -44,6 +44,7 @@ public class CardIssueServiceImpl implements CardIssueService {
     public void issueAccountAndCard(IssueRequest issueRequest) {
         Child child = getChild(memberId);
         Parent parent = getParentOfChild(memberId);
+        String accountPassword = parent.getSimplePassword();
 
         /**
          * BaaS에서 member가 존재하는지 조회한 후 없을 때만 생성해야 함
@@ -53,9 +54,11 @@ public class CardIssueServiceImpl implements CardIssueService {
 
         MemberBaasRequest memberBaasRequest = MemberBaasRequest.of(child.getName(), child.getBirthday(), issueRequest.getResidentRegistrationNumber(), baasMemberId);
         Long bankMemberId = createBankMember(memberBaasRequest);
-        child.saveBankMemberId(bankMemberId);
 
-        AccountBaasRequest accountBaasRequest = AccountBaasRequest.of(bankMemberId, parent.getSimplePassword(), productId);
+        child.saveBankMemberId(bankMemberId);
+        child.saveSimplePassword(accountPassword);
+
+        AccountBaasRequest accountBaasRequest = AccountBaasRequest.of(bankMemberId, accountPassword, productId);
         Account account = createAccount(accountBaasRequest, child);
 
         CardBaasRequest cardBaasRequest = CardBaasRequest.of(account.getAccountNumber(), child.getBankMemberId(), issueRequest.getPassword());
@@ -64,9 +67,11 @@ public class CardIssueServiceImpl implements CardIssueService {
 
     private Long createBankMember(MemberBaasRequest memberBaasRequest) {
         String bankMemberBaasUrl = BAAS_URL + "/api/v1/bank-members";
-        ResponseEntity<MemberBaasRespone> memberResponse = restTemplate.postForEntity(bankMemberBaasUrl, memberBaasRequest, MemberBaasRespone.class);
+        ResponseEntity<MemberBaasResponse> memberResponse = restTemplate.postForEntity(bankMemberBaasUrl, memberBaasRequest, MemberBaasResponse.class);
 
-        return memberResponse.getBody().getBankMemberId();
+        Long bankMemberId = memberResponse.getBody().getBankMemberId();
+
+        return bankMemberId;
     }
 
     private Account createAccount(AccountBaasRequest accountRequest, Child child) {
@@ -96,9 +101,9 @@ public class CardIssueServiceImpl implements CardIssueService {
     }
 
 
-    private Child getChild(Long bankMemberId) {
-        return childRepository.findChildByBankMemberId(bankMemberId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("은행 회원 아이디: %s", bankMemberId)));
+    private Child getChild(Long memberId) {
+        return childRepository.findById(memberId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("회원 아이디: %s", memberId)));
     }
 
     private Parent getParentOfChild(Long childId) {
