@@ -8,17 +8,20 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class AccountTransactionFixture {
+    private Long id = 1L;
+    private String title = "카카오페이"; // 더미 데이터 제목
+    private TransactionType type = TransactionType.DEPOSIT; // 기본 거래 유형
+    private BigDecimal amount = BigDecimal.valueOf(100.00); // 기본 거래 금액
+    private BigDecimal balance = BigDecimal.valueOf(1000.00); // 기본 잔액
+    private String sender = "Sender Name"; // 더미 송신자
+    private String receiver = "Receiver Name"; // 더미 수신자
+    private String memo; // 메모
+    private LocalDateTime createdAt = LocalDateTime.now(); // 생성 시간
+//    private Account account;
 
-    private Long id = 4L;
-    private String title = "박민수";
-    private String type = "WITHDRAWAL";
-    private BigDecimal amount = BigDecimal.valueOf(30000.00).setScale(2);
-    private BigDecimal balance = BigDecimal.valueOf(47000.00).setScale(2);
-    private String sender = "박민수";
-    private String receiver = "김철수";
-    private String memo = "친구에게 송금";
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private Account account;
+    public static AccountTransactionFixture builder() {
+        return new AccountTransactionFixture();
+    }
 
     public AccountTransactionFixture id(Long id) {
         this.id = id;
@@ -30,7 +33,7 @@ public class AccountTransactionFixture {
         return this;
     }
 
-    public AccountTransactionFixture type(String type) {
+    public AccountTransactionFixture type(TransactionType type) {
         this.type = type;
         return this;
     }
@@ -65,16 +68,16 @@ public class AccountTransactionFixture {
         return this;
     }
 
-    public AccountTransactionFixture account(Account account){
-        this.account = account;
-        return this;
-    }
+//    public AccountTransactionFixture account(Account account) {
+//        this.account = account;
+//        return this;
+//    }
 
-    public AccountTransaction build() {
+    public AccountTransaction build(Account account) {
         return AccountTransaction.builder()
                 .id(id)
                 .title(title)
-                .type(TransactionType.valueOf(type))
+                .type(type)
                 .amount(amount)
                 .balance(balance)
                 .sender(sender)
@@ -84,6 +87,4 @@ public class AccountTransactionFixture {
                 .account(account)
                 .build();
     }
-
-
 }

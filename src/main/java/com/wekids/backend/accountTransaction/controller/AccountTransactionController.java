@@ -1,10 +1,12 @@
 package com.wekids.backend.accountTransaction.controller;
 
+import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.dto.response.TransactionGetResponse;
 import com.wekids.backend.accountTransaction.service.AccountTransactionService;
 import com.wekids.backend.accountTransaction.dto.response.TransactionListResponse;
 import com.wekids.backend.accountTransaction.service.AccountTransactionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/transactions")
@@ -25,10 +29,16 @@ public class AccountTransactionController {
 
     private final AccountTransactionService accountTransactionService;
 
-    @GetMapping("/{transaction_id}")
-    public TransactionDetailSearchResponse getTransactionDetails(@PathVariable Long transaction_id) {
-        TransactionDetailSearchResponse result = accountTransactionService.findByTransactionId(transaction_id);
-        return result;
+    @PostMapping("/{transactionId}/memo")
+    public ResponseEntity<Void> saveMemo(@PathVariable("transactionId") Long transactionId, @RequestBody @Valid UpdateMemoRequest request) {
+        accountTransactionService.saveMemo(transactionId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{transactionId}")
+    public ResponseEntity<TransactionDetailSearchResponse> getTransactionDetails(@PathVariable("transactionId") Long transactionId) {
+        TransactionDetailSearchResponse result = accountTransactionService.findByTransactionId(transactionId);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{accountId}/transactions")
