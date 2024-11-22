@@ -53,4 +53,8 @@ public abstract class Member extends BaseTime {
 
     private Long bankMemberId;
 
+    public void saveBankMemberId(Long bankMemberId) {
+        this.bankMemberId = bankMemberId;
+    }
+
 }
