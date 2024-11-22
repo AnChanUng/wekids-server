@@ -57,27 +57,15 @@ class AccountTransactionServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // 아이 더미데이터 넣기
-        childMember = new ChildFixture().build();
-        parentMember = new ChildFixture()
-                .name("강현우")
-                .email("5678")
-                .build();
-        account = createAccount();
-        transaction = createAccountTransaction(account);
-    }
-
-    private Account createAccount() {
-        return AccountFixture.builder()
+        childMember = ChildFixture.builder().build().from();
+        parentMember = ChildFixture.builder().name("강현우").email("5678").build().from();
+        account = AccountFixture.builder()
                 .id(1L)
                 .accountNumber("123-456-789")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
                 .build().toAccount();
-    }
-
-    private AccountTransaction createAccountTransaction(Account account) {
-        return AccountTransactionFixture.builder().build(account);
+        transaction = AccountTransactionFixture.builder().build(account);
     }
 
     @Test
@@ -86,14 +74,10 @@ class AccountTransactionServiceImplTest {
 
         AccountTransaction transaction = AccountTransactionFixture.builder().build(account);
 
-
-        // Mocking the repository to return the transaction when queried by ID
         given(accountTransactionRepository.findById(transactionId)).willReturn(Optional.of(transaction));
 
-        // Call the service method to retrieve the transaction details
         TransactionDetailSearchResponse response = accountTransactionService.findByTransactionId(transactionId);
 
-        // Assertions to verify the response
         assertAll(
                 () -> verify(accountTransactionRepository, times(1)).findById(transactionId),
                 () -> assertThat(response.getTitle()).isEqualTo(transaction.getTitle()),
@@ -108,7 +92,6 @@ class AccountTransactionServiceImplTest {
     @Test
     void 메모를_업데이트한다() {
         Long transactionId = 1L;
-        // AccountTransactionFixture를 사용하여 거래 객체를 생성
         AccountTransaction transaction = AccountTransactionFixture.builder()
                 .id(transactionId)
                 .title("카카오페이")
@@ -135,34 +118,32 @@ class AccountTransactionServiceImplTest {
     @Test
     void 이체금액을_제대로_부모_자식의_계좌에_업데이트_한다() {
         // Given
-        String parentAccountNumber = "PARENT12345";
-        String childAccountNumber = "CHILD12345";
         BigDecimal transactionAmount = BigDecimal.valueOf(100.00);  //이체 금액
 
-        Account childAccount = Account.builder()
-                .accountNumber("CHILD1234567890")
-                .balance(BigDecimal.valueOf(250.00))
-                .state(AccountState.ACTIVE)
-                .member(childMember)
-                .build();
+        Account childAccount = AccountFixture.builder()
+                                    .accountNumber("CHILD1234567890")
+                                    .balance(BigDecimal.valueOf(250.00))
+                                    .state(AccountState.ACTIVE)
+                                    .member(childMember)
+                                    .build().toAccount();
 
-        Account parentAccount = Account.builder()
+        Account parentAccount = AccountFixture.builder()
                 .accountNumber("PARENT1234567890")
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build();
+                .build().toAccount();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
-                .parentAccountNumber(parentAccountNumber)
-                .childAccountNumber(childAccountNumber)
+                .parentAccountNumber(parentAccount.getAccountNumber())
+                .childAccountNumber(childAccount.getAccountNumber())
                 .amount(transactionAmount)
                 .sender(parentMember.getName())
                 .receiver(childMember.getName())
                 .build();
 
-        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
-        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+        when(accountRepository.findAccountByAccountNumber(parentAccount.getAccountNumber())).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
 
         // When
         accountTransactionService.transfer(transactionRequest);
@@ -174,12 +155,10 @@ class AccountTransactionServiceImplTest {
         AccountTransaction parentTransaction = transactionCaptor.getAllValues().get(0);
         AccountTransaction childTransaction = transactionCaptor.getAllValues().get(1);
 
-        // Validate parent transaction
         assertThat(parentTransaction.getType()).isEqualTo(TransactionType.WITHDRAWAL);
         assertThat(parentTransaction.getAmount()).isEqualTo(transactionAmount);
         assertThat(parentTransaction.getBalance()).isEqualTo(BigDecimal.valueOf(400.00)); // 500 - 100
 
-        // Validate child transaction
         assertThat(childTransaction.getType()).isEqualTo(TransactionType.DEPOSIT);
         assertThat(childTransaction.getAmount()).isEqualTo(transactionAmount);
         assertThat(childTransaction.getBalance()).isEqualTo(BigDecimal.valueOf(350.00)); // 200 + 100
@@ -188,34 +167,32 @@ class AccountTransactionServiceImplTest {
     @Test
     void 거래금액이_0이하일_때_예외가_발생한다() {
         // Given
-        String parentAccountNumber = "PARENT12345";
-        String childAccountNumber = "CHILD12345";
-        BigDecimal transactionAmount = BigDecimal.valueOf(0);  // 잘못된 이체 금액 (0)
+        BigDecimal transactionAmount = BigDecimal.valueOf(0);
 
-        Account childAccount = Account.builder()
-                .accountNumber(childAccountNumber)
+        Account childAccount = AccountFixture.builder()
+                .accountNumber("CHILD12345")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build();
+                .build().toAccount();
 
-        Account parentAccount = Account.builder()
-                .accountNumber(parentAccountNumber)
+        Account parentAccount = AccountFixture.builder()
+                .accountNumber("PARENT12345")
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build();
+                .build().toAccount();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
-                .parentAccountNumber(parentAccountNumber)
-                .childAccountNumber(childAccountNumber)
+                .parentAccountNumber(parentAccount.getAccountNumber())
+                .childAccountNumber(childAccount.getAccountNumber())
                 .amount(transactionAmount)
                 .sender(parentMember.getName())
                 .receiver(childMember.getName())
                 .build();
 
-        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
-        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+        when(accountRepository.findAccountByAccountNumber(parentAccount.getAccountNumber())).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
 
         // When & Then
         WekidsException exception = assertThrows(WekidsException.class, () ->
@@ -223,41 +200,38 @@ class AccountTransactionServiceImplTest {
         );
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_TRANSACTION_AMOUNT);
-        //예외처리를 할 때 나오는 메시지
         assertThat(exception.getMessage()).contains("거래하려는 금액");
     }
 
     @Test
     void 부모계좌_잔액이_부족할_때_예외가_발생한다() {
         // Given
-        String parentAccountNumber = "PARENT12345";
-        String childAccountNumber = "CHILD12345";
-        BigDecimal transactionAmount = BigDecimal.valueOf(600.00);  // 부모 계좌 잔액보다 큰 금액
+        BigDecimal transactionAmount = BigDecimal.valueOf(600.00);
 
-        Account childAccount = Account.builder()
-                .accountNumber(childAccountNumber)
+        Account childAccount = AccountFixture.builder()
+                .accountNumber("CHILD12345")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build();
+                .build().toAccount();
 
-        Account parentAccount = Account.builder()
-                .accountNumber(parentAccountNumber)
+        Account parentAccount = AccountFixture.builder()
+                .accountNumber("PARENT12345")
                 .balance(BigDecimal.valueOf(500.00))  // 부족한 잔액
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build();
+                .build().toAccount();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
-                .parentAccountNumber(parentAccountNumber)
-                .childAccountNumber(childAccountNumber)
+                .parentAccountNumber(parentAccount.getAccountNumber())
+                .childAccountNumber(childAccount.getAccountNumber())
                 .amount(transactionAmount)
                 .sender(parentMember.getName())
                 .receiver(childMember.getName())
                 .build();
 
-        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
-        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+        when(accountRepository.findAccountByAccountNumber(parentAccount.getAccountNumber())).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
 
         // When & Then
         WekidsException exception = assertThrows(WekidsException.class, () ->
@@ -271,34 +245,32 @@ class AccountTransactionServiceImplTest {
     @Test
     void 계좌가_비활성화되어_있을_때_예외가_발생한다() {
         // Given
-        String parentAccountNumber = "PARENT12345";
-        String childAccountNumber = "CHILD12345";
         BigDecimal transactionAmount = BigDecimal.valueOf(100.00);
 
-        Account childAccount = Account.builder()
-                .accountNumber(childAccountNumber)
+        Account childAccount = AccountFixture.builder()
+                .accountNumber("CHILD12345")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.INACTIVE)  // 비활성화된 계좌
                 .member(childMember)
-                .build();
+                .build().toAccount();
 
-        Account parentAccount = Account.builder()
-                .accountNumber(parentAccountNumber)
+        Account parentAccount = AccountFixture.builder()
+                .accountNumber("PARENT12345")
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build();
+                .build().toAccount();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
-                .parentAccountNumber(parentAccountNumber)
-                .childAccountNumber(childAccountNumber)
+                .parentAccountNumber(parentAccount.getAccountNumber())
+                .childAccountNumber(childAccount.getAccountNumber())
                 .amount(transactionAmount)
                 .sender(parentMember.getName())
                 .receiver(childMember.getName())
                 .build();
 
-        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
-        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+        when(accountRepository.findAccountByAccountNumber(parentAccount.getAccountNumber())).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
 
         // When & Then
         WekidsException exception = assertThrows(WekidsException.class, () ->
@@ -315,19 +287,19 @@ class AccountTransactionServiceImplTest {
         String accountNumber = "PARENT12345";  // 동일한 계좌 번호
         BigDecimal transactionAmount = BigDecimal.valueOf(100.00);
 
-        Account childAccount = Account.builder()
+        Account childAccount =  AccountFixture.builder()
                 .accountNumber(accountNumber)  // 동일한 계좌 번호
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build();
+                .build().toAccount();
 
-        Account parentAccount = Account.builder()
+        Account parentAccount = AccountFixture.builder()
                 .accountNumber(accountNumber)  // 동일한 계좌 번호
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build();
+                .build().toAccount();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(accountNumber)
@@ -353,19 +325,19 @@ class AccountTransactionServiceImplTest {
     void 이체가_성공적으로_업데이트_된_경우() {
         BigDecimal transactionAmount = BigDecimal.valueOf(100.00);  //이체 금액
 
-        Account childAccount = Account.builder()
+        Account childAccount = AccountFixture.builder()
                 .accountNumber("CHILD1234567890")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build();
+                .build().toAccount();
 
-        Account parentAccount = Account.builder()
+        Account parentAccount = AccountFixture.builder()
                 .accountNumber("PARENT1234567890")
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build();
+                .build().toAccount();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(parentAccount.getAccountNumber())
@@ -375,15 +347,11 @@ class AccountTransactionServiceImplTest {
                 .receiver(childMember.getName())
                 .build();
 
-        // Arrange
         when(accountRepository.findAccountByAccountNumber("PARENT1234567890")).thenReturn(Optional.of(parentAccount));
         when(accountRepository.findAccountByAccountNumber("CHILD1234567890")).thenReturn(Optional.of(childAccount));
 
-        // Act
         accountTransactionService.transfer(transactionRequest);
 
-        // Assert
-//        (new BigDecimal("400.00"), parentAccount.getBalance()); // 부모 계좌 잔액 확인
         assertEquals(new BigDecimal("350.0"), childAccount.getBalance()); // 자식 계좌 잔액 확인
         assertEquals(new BigDecimal("400.0"), parentAccount.getBalance());
 
@@ -394,34 +362,32 @@ class AccountTransactionServiceImplTest {
     @Test
     void BaaS_이체요청_성공() {
         // Given
-        String parentAccountNumber = "PARENT123456";
-        String childAccountNumber = "CHILD123456";
         BigDecimal transactionAmount = BigDecimal.valueOf(100);
 
-        Account parentAccount = Account.builder()
-                .accountNumber(parentAccountNumber)
+        Account parentAccount = AccountFixture.builder()
+                .accountNumber("PARENT123456")
                 .balance(BigDecimal.valueOf(500))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build();
+                .build().toAccount();
 
-        Account childAccount = Account.builder()
-                .accountNumber(childAccountNumber)
+        Account childAccount = AccountFixture.builder()
+                .accountNumber("CHILD123456")
                 .balance(BigDecimal.valueOf(200))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build();
+                .build().toAccount();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
-                .parentAccountNumber(parentAccountNumber)
-                .childAccountNumber(childAccountNumber)
+                .parentAccountNumber(parentAccount.getAccountNumber())
+                .childAccountNumber(childAccount.getAccountNumber())
                 .amount(transactionAmount)
                 .sender(parentMember.getName())
                 .receiver(childMember.getName())
                 .build();
 
-        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
-        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+        when(accountRepository.findAccountByAccountNumber(parentAccount.getAccountNumber())).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
         when(restTemplate.postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class)))
                 .thenReturn(null);
 
@@ -435,34 +401,32 @@ class AccountTransactionServiceImplTest {
     @Test
     void BaaS_이체요청_클라이언트_오류() {
         // Given
-        String parentAccountNumber = "PARENT123456";
-        String childAccountNumber = "CHILD123456";
         BigDecimal transactionAmount = BigDecimal.valueOf(100);
 
-        Account parentAccount = Account.builder()
-                .accountNumber(parentAccountNumber)
+        Account parentAccount = AccountFixture.builder()
+                .accountNumber("PARENT123456")
                 .balance(BigDecimal.valueOf(500))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build();
+                .build().toAccount();
 
-        Account childAccount = Account.builder()
-                .accountNumber(childAccountNumber)
+        Account childAccount = AccountFixture.builder()
+                .accountNumber("CHILD123456")
                 .balance(BigDecimal.valueOf(200))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build();
+                .build().toAccount();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
-                .parentAccountNumber(parentAccountNumber)
-                .childAccountNumber(childAccountNumber)
+                .parentAccountNumber(parentAccount.getAccountNumber())
+                .childAccountNumber(childAccount.getAccountNumber())
                 .amount(transactionAmount)
                 .sender(parentMember.getName())
                 .receiver(childMember.getName())
                 .build();
 
-        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
-        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+        when(accountRepository.findAccountByAccountNumber(parentAccount.getAccountNumber())).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
 
         doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "잘못된 요청"))
                 .when(restTemplate).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
@@ -481,34 +445,32 @@ class AccountTransactionServiceImplTest {
     @Test
     void BaaS_이체요청_네트워크_오류() {
         // Given
-        String parentAccountNumber = "PARENT123456";
-        String childAccountNumber = "CHILD123456";
         BigDecimal transactionAmount = BigDecimal.valueOf(100);
 
-        Account parentAccount = Account.builder()
-                .accountNumber(parentAccountNumber)
+        Account parentAccount = AccountFixture.builder()
+                .accountNumber("PARENT123456")
                 .balance(BigDecimal.valueOf(500))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build();
+                .build().toAccount();
 
-        Account childAccount = Account.builder()
-                .accountNumber(childAccountNumber)
+        Account childAccount = AccountFixture.builder()
+                .accountNumber("CHILD123456")
                 .balance(BigDecimal.valueOf(200))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build();
+                .build().toAccount();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
-                .parentAccountNumber(parentAccountNumber)
-                .childAccountNumber(childAccountNumber)
+                .parentAccountNumber(parentAccount.getAccountNumber())
+                .childAccountNumber(childAccount.getAccountNumber())
                 .amount(transactionAmount)
                 .sender(parentMember.getName())
                 .receiver(childMember.getName())
                 .build();
 
-        when(accountRepository.findAccountByAccountNumber(parentAccountNumber)).thenReturn(Optional.of(parentAccount));
-        when(accountRepository.findAccountByAccountNumber(childAccountNumber)).thenReturn(Optional.of(childAccount));
+        when(accountRepository.findAccountByAccountNumber(parentAccount.getAccountNumber())).thenReturn(Optional.of(parentAccount));
+        when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
 
         doThrow(new RestClientException("네트워크 오류"))
                 .when(restTemplate).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
