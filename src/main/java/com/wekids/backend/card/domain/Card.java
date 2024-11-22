@@ -52,7 +52,7 @@ public class Card extends BaseTime {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public static Card createFromResponse( CardBaasResponse cardResponse, CardBaasRequest cardRequest, Account account, String cardName) {
+    public static Card of(CardBaasResponse cardResponse, String cardPassword, Account account, String cardName) {
         return Card.builder()
                 .cardNumber(cardResponse.getCardNumber())
                 .validThru(cardResponse.getValidThru())
@@ -60,7 +60,7 @@ public class Card extends BaseTime {
                 .memberName(cardResponse.getBankMemberName())
                 .cardName(cardName)
                 .newDate(cardResponse.getNewDate())
-                .password(cardRequest.getPassword())
+                .password(cardPassword)
                 .account(account)
                 .state(CardState.ACTIVE)
                 .build();

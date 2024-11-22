@@ -39,9 +39,9 @@ public class Account extends BaseTime {
     @ToString.Exclude
     private Member member;
 
-    public static Account createFromResponse(AccountBaasResponse accountResponse, Member member) {
+    public static Account of(String accountNumber, Member member) {
         return Account.builder()
-                .accountNumber(accountResponse.getAccountNumber())
+                .accountNumber(accountNumber)
                 .balance(BigDecimal.ZERO)
                 .state(AccountState.ACTIVE)
                 .member(member)
