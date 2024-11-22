@@ -5,6 +5,4 @@ import com.wekids.backend.account.dto.response.AccountResponse;
 import java.util.List;
 
 public interface AccountService {
-
-    List<AccountResponse> getAccount();
 }
