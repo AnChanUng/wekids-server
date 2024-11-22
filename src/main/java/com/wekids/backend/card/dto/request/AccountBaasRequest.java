@@ -13,11 +13,11 @@ public class AccountBaasRequest {
     private String password;
 
 
-    public static AccountBaasRequest createFromMemberAndParent(Member member, Parent parent, Long productId) {
+    public static AccountBaasRequest of(Long bankMemberId, String accountPassword, Long productId) {
         return AccountBaasRequest.builder()
-                .bankMemberId(member.getBankMemberId())
+                .bankMemberId(bankMemberId)
                 .productId(productId)
-                .password(parent.getSimplePassword())
+                .password(accountPassword)
                 .build();
     }
 }

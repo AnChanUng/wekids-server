@@ -12,11 +12,11 @@ public class CardBaasRequest {
     private Long bankMemberId;
     private String accountNumber;
 
-    public static CardBaasRequest createFromAccountAndMember(Account account, Member member, PasswordRequest passwordRequest) {
+    public static CardBaasRequest of(String accountNumber, Long bankMemberId, String cardPassword) {
         return CardBaasRequest.builder()
-                .accountNumber(account.getAccountNumber())
-                .bankMemberId(member.getBankMemberId())
-                .password(passwordRequest.getPassword())
+                .accountNumber(accountNumber)
+                .bankMemberId(bankMemberId)
+                .password(cardPassword)
                 .build();
     }
 }
