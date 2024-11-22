@@ -1,6 +1,5 @@
 package com.wekids.backend.account.service;
 
-import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.dto.response.AccountResponse;
 import com.wekids.backend.account.dto.response.BaasAccountResponse;
 import com.wekids.backend.account.repository.AccountRepository;
@@ -8,7 +7,6 @@ import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,14 +23,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AccountServiceImpl implements AccountService{
 
-    @Autowired
-    private AccountRepository accountRepository;
 
-    private final RestTemplate restTemplate;
+    private final AccountRepository accountRepository;
 
-    public AccountServiceImpl() {
-        this.restTemplate = new RestTemplate();
-    }
+    private final RestTemplate restTemplate = new RestTemplate();
+
 
     @Override
     public List<AccountResponse> getAccount() {
@@ -54,6 +48,8 @@ public class AccountServiceImpl implements AccountService{
                 new ParameterizedTypeReference<List<BaasAccountResponse>>() {}, // List
                 uriVariables
         );
+
+
 
         if (response == null || response.getBody() == null) {
             throw new WekidsException(ErrorCode.INVALID_INPUT, "응답이 없습니다.");
