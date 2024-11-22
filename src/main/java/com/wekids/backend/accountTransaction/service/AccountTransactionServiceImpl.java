@@ -5,6 +5,7 @@ import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
+import com.wekids.backend.accountTransaction.dto.request.BaaSTransferRequest;
 import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
@@ -13,8 +14,14 @@ import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 
@@ -23,8 +30,11 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 @Slf4j
 public class AccountTransactionServiceImpl implements AccountTransactionService {
+    @Value("${baas.api.baas-url}")
+    private String baasURL;
     private final AccountTransactionRepository accountTransactionRepository;
     private final AccountRepository accountRepository;
+    private final RestTemplate template;
 
     @Override
     public TransactionDetailSearchResponse findByTransactionId(Long transactionId) {
@@ -51,11 +61,31 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
         validateTransaction(transactionRequest, parentAccount, childAccount);
 
+        transferBaaS(transactionRequest);
+
         AccountTransaction parentTransaction = createParentAccountTransaction(transactionRequest, parentAccount);
         AccountTransaction childTransaction = createChildAccountTransaction(transactionRequest, childAccount);
 
         accountTransactionRepository.save(parentTransaction);
         accountTransactionRepository.save(childTransaction);
+    }
+
+    private void transferBaaS(TransactionRequest transactionRequest) {
+        BaaSTransferRequest request = BaaSTransferRequest.of(
+                transactionRequest.getParentAccountNumber(),
+                transactionRequest.getChildAccountNumber(),
+                transactionRequest.getAmount()
+        );
+
+        try {
+            template.postForLocation(baasURL + "/api/v1/transactions", request);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            String errorMessage = "BaaS 요청 실패: " + e.getStatusCode() + " - " + e.getMessage();
+            throw new WekidsException(ErrorCode.BAAS_REQUEST_FAILED, errorMessage);
+        } catch (RestClientException e) {
+            String errorMessage = "BaaS 요청 실패: 네트워크 오류 또는 알 수 없는 문제 - " + e.getMessage();
+            throw new WekidsException(ErrorCode.BAAS_REQUEST_FAILED, errorMessage);
+        }
     }
 
 
