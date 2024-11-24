@@ -85,7 +85,7 @@ public class CardIssueServiceImpl implements CardIssueService {
     }
 
     private Card createCard(CardBaasRequest cardRequest, Account account) {
-        String cardBaasUrl = "http://localhost:8081/api/v1/cards";
+        String cardBaasUrl = BAAS_URL + "/api/v1/cards";
 
         ResponseEntity<CardBaasResponse> cardResponse = restTemplate.postForEntity(cardBaasUrl, cardRequest, CardBaasResponse.class);
 
