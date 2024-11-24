@@ -25,7 +25,7 @@ public class DesignController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Void> createDesign(@RequestBody DesignCreateRequest request) {
         designService.createDesign(DEFAULT_MEMBER_ID, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();

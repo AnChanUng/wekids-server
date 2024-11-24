@@ -1,6 +1,7 @@
 package com.wekids.backend.support.fixture;
 
 import com.wekids.backend.member.domain.Child;
+import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.domain.enums.CardState;
 import com.wekids.backend.member.domain.enums.MemberState;
 import lombok.Builder;
@@ -9,10 +10,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
-public class ChildFixture {
+public class ParentFixture {
     private Long id;
     @Builder.Default
-    private String name = "조예은"; // 더미 데이터 이름
+    private String name = "최윤정"; // 더미 데이터 이름
     @Builder.Default
     private String email = "1234"; // 더미 데이터 이메일
     @Builder.Default
@@ -30,8 +31,8 @@ public class ChildFixture {
     private CardState cardState = CardState.NONE; // 카드 상태
     private Long bankMemberId; // 은행 회원 ID는 null로 설정
 
-    public Child child() {
-        return Child.builder()
+    public Parent parent() {
+        return Parent.builder()
                 .id(id)
                 .name(name)
                 .email(email)
@@ -46,4 +47,3 @@ public class ChildFixture {
                 .build();
     }
 }
-
