@@ -1,17 +1,18 @@
 package com.wekids.backend.accountTransaction.service;
 
+import com.wekids.backend.accountTransaction.dto.enums.TransactionRequestType;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 
-import com.wekids.backend.accountTransaction.dto.response.TransactionGetResponse;
-import com.wekids.backend.accountTransaction.dto.response.TransactionListResponse;
+import com.wekids.backend.accountTransaction.dto.response.BaasTransactionResponse;
+import com.wekids.backend.accountTransaction.dto.response.TransactionHistoryResponse;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 public interface AccountTransactionService {
     TransactionDetailSearchResponse findByTransactionId(Long transactionId);
-    Slice<TransactionGetResponse> showTransactionList(long accountid, LocalDateTime start, LocalDateTime end, String type, int page, int size);
     void saveMemo(Long transactionId, UpdateMemoRequest request);
+    TransactionHistoryResponse showTransactionList(Long accountId, LocalDate start, LocalDate end, TransactionRequestType type, Pageable pageable);
 }
