@@ -11,10 +11,13 @@ import com.wekids.backend.card.dto.response.CardBaasResponse;
 import com.wekids.backend.card.domain.Card;
 import com.wekids.backend.card.dto.response.MemberBaasResponse;
 import com.wekids.backend.card.repository.CardRepository;
+import com.wekids.backend.design.domain.Design;
+import com.wekids.backend.design.repository.DesignRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
+import com.wekids.backend.member.domain.enums.CardState;
 import com.wekids.backend.member.repository.ChildRepository;
 import com.wekids.backend.member.repository.ParentRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,7 @@ public class CardIssueServiceImpl implements CardIssueService {
     private final AccountRepository accountRepository;
     private final ChildRepository childRepository;
     private final ParentRepository parentRepository;
+    private final DesignRepository designRepository;
     private Long memberId = 3L;
     private Long productId = 5L;
     private Long baasMemberId = 1L;
@@ -43,6 +47,7 @@ public class CardIssueServiceImpl implements CardIssueService {
     @Transactional
     public void issueAccountAndCard(IssueRequest issueRequest) {
         Child child = getChild(memberId);
+        Design design = getDesign(memberId);
         Parent parent = getParentOfChild(memberId);
         String accountPassword = parent.getSimplePassword();
 
@@ -60,9 +65,22 @@ public class CardIssueServiceImpl implements CardIssueService {
 
         AccountBaasRequest accountBaasRequest = AccountBaasRequest.of(bankMemberId, accountPassword, productId);
         Account account = createAccount(accountBaasRequest, child);
+        design.updateAccount(account);
 
         CardBaasRequest cardBaasRequest = CardBaasRequest.of(account.getAccountNumber(), child.getBankMemberId(), issueRequest.getPassword());
-        createCard(cardBaasRequest, account);
+        Card card = createCard(cardBaasRequest, account);
+        design.updateCard(card);
+
+        validateCardState(child);
+        child.updateCardState(CardState.CREATED);
+    }
+
+    private void validateCardState(Child child) {
+        if(!child.getCardState().equals(CardState.READY)) throw new WekidsException(ErrorCode.INVALID_CARD_STATE, "현재 카드 상태: " + child.getCardState() + "변경하려는 카드 상태: " + CardState.CREATED);
+    }
+
+    private Design getDesign(Long memberId) {
+        return designRepository.findById(memberId).orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "회원 아이디: " + memberId));
     }
 
     private Long createBankMember(MemberBaasRequest memberBaasRequest) {
