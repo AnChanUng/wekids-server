@@ -77,8 +77,9 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         if(pageable.getPageNumber() == 0){
             LocalDateTime mostRecentDateTime = accountTransactionRepository
                     .findMostRecentTransactionDateTime(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX)).orElse(start.atStartOfDay());
+
             BaasTransactionRequest request = BaasTransactionRequest.of(
-                    account.getAccountNumber(), mostRecentDateTime.toLocalDate(), end, type.toString(), pageable);
+                    account.getAccountNumber(), mostRecentDateTime.plusSeconds(1), end.atTime(LocalTime.MAX), type.toString(), pageable);
 
             List<BaasTransactionResponse> baasResponse = findBaasTransactionResponseByBaas(accountId, request);
 
