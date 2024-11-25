@@ -39,7 +39,7 @@ public class ParentServiceImplTest {
     @Test
     void 부모_자식_리스트를_조회한다() {
         // Parent 및 Child 객체 생성
-        Parent parent = ParentFixture.builder().id(1L).build().from();
+        Parent parent = ParentFixture.builder().id(1L).build().parent();
         Child child1 = ChildFixture.builder().id(2L).build().from();
         Child child2 = ChildFixture.builder().id(3L).build().from();
         List<Child> children = List.of(child1, child2);
@@ -94,7 +94,7 @@ public class ParentServiceImplTest {
     @Test
     void 부모_계좌만_존재하고_자식이_없다() {
         // Parent 객체 생성
-        Parent parent = ParentFixture.builder().id(1L).build().from();
+        Parent parent = ParentFixture.builder().id(1L).build().parent();
 
         // Account 객체 생성
         Account parentAccount = AccountFixture.builder().id(1L).member(parent).build().from();
@@ -135,7 +135,7 @@ public class ParentServiceImplTest {
     @Test
     void 자식_계좌나_디자인_정보가_없는_경우() {
         // Parent 및 Child 객체 생성
-        Parent parent = ParentFixture.builder().id(1L).build().from();
+        Parent parent = ParentFixture.builder().id(1L).build().parent();
         Child child = ChildFixture.builder().id(2L).build().from();
         List<Child> children = List.of(child);
 

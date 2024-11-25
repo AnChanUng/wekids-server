@@ -4,7 +4,7 @@ import com.wekids.backend.account.dto.response.BaasAccountResponse;
 import com.wekids.backend.baas.dto.response.AllAccountResponse;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Member;
-import com.wekids.backend.member.repository.MemberRepository;
+import com.wekids.backend.member.repository.ParentRepository;
 import com.wekids.backend.support.fixture.ParentFixture;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class BassServiceTest {
-    @Mock private MemberRepository memberRepository;
+    @Mock private ParentRepository parentRepository;
     @Mock private RestTemplate restTemplate;
     @InjectMocks private BassServiceImpl bassService;
     @Value("${baas.api.baas-url}")
@@ -50,7 +50,7 @@ class BassServiceTest {
                 .map(AllAccountResponse::new)
                 .toList();
 
-        given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
+        given(parentRepository.findById(member.getId())).willReturn(Optional.of(member));
         given(restTemplate.exchange(
                 eq(baasURL + "/api/v1/baas-members/{baasMemberId}/bank-members/{bankMemberId}/accounts"),
                 eq(HttpMethod.GET),
@@ -89,7 +89,7 @@ class BassServiceTest {
         Long memberId = 1L;
 
         // Mock: 멤버가 존재하지 않음
-        given(memberRepository.findById(memberId)).willReturn(Optional.empty());
+        given(parentRepository.findById(memberId)).willReturn(Optional.empty());
 
         // WHEN & THEN
         Exception exception = org.junit.jupiter.api.Assertions.assertThrows(
@@ -97,6 +97,6 @@ class BassServiceTest {
         );
 
         assertThat(exception.getMessage()).contains(memberId + "가 없습니다.");
-        verify(memberRepository).findById(memberId);
+        verify(parentRepository).findById(memberId);
     }
 }
