@@ -2,14 +2,14 @@ package com.wekids.backend.card.service;
 
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
+import com.wekids.backend.baas.dto.request.AccountCreateRequest;
+import com.wekids.backend.baas.dto.request.BankMemberCreateRequest;
+import com.wekids.backend.baas.dto.request.CardCreateRequest;
+import com.wekids.backend.baas.dto.response.AccountCreateResponse;
+import com.wekids.backend.baas.dto.response.BankMemberCreateResponse;
+import com.wekids.backend.baas.dto.response.CardCreateResponse;
 import com.wekids.backend.card.domain.Card;
-import com.wekids.backend.card.dto.request.AccountBaasRequest;
-import com.wekids.backend.card.dto.request.CardBaasRequest;
 import com.wekids.backend.card.dto.request.IssueRequest;
-import com.wekids.backend.card.dto.request.MemberBaasRequest;
-import com.wekids.backend.card.dto.response.AccountBaasResponse;
-import com.wekids.backend.card.dto.response.CardBaasResponse;
-import com.wekids.backend.card.dto.response.MemberBaasResponse;
 import com.wekids.backend.card.repository.CardRepository;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
@@ -75,27 +75,27 @@ class CardIssueServiceTest {
         Long bankMemberId = 1L;
         String accountPassword = parent.getSimplePassword();
 
-        MemberBaasResponse memberBaasResponse = MemberBaasResponse.builder().bankMemberId(bankMemberId).build();
-        when(restTemplate.postForEntity(eq(bankMemberBaasUrl), any(MemberBaasRequest.class), eq(MemberBaasResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(memberBaasResponse));
+        BankMemberCreateResponse memberBaasResponse = BankMemberCreateResponse.builder().bankMemberId(bankMemberId).build();
+        when(restTemplate.postForEntity(eq(bankMemberBaasUrl), any(BankMemberCreateRequest.class), eq(BankMemberCreateResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(memberBaasResponse));
 
         String accountBaasUrl = BAAS_URL + "/api/v1/accounts";
         Account account = AccountFixture.builder().build().account();
 
-        AccountBaasResponse accountBaasResponse = AccountBaasResponse.builder().accountNumber(account.getAccountNumber()).type("CHECKING").expireDate(LocalDateTime.MAX).build();
-        when(restTemplate.postForEntity(eq(accountBaasUrl), any(AccountBaasRequest.class), eq(AccountBaasResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(accountBaasResponse));
+        AccountCreateResponse accountBaasResponse = AccountCreateResponse.builder().accountNumber(account.getAccountNumber()).type("CHECKING").expireDate(LocalDateTime.MAX).build();
+        when(restTemplate.postForEntity(eq(accountBaasUrl), any(AccountCreateRequest.class), eq(AccountCreateResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(accountBaasResponse));
         when(accountRepository.save(any(Account.class))).thenReturn(account);
 
         String cardBaasUrl = BAAS_URL + "/api/v1/cards";
         Card card = CardFixture.builder().build().card();
 
-        CardBaasResponse cardBaasResponse = CardBaasResponse.builder()
+        CardCreateResponse cardBaasResponse = CardCreateResponse.builder()
                 .cardNumber(card.getCardNumber())
                 .validThru(card.getValidThru())
                 .cvc(card.getCvc())
                 .newDate(card.getNewDate())
                 .bankMemberName(child.getName())
                 .build();
-        when(restTemplate.postForEntity(eq(cardBaasUrl), any(CardBaasRequest.class), eq(CardBaasResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(cardBaasResponse));
+        when(restTemplate.postForEntity(eq(cardBaasUrl), any(CardCreateRequest.class), eq(CardCreateResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(cardBaasResponse));
         when(cardRepository.save(any(Card.class))).thenReturn(card);
 
         cardIssueService.issueAccountAndCard(issueRequest);
@@ -111,10 +111,10 @@ class CardIssueServiceTest {
 
         verify(childRepository, times(1)).findById(memberId);
         verify(parentRepository, times(1)).findParentByChildId(memberId);
-        verify(restTemplate, times(1)).postForEntity(eq(bankMemberBaasUrl), any(MemberBaasRequest.class), eq(MemberBaasResponse.class));
-        verify(restTemplate, times(1)).postForEntity(eq(accountBaasUrl), any(AccountBaasRequest.class), eq(AccountBaasResponse.class));
+        verify(restTemplate, times(1)).postForEntity(eq(bankMemberBaasUrl), any(BankMemberCreateRequest.class), eq(BankMemberCreateResponse.class));
+        verify(restTemplate, times(1)).postForEntity(eq(accountBaasUrl), any(AccountCreateRequest.class), eq(AccountCreateResponse.class));
         verify(accountRepository, times(1)).save(any(Account.class));
-        verify(restTemplate, times(1)).postForEntity(eq(cardBaasUrl), any(CardBaasRequest.class), eq(CardBaasResponse.class));
+        verify(restTemplate, times(1)).postForEntity(eq(cardBaasUrl), any(CardCreateRequest.class), eq(CardCreateResponse.class));
         verify(cardRepository, times(1)).save(any(Card.class));
     }
 }

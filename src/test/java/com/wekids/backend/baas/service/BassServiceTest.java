@@ -3,7 +3,6 @@ package com.wekids.backend.baas.service;
 import com.wekids.backend.account.dto.response.BaasAccountResponse;
 import com.wekids.backend.baas.dto.response.AllAccountResponse;
 import com.wekids.backend.exception.WekidsException;
-import com.wekids.backend.member.domain.Member;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.repository.ParentRepository;
 import com.wekids.backend.support.fixture.ParentFixture;
@@ -31,7 +30,7 @@ import static org.mockito.Mockito.verify;
 class BassServiceTest {
     @Mock private ParentRepository parentRepository;
     @Mock private RestTemplate restTemplate;
-    @InjectMocks private BassServiceImpl bassService;
+    @InjectMocks private BaasServiceImpl bassService;
     @Value("${baas.api.baas-url}")
     private String baasURL;
     @Value("${baas.id.baas-member-id}")
