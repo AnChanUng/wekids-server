@@ -1,13 +1,14 @@
 package com.wekids.backend.design.service;
 
 import com.wekids.backend.design.domain.Design;
-import com.wekids.backend.design.domain.enums.CharacterType;
-import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.design.dto.request.DesignCreateRequest;
 import com.wekids.backend.design.dto.response.DesignResponse;
 import com.wekids.backend.design.repository.DesignRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
+import com.wekids.backend.member.domain.Child;
+import com.wekids.backend.member.domain.enums.CardState;
+import com.wekids.backend.member.repository.ChildRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DesignServiceImpl implements DesignService {
 
     private final DesignRepository designRepository;
+    private final ChildRepository childRepository;
 
     @Override
     public DesignResponse showDesign(Long memberId) {
@@ -30,8 +32,22 @@ public class DesignServiceImpl implements DesignService {
     @Override
     @Transactional
     public void createDesign(Long memberId, DesignCreateRequest request) {
-        Design newDesign = Design.create(memberId, request.getColor(), request.getCharacter());
+        Child child = getChild(memberId);
+
+        validateCardState(child);
+        child.updateCardState(CardState.READY);
+
+        Design newDesign = Design.create(child, request.getColor(), request.getCharacter());
+
         designRepository.save(newDesign);
+    }
+
+    private static void validateCardState(Child child) {
+        if(!child.getCardState().equals(CardState.NONE)) throw new WekidsException(ErrorCode.INVALID_CARD_STATE, "현재 카드 상태: " + child.getCardState() + "변경하려는 카드 상태: " + CardState.READY);
+    }
+
+    private Child getChild(Long memberId) {
+        return childRepository.findById(memberId).orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "아이디: " + memberId));
     }
 
     private Design findDesignByMemberId(Long memberId) {
