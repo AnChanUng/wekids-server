@@ -16,17 +16,28 @@ import java.util.List;
 @NoArgsConstructor
 public class ErrorResponse {
 
-    private int status;
+    private String errorCode;
     private String message;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String details;
     private LocalDateTime timestamp;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<ValidErrorResponse> errors;
 
+
+    public static ErrorResponse of(String errorStatus, String message) {
+        return ErrorResponse.builder()
+                .errorCode(errorStatus)
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+
     public static ErrorResponse of(ErrorCode errorCode, String details) {
         return ErrorResponse.builder()
-                .status(errorCode.getStatus().value())
+                .errorCode(errorCode.toString())
                 .message(errorCode.getMessage())
                 .details(details)
                 .timestamp(LocalDateTime.now())
@@ -35,7 +46,7 @@ public class ErrorResponse {
 
     public static ErrorResponse of(List<FieldError> errors, ErrorCode errorCode) {
         return ErrorResponse.builder()
-                .status(errorCode.getStatus().value())
+                .errorCode(errorCode.toString())
                 .message(errorCode.getMessage())
                 .timestamp(LocalDateTime.now())
                 .errors(errors.stream().map(ValidErrorResponse::from).toList())
