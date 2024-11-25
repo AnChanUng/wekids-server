@@ -1,34 +1,199 @@
 package com.wekids.backend.accountTransaction.service;
 
+import com.wekids.backend.account.domain.Account;
+import com.wekids.backend.account.domain.enums.AccountState;
+import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
+import com.wekids.backend.accountTransaction.dto.enums.TransactionRequestType;
+import com.wekids.backend.accountTransaction.dto.request.BaasTransactionRequest;
+import com.wekids.backend.accountTransaction.dto.response.*;
+import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
+import com.wekids.backend.accountTransaction.dto.request.BaaSTransferRequest;
+import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
+import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
+import com.wekids.backend.baas.aop.BassLogAndHandleException;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class AccountTransactionServiceImpl implements AccountTransactionService {
-
+    @Value("${baas.api.baas-url}")
+    private String baasURL;
     private final AccountTransactionRepository accountTransactionRepository;
+    private final AccountRepository accountRepository;
+    private final RestTemplate template;
 
 
     @Override
-    public TransactionDetailSearchResponse findByTransactionId(Long transactionId) {
-
-        AccountTransaction accountTransaction = accountTransactionById(transactionId);
+    public TransactionDetailSearchResponse showTransaction(Long transactionId) {
+        AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "transaction id값");
         return TransactionDetailSearchResponse.from(accountTransaction);
 
     }
 
-    private AccountTransaction accountTransactionById(Long transactionId) {
+    @Override
+    @Transactional
+    public void updateMemo(Long transactionId, UpdateMemoRequest request) {
+        AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "memo업데이트를 하는 거래내역id");
+        accountTransaction.updateMemo(request.getMemo());
+    }
+
+    @Override
+    @Transactional
+    @BassLogAndHandleException
+    public void transfer(TransactionRequest transactionRequest) {
+        Account parentAccount = findAccountByAccountNumber(transactionRequest.getParentAccountNumber());
+        Account childAccount = findAccountByAccountNumber(transactionRequest.getChildAccountNumber());
+
+        log.info("부모계좌번호 " + parentAccount);
+        log.info("자식계좌번호 " + childAccount);
+
+        validateTransaction(transactionRequest, parentAccount, childAccount);
+
+        transferBaaS(transactionRequest);
+
+        AccountTransaction parentTransaction = createParentAccountTransaction(transactionRequest, parentAccount);
+        AccountTransaction childTransaction = createChildAccountTransaction(transactionRequest, childAccount);
+
+        accountTransactionRepository.save(parentTransaction);
+        accountTransactionRepository.save(childTransaction);
+    }
+
+    private void transferBaaS(TransactionRequest transactionRequest) {
+        BaaSTransferRequest request = BaaSTransferRequest.of(
+                transactionRequest.getParentAccountNumber(),
+                transactionRequest.getChildAccountNumber(),
+                transactionRequest.getAmount()
+        );
+
+        template.postForLocation(baasURL + "/api/v1/transactions", request);
+    }
+
+
+    private Account findAccountByAccountNumber(String accountNumber) {
+        log.debug("Searching for account with account number: {}", accountNumber);  // 로그 추가
+        return accountRepository.findAccountByAccountNumber(accountNumber)
+                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND,
+                        "회원 계좌번호: " + accountNumber));
+    }
+
+    private AccountTransaction createParentAccountTransaction(TransactionRequest request, Account parentAccount) {
+        BigDecimal newBalance = parentAccount.getBalance().subtract(request.getAmount());
+        parentAccount.updateAccountAmount(newBalance);
+        return AccountTransaction.createTransaction(request, TransactionType.WITHDRAWAL, newBalance, parentAccount);
+    }
+
+    private AccountTransaction createChildAccountTransaction(TransactionRequest request, Account childAccount) {
+        BigDecimal newBalance = childAccount.getBalance().add(request.getAmount());
+        childAccount.updateAccountAmount(newBalance);
+        return AccountTransaction.createTransaction(request, TransactionType.DEPOSIT, newBalance, childAccount);
+    }
+
+
+    private AccountTransaction findAccountTransactionById(Long transactionId, String message) {
         return accountTransactionRepository.findById(transactionId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "transactionId : " + transactionId));
+                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, message + transactionId));
+    }
+
+    private void validateTransaction(TransactionRequest transactionRequest, Account parentAccount, Account childAccount) {
+        if (transactionRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new WekidsException(ErrorCode.INVALID_TRANSACTION_AMOUNT, " 거래하려는 금액 " + transactionRequest.getAmount());
+        }
+
+        if (parentAccount.getBalance().compareTo(transactionRequest.getAmount()) < 0) {
+            throw new WekidsException(ErrorCode.INVALID_TRANSACTION_AMOUNT,
+                    "부모의 잔액" + parentAccount.getBalance() + " 거래하려는 금액 " + transactionRequest.getAmount());
+        }
+
+        if (parentAccount.getAccountNumber() == null || childAccount.getAccountNumber() == null) {
+            throw new WekidsException(ErrorCode.INVALID_ACCOUNT_NUMBER,
+                    "부모 AccountNum:" + parentAccount + " 자식 AccountNum" + childAccount);
+        }
+
+        if (parentAccount.getState() != AccountState.ACTIVE) {
+            throw new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE,
+                    "부모 계좌 상태가 활성 상태가 아닙니다. 상태: " + parentAccount.getState());
+        }
+        if (childAccount.getState() != AccountState.ACTIVE) {
+            throw new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE,
+                    "자식 계좌 상태가 활성 상태가 아닙니다. 상태: " + childAccount.getState());
+        }
+        if (parentAccount.getAccountNumber().equals(childAccount.getAccountNumber())) {
+            throw new WekidsException(ErrorCode.INVALID_ACCOUNT_NUMBER,
+                    "부모 계좌와 자식 계좌가 동일할 수 없습니다.");
+        }
+    }
+
+    @Override
+    @Transactional
+    @BassLogAndHandleException
+    public TransactionHistoryResponse showTransactionList(Long accountId, LocalDate start, LocalDate end, TransactionRequestType type, Pageable pageable){
+        Account account = findAccountByAccountId(accountId);
+
+        if(pageable.getPageNumber() == 0){
+            LocalDateTime mostRecentDateTime = accountTransactionRepository
+                    .findMostRecentTransactionDateTime(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX)).orElse(start.atStartOfDay());
+
+            BaasTransactionRequest request = BaasTransactionRequest.of(
+                    account.getAccountNumber(), mostRecentDateTime.plusSeconds(1), end.atTime(LocalTime.MAX), type.toString(), pageable);
+
+            List<BaasTransactionResponse> baasResponse = findBaasTransactionResponseByBaas(accountId, request);
+
+            baasResponse.forEach(item -> {
+                accountTransactionRepository.save(AccountTransaction.of(account, item));
+            });
+        }
+
+        Slice<TransactionResult> transactionResultSlice = accountTransactionRepository.findAccountTransactionByTypeSortedByTimeDesc(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX), pageable);
+
+        return TransactionHistoryResponse.of(
+                account.getBalance().longValue(),
+                transactionResultSlice.hasNext(),
+                transactionResultSlice.getContent());
+    }
+
+    private List<BaasTransactionResponse> findBaasTransactionResponseByBaas(Long accountId, BaasTransactionRequest request){
+        String url = baasURL + "/api/v1/getTransactions";
+
+        ResponseEntity<List<BaasTransactionResponse>> response = template.exchange(
+                url,
+                HttpMethod.POST,
+                new HttpEntity<>(request),
+                new ParameterizedTypeReference<List<BaasTransactionResponse>>() {}
+        );
+
+        if (response.getBody() == null) {
+            throw new WekidsException(ErrorCode.BAAS_NOT_RESPONSE, accountId + "에 대한 정보가 baas의 db 상에 존재하지 않습니다.");
+        }
+
+        return response.getBody();
+    }
+
+    private Account findAccountByAccountId(Long id){
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE, "계좌를 찾을 수 없습니다."));
     }
 }
