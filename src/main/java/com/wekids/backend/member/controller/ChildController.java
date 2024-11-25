@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ChildController {
-
     private final ChildService childService;
+    private final Long childId = 3L;
 
     @GetMapping("/children")
     public ResponseEntity<ChildResponse> getParentAccount() {
-        ChildResponse response = childService.getChildAccount();
+        ChildResponse response = childService.getChildAccount(childId);
         return ResponseEntity.ok(response);
     }
 

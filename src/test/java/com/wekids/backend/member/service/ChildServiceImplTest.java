@@ -49,7 +49,7 @@ public class ChildServiceImplTest {
                 .id(childId)
                 .cardState(CardState.NONE)
                 .build()
-                .build();
+                .child();
 
         Account childAccount = Account.builder().build();
         Design design = Design.builder().color(ColorType.PINK1).character(CharacterType.HEARTSPRING).build();
@@ -58,7 +58,7 @@ public class ChildServiceImplTest {
         when(accountRepository.findByMember(child)).thenReturn(Optional.of(childAccount));
         when(designRepository.findById(childId)).thenReturn(Optional.of(design));
 
-        ChildResponse foundChild = childService.getChildAccount();
+        ChildResponse foundChild = childService.getChildAccount(3L);
 
         assertThat(foundChild).isNotNull();
         assertThat(foundChild.getChildId()).isEqualTo(childId);

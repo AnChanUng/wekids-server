@@ -28,14 +28,12 @@ public class ChildServiceImpl implements ChildService {
     private final DesignRepository designRepository;
 
     @Override
-    public ChildResponse getChildAccount() {
-        Long childId = 2L;
-
+    public ChildResponse getChildAccount(Long childId) {
         Child child = findChildById(childId);
         Account childAccount = findChildAccountByMember(child);
         Design design = findDesignById(childId);
 
-        return ChildResponse.from(child, childAccount, design);
+        return ChildResponse.of(child, childAccount, design);
     }
 
     private Child findChildById(Long childId) {
@@ -44,11 +42,10 @@ public class ChildServiceImpl implements ChildService {
     }
 
     private Account findChildAccountByMember(Child child) {
-        return accountRepository.findByMember(child)
-                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계정 정보를 찾을 수 없습니다." ));
+        return accountRepository.findByMember(child).orElse(null);
     }
 
     private Design findDesignById(Long childId) {
-        return designRepository.findById(childId).orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "자식 계좌를 찾을 수 없습니다." + childId));
+        return designRepository.findById(childId).orElse(null);
     }
 }

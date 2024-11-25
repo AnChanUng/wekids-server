@@ -1,37 +1,53 @@
 package com.wekids.backend.member.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wekids.backend.account.domain.Account;
+import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.design.domain.Design;
+import com.wekids.backend.design.domain.enums.CharacterType;
+import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.member.domain.Child;
+import com.wekids.backend.member.domain.enums.CardState;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@Builder
 public class ChildResponse {
-    private Long childId;
-    private String name;
-    private String accountNumber;
-    private String profile;
-    private BigDecimal balance;
-    private Long accountId;
-    private String CardState;
-    private String color;
-    private String character;
+    Long childId;
+    String name;
+    String accountNumber;
+    String profile;
+    BigDecimal balance;
+    Long accountId;
+    CardState cardState;
+    ColorType color;
+    CharacterType character;
 
-    public static ChildResponse from(Child child, Account account, Design design){
-        return new ChildResponse(
-                child.getId(),
-                child.getName(),
-                account.getAccountNumber(),
-                child.getProfile(),
-                account.getBalance(),
-                account.getId(),
-                child.getCardState().name(),
-                design.getColor().name(),
-                design.getCharacter().name()
-        );
+    public static ChildResponse of(Child child, Account account, Design design) {
+        ChildResponse.ChildResponseBuilder builder = ChildResponse.builder()
+                .childId(child.getId())
+                .name(child.getName())
+                .profile(child.getProfile())
+                .cardState(child.getCardState());
+
+        if(account != null){
+            builder.accountNumber(account.getAccountNumber())
+                .balance(account.getBalance())
+                .accountId(account.getId());
+        }
+
+        if (design != null) {
+            builder.color(design.getColor())
+                    .character(design.getCharacter());
+        }
+
+        return builder.build();
     }
 }
