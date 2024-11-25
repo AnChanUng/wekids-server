@@ -65,6 +65,7 @@ public class BaasServiceImpl implements BaasService {
     }
 
     @Override
+    @BaasLogAndHandleException
     public Long createBankMember(BankMemberCreateRequest bankMemberCreateRequest) {
         String url = BAAS_URL + "/api/v1/bank-members";
 
@@ -76,6 +77,7 @@ public class BaasServiceImpl implements BaasService {
     }
 
     @Override
+    @BaasLogAndHandleException
     public AccountCreateResponse createAccount(AccountCreateRequest accountCreateRequest) {
         String url = BAAS_URL + "/api/v1/accounts";
 
@@ -87,6 +89,7 @@ public class BaasServiceImpl implements BaasService {
     }
 
     @Override
+    @BaasLogAndHandleException
     public CardCreateResponse createCard(CardCreateRequest cardCreateRequest) {
         String url = BAAS_URL + "/api/v1/cards";
 
