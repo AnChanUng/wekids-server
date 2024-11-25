@@ -2,13 +2,8 @@ package com.wekids.backend.baas.service;
 
 import com.wekids.backend.account.dto.response.BaasAccountResponse;
 import com.wekids.backend.baas.aop.BaasLogAndHandleException;
-import com.wekids.backend.baas.dto.request.AccountCreateRequest;
-import com.wekids.backend.baas.dto.request.BankMemberCreateRequest;
-import com.wekids.backend.baas.dto.request.CardCreateRequest;
-import com.wekids.backend.baas.dto.response.AccountCreateResponse;
-import com.wekids.backend.baas.dto.response.AllAccountResponse;
-import com.wekids.backend.baas.dto.response.BankMemberCreateResponse;
-import com.wekids.backend.baas.dto.response.CardCreateResponse;
+import com.wekids.backend.baas.dto.request.*;
+import com.wekids.backend.baas.dto.response.*;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Parent;
@@ -22,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -96,6 +92,23 @@ public class BaasServiceImpl implements BaasService {
         ResponseEntity<CardCreateResponse> response = restTemplate.postForEntity(url, cardCreateRequest, CardCreateResponse.class);
 
         return response.getBody();
+    }
+
+    @Override
+    @BaasLogAndHandleException
+    public void transfer(TransferRequest transferRequest) {
+
+    }
+
+    @Override
+    @BaasLogAndHandleException
+    public List<AccountTransactionGetResponse> getAccountTransactionList(AccountTransactionGetRequest accountTransactionGetRequest) {
+        String url = BAAS_URL + "/api/v1/getTransactions";
+
+        ResponseEntity<AccountTransactionGetResponse[]> response = restTemplate.postForEntity(url, accountTransactionGetRequest, AccountTransactionGetResponse[].class);
+        AccountTransactionGetResponse[] body = response.getBody();
+
+        return Arrays.stream(body).toList();
     }
 
     private Parent findParentByMemberId(Long memberId) {

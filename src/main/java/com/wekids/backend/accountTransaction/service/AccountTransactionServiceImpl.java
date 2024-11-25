@@ -5,28 +5,25 @@ import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
 import com.wekids.backend.accountTransaction.dto.enums.TransactionRequestType;
-import com.wekids.backend.accountTransaction.dto.request.BaasTransactionRequest;
+import com.wekids.backend.accountTransaction.dto.request.AccountTransactionListGetRequestParams;
+import com.wekids.backend.baas.dto.request.AccountTransactionGetRequest;
 import com.wekids.backend.accountTransaction.dto.response.*;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
-import com.wekids.backend.accountTransaction.dto.request.BaaSTransferRequest;
+import com.wekids.backend.baas.dto.request.TransferRequest;
 import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
-import com.wekids.backend.baas.aop.BassLogAndHandleException;
+import com.wekids.backend.baas.aop.BaasLogAndHandleException;
+import com.wekids.backend.baas.dto.response.AccountTransactionGetResponse;
+import com.wekids.backend.baas.service.BaasService;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.*;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 
@@ -40,12 +37,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class AccountTransactionServiceImpl implements AccountTransactionService {
-    @Value("${baas.api.baas-url}")
-    private String baasURL;
     private final AccountTransactionRepository accountTransactionRepository;
     private final AccountRepository accountRepository;
-    private final RestTemplate template;
-
+    private final BaasService baasService;
 
     @Override
     public TransactionDetailSearchResponse showTransaction(Long transactionId) {
@@ -63,7 +57,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     @Override
     @Transactional
-    @BassLogAndHandleException
+    @BaasLogAndHandleException
     public void transfer(TransactionRequest transactionRequest) {
         Account parentAccount = findAccountByAccountNumber(transactionRequest.getParentAccountNumber());
         Account childAccount = findAccountByAccountNumber(transactionRequest.getChildAccountNumber());
@@ -83,13 +77,13 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     }
 
     private void transferBaaS(TransactionRequest transactionRequest) {
-        BaaSTransferRequest request = BaaSTransferRequest.of(
+        TransferRequest request = TransferRequest.of(
                 transactionRequest.getParentAccountNumber(),
                 transactionRequest.getChildAccountNumber(),
                 transactionRequest.getAmount()
         );
 
-        template.postForLocation(baasURL + "/api/v1/transactions", request);
+//        template.postForLocation(baasURL + "/api/v1/transactions", request);
     }
 
 
@@ -149,21 +143,25 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     @Override
     @Transactional
-    @BassLogAndHandleException
-    public TransactionHistoryResponse showTransactionList(Long accountId, LocalDate start, LocalDate end, TransactionRequestType type, Pageable pageable){
+    @BaasLogAndHandleException
+    public TransactionHistoryResponse showTransactionList(Long accountId, AccountTransactionListGetRequestParams params){
         Account account = findAccountByAccountId(accountId);
+        LocalDate start = params.getStart();
+        LocalDate end = params.getEnd();
+        TransactionRequestType type = params.getType();
+        Pageable pageable = PageRequest.of(params.getPage(), params.getSize());
 
         if(pageable.getPageNumber() == 0){
             LocalDateTime mostRecentDateTime = accountTransactionRepository
                     .findMostRecentTransactionDateTime(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX)).orElse(start.atStartOfDay());
 
-            BaasTransactionRequest request = BaasTransactionRequest.of(
+            AccountTransactionGetRequest request = AccountTransactionGetRequest.of(
                     account.getAccountNumber(), mostRecentDateTime.plusSeconds(1), end.atTime(LocalTime.MAX), type.toString(), pageable);
 
-            List<BaasTransactionResponse> baasResponse = findBaasTransactionResponseByBaas(accountId, request);
+            List<AccountTransactionGetResponse> accountTransactionGetResponses = baasService.getAccountTransactionList(request);
 
-            baasResponse.forEach(item -> {
-                accountTransactionRepository.save(AccountTransaction.of(account, item));
+            accountTransactionGetResponses.forEach(accountTransactionGetResponse -> {
+                accountTransactionRepository.save(AccountTransaction.of(account, accountTransactionGetResponse));
             });
         }
 
@@ -173,23 +171,6 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                 account.getBalance().longValue(),
                 transactionResultSlice.hasNext(),
                 transactionResultSlice.getContent());
-    }
-
-    private List<BaasTransactionResponse> findBaasTransactionResponseByBaas(Long accountId, BaasTransactionRequest request){
-        String url = baasURL + "/api/v1/getTransactions";
-
-        ResponseEntity<List<BaasTransactionResponse>> response = template.exchange(
-                url,
-                HttpMethod.POST,
-                new HttpEntity<>(request),
-                new ParameterizedTypeReference<List<BaasTransactionResponse>>() {}
-        );
-
-        if (response.getBody() == null) {
-            throw new WekidsException(ErrorCode.BAAS_NOT_RESPONSE, accountId + "에 대한 정보가 baas의 db 상에 존재하지 않습니다.");
-        }
-
-        return response.getBody();
     }
 
     private Account findAccountByAccountId(Long id){

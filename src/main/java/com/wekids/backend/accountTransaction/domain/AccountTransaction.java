@@ -2,7 +2,7 @@ package com.wekids.backend.accountTransaction.domain;
 
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
-import com.wekids.backend.accountTransaction.dto.response.BaasTransactionResponse;
+import com.wekids.backend.baas.dto.response.AccountTransactionGetResponse;
 import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import jakarta.persistence.*;
 import lombok.*;
@@ -70,15 +70,15 @@ public class AccountTransaction {
                 .build();
     }
 
-    public static AccountTransaction of(Account account, BaasTransactionResponse response){
+    public static AccountTransaction of(Account account, AccountTransactionGetResponse response){
         return AccountTransaction.builder()
                 .account(account)
                 .title(response.getTitle())
-                .amount(new BigDecimal(response.getAmount()))
+                .amount(BigDecimal.valueOf(response.getAmount()))
                 .type(TransactionType.from(response.getType()))
                 .sender(response.getSender())
                 .receiver(response.getReceiver())
-                .balance(new BigDecimal(response.getBalance()))
+                .balance(BigDecimal.valueOf(response.getBalance()))
                 .createdAt(response.getTransactionDate())
                 .build();
     }

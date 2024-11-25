@@ -1,9 +1,8 @@
 package com.wekids.backend.baas.service;
 
-import com.wekids.backend.baas.dto.request.AccountCreateRequest;
-import com.wekids.backend.baas.dto.request.BankMemberCreateRequest;
-import com.wekids.backend.baas.dto.request.CardCreateRequest;
+import com.wekids.backend.baas.dto.request.*;
 import com.wekids.backend.baas.dto.response.AccountCreateResponse;
+import com.wekids.backend.baas.dto.response.AccountTransactionGetResponse;
 import com.wekids.backend.baas.dto.response.AllAccountResponse;
 import com.wekids.backend.baas.dto.response.CardCreateResponse;
 
@@ -15,4 +14,6 @@ public interface BaasService {
     Long createBankMember(BankMemberCreateRequest bankMemberCreateRequest);
     AccountCreateResponse createAccount(AccountCreateRequest accountCreateRequest);
     CardCreateResponse createCard(CardCreateRequest cardCreateRequest);
+    void transfer(TransferRequest transferRequest);
+    List<AccountTransactionGetResponse> getAccountTransactionList(AccountTransactionGetRequest accountTransactionGetRequest);
 }
