@@ -41,11 +41,19 @@ public class Design {
     @JoinColumn(name = "card_id")
     private Card card;
 
-    public static Design create(Long memberId, ColorType color, CharacterType character) {
+    public static Design create(Member member, ColorType color, CharacterType character) {
         return Design.builder()
-                .memberId(memberId)
+                .member(member)
                 .color(color)
                 .character(character)
                 .build();
+    }
+
+    public void updateAccount(Account account) {
+        this.account = account;
+    }
+
+    public void updateCard(Card card) {
+        this.card = card;
     }
 }
