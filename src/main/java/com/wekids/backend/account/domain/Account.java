@@ -28,8 +28,9 @@ public class Account extends BaseTime {
     private BigDecimal balance;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
-    private AccountState state;
+    @Column(name = "state", nullable = false)
+    @Builder.Default
+    private AccountState state = AccountState.ACTIVE;
 
     private LocalDateTime inactiveDate;
 
@@ -40,5 +41,12 @@ public class Account extends BaseTime {
 
     public void updateAccountAmount(BigDecimal amount) {
         this.balance = amount;
+    }
+    public static Account of(String accountNumber, Member member) {
+        return Account.builder()
+                .accountNumber(accountNumber)
+                .balance(BigDecimal.ZERO)
+                .member(member)
+                .build();
     }
 }

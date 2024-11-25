@@ -64,15 +64,19 @@ class AccountTransactionServiceImplTest {
                 .accountNumber("123-456-789")
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
-                .build().toAccount();
-        transaction = AccountTransactionFixture.builder().build(account);
+                .build()
+                .account();
+    }
+
+    private AccountTransaction createAccountTransaction(Account account) {
+        return AccountTransactionFixture.builder().account(account).build().accountTransaction();
     }
 
     @Test
     void 거래_상세뷰를_id로_조회한다() {
         Long transactionId = 1L;
 
-        AccountTransaction transaction = AccountTransactionFixture.builder().build(account);
+        AccountTransaction transaction = AccountTransactionFixture.builder().account(account).build().accountTransaction();
 
         given(accountTransactionRepository.findById(transactionId)).willReturn(Optional.of(transaction));
 
@@ -102,7 +106,9 @@ class AccountTransactionServiceImplTest {
                 .receiver("Receiver Name")
                 .memo("")
                 .createdAt(LocalDateTime.now())
-                .build(account);
+                .account(account)
+                .build()
+                .accountTransaction();
 
         given(accountTransactionRepository.findById(transactionId)).willReturn(Optional.of(transaction));
 
@@ -125,14 +131,16 @@ class AccountTransactionServiceImplTest {
                                     .balance(BigDecimal.valueOf(250.00))
                                     .state(AccountState.ACTIVE)
                                     .member(childMember)
-                                    .build().toAccount();
+                                    .build()
+                                    .account();
 
         Account parentAccount = AccountFixture.builder()
                 .accountNumber("PARENT1234567890")
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(parentAccount.getAccountNumber())
@@ -174,14 +182,16 @@ class AccountTransactionServiceImplTest {
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         Account parentAccount = AccountFixture.builder()
                 .accountNumber("PARENT12345")
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(parentAccount.getAccountNumber())
@@ -213,14 +223,16 @@ class AccountTransactionServiceImplTest {
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         Account parentAccount = AccountFixture.builder()
                 .accountNumber("PARENT12345")
                 .balance(BigDecimal.valueOf(500.00))  // 부족한 잔액
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(parentAccount.getAccountNumber())
@@ -252,14 +264,16 @@ class AccountTransactionServiceImplTest {
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.INACTIVE)  // 비활성화된 계좌
                 .member(childMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         Account parentAccount = AccountFixture.builder()
                 .accountNumber("PARENT12345")
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(parentAccount.getAccountNumber())
@@ -292,14 +306,16 @@ class AccountTransactionServiceImplTest {
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         Account parentAccount = AccountFixture.builder()
                 .accountNumber(accountNumber)  // 동일한 계좌 번호
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(accountNumber)
@@ -330,14 +346,16 @@ class AccountTransactionServiceImplTest {
                 .balance(BigDecimal.valueOf(250.00))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         Account parentAccount = AccountFixture.builder()
                 .accountNumber("PARENT1234567890")
                 .balance(BigDecimal.valueOf(500.00))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(parentAccount.getAccountNumber())
@@ -369,14 +387,16 @@ class AccountTransactionServiceImplTest {
                 .balance(BigDecimal.valueOf(500))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         Account childAccount = AccountFixture.builder()
                 .accountNumber("CHILD123456")
                 .balance(BigDecimal.valueOf(200))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(parentAccount.getAccountNumber())
@@ -408,14 +428,16 @@ class AccountTransactionServiceImplTest {
                 .balance(BigDecimal.valueOf(500))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         Account childAccount = AccountFixture.builder()
                 .accountNumber("CHILD123456")
                 .balance(BigDecimal.valueOf(200))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(parentAccount.getAccountNumber())
@@ -452,14 +474,16 @@ class AccountTransactionServiceImplTest {
                 .balance(BigDecimal.valueOf(500))
                 .state(AccountState.ACTIVE)
                 .member(parentMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         Account childAccount = AccountFixture.builder()
                 .accountNumber("CHILD123456")
                 .balance(BigDecimal.valueOf(200))
                 .state(AccountState.ACTIVE)
                 .member(childMember)
-                .build().toAccount();
+                .build()
+                .account();
 
         TransactionRequest transactionRequest = TransactionRequest.builder()
                 .parentAccountNumber(parentAccount.getAccountNumber())

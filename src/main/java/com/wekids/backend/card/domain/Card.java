@@ -1,22 +1,21 @@
 package com.wekids.backend.card.domain;
 
 import com.wekids.backend.account.domain.Account;
-import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.card.domain.enums.CardState;
+import com.wekids.backend.card.dto.request.CardBaasRequest;
+import com.wekids.backend.card.dto.response.CardBaasResponse;
 import com.wekids.backend.common.entity.BaseTime;
-import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
-import org.springframework.cglib.core.Local;
-
-import java.math.BigDecimal;
+import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @ToString
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Card extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,8 +40,9 @@ public class Card extends BaseTime {
     private String cardName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
-    private CardState state;
+    @Column(nullable = false)
+    @Builder.Default
+    private CardState state = CardState.ACTIVE;
 
     private LocalDateTime inactiveDate;
 
@@ -52,4 +52,17 @@ public class Card extends BaseTime {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
+
+    public static Card of(CardBaasResponse cardResponse, String cardPassword, Account account, String cardName) {
+        return Card.builder()
+                .cardNumber(cardResponse.getCardNumber())
+                .validThru(cardResponse.getValidThru())
+                .cvc(cardResponse.getCvc())
+                .memberName(cardResponse.getBankMemberName())
+                .cardName(cardName)
+                .newDate(cardResponse.getNewDate())
+                .password(cardPassword)
+                .account(account)
+                .build();
+    }
 }

@@ -1,26 +1,30 @@
 package com.wekids.backend.account.repository;
 
 import com.wekids.backend.account.domain.Account;
+import com.wekids.backend.account.domain.enums.AccountDesignType;
 import com.wekids.backend.account.domain.enums.AccountState;
-import com.wekids.backend.member.domain.Member;
-import com.wekids.backend.member.repository.MemberRepository;
-import com.wekids.backend.support.fixture.ChildFixture;
-import org.junit.jupiter.api.BeforeEach;
+import com.wekids.backend.account.dto.response.AccountResponse;
+import com.wekids.backend.account.service.AccountService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
-import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class AccountRepositoryTest {
+    @Autowired
+    AccountRepository accountRepository;
 
 
+    @Test
+    void test() {
+        List<Account> all = accountRepository.findAll();
+        System.out.println("all = " + all);
+    }
 
 
 }
