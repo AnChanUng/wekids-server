@@ -3,10 +3,9 @@ package com.wekids.backend.accountTransaction.domain;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
 import com.wekids.backend.accountTransaction.dto.response.BaasTransactionResponse;
+import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,7 +25,7 @@ public class AccountTransaction {
     private String title;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
     private TransactionType type;
 
     @Column(precision = 20, scale = 2, nullable = false)
@@ -54,6 +53,21 @@ public class AccountTransaction {
 
     public void updateMemo(String memo) {
         this.memo = memo;
+    }
+
+    public static AccountTransaction createTransaction(TransactionRequest request, TransactionType type, BigDecimal
+            balance, Account account) {
+        return AccountTransaction.builder()
+                .title(request.getSender())
+                .type(type)
+                .amount(request.getAmount())
+                .balance(balance)
+                .sender(request.getSender())
+                .receiver(request.getReceiver())
+                .memo("")
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
     }
 
     public static AccountTransaction of(Account account, BaasTransactionResponse response){
