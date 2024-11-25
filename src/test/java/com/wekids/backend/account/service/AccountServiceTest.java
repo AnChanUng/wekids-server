@@ -26,11 +26,11 @@ public class AccountServiceTest {
     void 자식_계좌_리스트를_조회한다() {
         // Given
         Long parentId = 1L;
-        Child child1 = ChildFixture.builder().id(1L).build().from();
-        Child child2 = ChildFixture.builder().id(2L).build().from();
+        Child child1 = ChildFixture.builder().id(1L).build().child();
+        Child child2 = ChildFixture.builder().id(2L).build().child();
 
-        Account account1 = AccountFixture.builder().id(1L).member(child1).build().from();
-        Account account2 = AccountFixture.builder().id(2L).member(child2).build().from();
+        Account account1 = AccountFixture.builder().id(1L).member(child1).build().account();
+        Account account2 = AccountFixture.builder().id(2L).member(child2).build().account();
 
         List<Account> accounts = List.of(account1, account2);
 
