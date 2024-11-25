@@ -1,15 +1,14 @@
-package com.wekids.backend.accountTransaction.dto.request;
+package com.wekids.backend.baas.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class BaasTransactionRequest {
+public class AccountTransactionGetRequest {
     private String accountNumber;
     private LocalDateTime start;
     private LocalDateTime end;
@@ -17,8 +16,8 @@ public class BaasTransactionRequest {
     private Integer page;
     private Integer size;
 
-    public static BaasTransactionRequest of(String accountNumber, LocalDateTime start, LocalDateTime end, String type, Pageable pageable){
-        return BaasTransactionRequest.builder()
+    public static AccountTransactionGetRequest of(String accountNumber, LocalDateTime start, LocalDateTime end, String type, Pageable pageable){
+        return AccountTransactionGetRequest.builder()
                 .accountNumber(accountNumber)
                 .start(start)
                 .end(end)
