@@ -23,7 +23,7 @@ public class DesignFixture {
     private Member member; // 회원 정보
 
     // 디자인 객체를 생성하는 메서드
-    public Design build() {
+    public Design design() {
         return Design.builder()
                 .memberId(memberId)
                 .color(color)

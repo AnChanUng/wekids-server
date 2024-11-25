@@ -44,6 +44,7 @@ public class ChildFixture {
                 .bankMemberId(bankMemberId)
                 .inactiveDate(inactiveDate)
                 .build();
+
     }
 }
 
