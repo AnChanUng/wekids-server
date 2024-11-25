@@ -8,29 +8,30 @@ import com.wekids.backend.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
-
 @Entity
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Builder
-public class Design implements Serializable {
+public class Design {
     @Id
-    private long id;
+    private Long memberId;
 
-    @MapsId
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @MapsId
     private Member member;
 
-    @Column(name = "color", nullable = false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ColorType color;
+    @Builder.Default
+    private ColorType color = ColorType.BLUE;
 
     @Column(name = "`character`", nullable = false)
     @Enumerated(EnumType.STRING)
-    private CharacterType character;
+    @Builder.Default
+    private CharacterType character = CharacterType.DADAPING;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
@@ -39,4 +40,20 @@ public class Design implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id")
     private Card card;
+
+    public static Design create(Member member, ColorType color, CharacterType character) {
+        return Design.builder()
+                .member(member)
+                .color(color)
+                .character(character)
+                .build();
+    }
+
+    public void updateAccount(Account account) {
+        this.account = account;
+    }
+
+    public void updateCard(Card card) {
+        this.card = card;
+    }
 }

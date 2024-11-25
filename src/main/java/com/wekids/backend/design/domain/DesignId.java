@@ -4,8 +4,8 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class DesignId implements Serializable {
     private Long member;

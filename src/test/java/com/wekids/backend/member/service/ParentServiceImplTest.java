@@ -10,6 +10,7 @@ import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.dto.response.ChildResponse;
 import com.wekids.backend.member.dto.response.ParentAccountResponse;
+import com.wekids.backend.member.repository.ChildRepository;
 import com.wekids.backend.member.repository.ParentRepository;
 import com.wekids.backend.support.fixture.AccountFixture;
 import com.wekids.backend.support.fixture.ChildFixture;
@@ -33,6 +34,7 @@ public class ParentServiceImplTest {
 
     @Mock private AccountRepository accountRepository;
     @Mock private ParentRepository parentRepository;
+    @Mock private ChildRepository childRepository;
     @Mock private DesignRepository designRepository;
     @InjectMocks private ParentServiceImpl parentService;
 
@@ -40,31 +42,31 @@ public class ParentServiceImplTest {
     void 부모_자식_리스트를_조회한다() {
         // Parent 및 Child 객체 생성
         Parent parent = ParentFixture.builder().id(1L).build().parent();
-        Child child1 = ChildFixture.builder().id(2L).build().from();
-        Child child2 = ChildFixture.builder().id(3L).build().from();
+        Child child1 = ChildFixture.builder().id(2L).build().child();
+        Child child2 = ChildFixture.builder().id(3L).build().child();
         List<Child> children = List.of(child1, child2);
 
         // Account 객체 생성
-        Account parentAccount = AccountFixture.builder().id(1L).member(parent).build().from();
-        Account childAccount1 = AccountFixture.builder().id(2L).member(child1).build().from();
-        Account childAccount2 = AccountFixture.builder().id(3L).member(child2).build().from();
+        Account parentAccount = AccountFixture.builder().id(1L).member(parent).build().account();
+        Account childAccount1 = AccountFixture.builder().id(2L).member(child1).build().account();
+        Account childAccount2 = AccountFixture.builder().id(3L).member(child2).build().account();
 
         // Design 객체 생성
-        Design parentDesign = DesignFixture.builder().id(1L).member(parent).account(parentAccount).build().from();
-        Design childDesign1 = DesignFixture.builder().id(2L).member(child1).account(childAccount1).build().from();
-        Design childDesign2 = DesignFixture.builder().id(3L).member(child2).account(childAccount2).build().from();
+        Design parentDesign = DesignFixture.builder().memberId(1L).member(parent).account(parentAccount).build().design();
+        Design childDesign1 = DesignFixture.builder().memberId(2L).member(child1).account(childAccount1).build().design();
+        Design childDesign2 = DesignFixture.builder().memberId(3L).member(child2).account(childAccount2).build().design();
 
         // Mock 동작 정의
         given(parentRepository.findById(parent.getId())).willReturn(Optional.of(parent));
-        given(parentRepository.findChildrenByParentId(parent.getId())).willReturn(children);
+        given(childRepository.findChildrenByParentId(parent.getId())).willReturn(children);
 
         given(accountRepository.findByMember(parent)).willReturn(Optional.of(parentAccount));
         given(accountRepository.findByMember(child1)).willReturn(Optional.of(childAccount1));
         given(accountRepository.findByMember(child2)).willReturn(Optional.of(childAccount2));
 
-        given(designRepository.findByMemberId(parent.getId())).willReturn(Optional.of(parentDesign));
-        given(designRepository.findByMemberId(child1.getId())).willReturn(Optional.of(childDesign1));
-        given(designRepository.findByMemberId(child2.getId())).willReturn(Optional.of(childDesign2));
+        given(designRepository.findById(parent.getId())).willReturn(Optional.of(parentDesign));
+        given(designRepository.findById(child1.getId())).willReturn(Optional.of(childDesign1));
+        given(designRepository.findById(child2.getId())).willReturn(Optional.of(childDesign2));
 
         // 서비스 호출
         ParentAccountResponse response = parentService.showParentAccount(parent.getId());
@@ -97,16 +99,16 @@ public class ParentServiceImplTest {
         Parent parent = ParentFixture.builder().id(1L).build().parent();
 
         // Account 객체 생성
-        Account parentAccount = AccountFixture.builder().id(1L).member(parent).build().from();
+        Account parentAccount = AccountFixture.builder().id(1L).member(parent).build().account();
 
         // Design 객체 생성
-        Design parentDesign = DesignFixture.builder().id(1L).member(parent).account(parentAccount).build().from();
+        Design parentDesign = DesignFixture.builder().memberId(1L).member(parent).account(parentAccount).build().design();
 
         // Mock 동작 정의
         given(parentRepository.findById(parent.getId())).willReturn(Optional.of(parent));
-        given(parentRepository.findChildrenByParentId(parent.getId())).willReturn(List.of());
+        given(childRepository.findChildrenByParentId(parent.getId())).willReturn(List.of());
         given(accountRepository.findByMember(parent)).willReturn(Optional.of(parentAccount));
-        given(designRepository.findByMemberId(parent.getId())).willReturn(Optional.of(parentDesign));
+        given(designRepository.findById(parent.getId())).willReturn(Optional.of(parentDesign));
 
         // 서비스 호출
         ParentAccountResponse response = parentService.showParentAccount(parent.getId());
@@ -136,20 +138,20 @@ public class ParentServiceImplTest {
     void 자식_계좌나_디자인_정보가_없는_경우() {
         // Parent 및 Child 객체 생성
         Parent parent = ParentFixture.builder().id(1L).build().parent();
-        Child child = ChildFixture.builder().id(2L).build().from();
+        Child child = ChildFixture.builder().id(2L).build().child();
         List<Child> children = List.of(child);
 
         // Account 및 Design 객체 생성
-        Account parentAccount = AccountFixture.builder().id(1L).member(parent).build().from();
-        Design parentDesign = DesignFixture.builder().id(1L).member(parent).account(parentAccount).build().from();
+        Account parentAccount = AccountFixture.builder().id(1L).member(parent).build().account();
+        Design parentDesign = DesignFixture.builder().memberId(1L).member(parent).account(parentAccount).build().design();
 
         // Mock 동작 정의
         given(parentRepository.findById(parent.getId())).willReturn(Optional.of(parent));
-        given(parentRepository.findChildrenByParentId(parent.getId())).willReturn(children);
+        given(childRepository.findChildrenByParentId(parent.getId())).willReturn(children);
         given(accountRepository.findByMember(parent)).willReturn(Optional.of(parentAccount));
-        given(designRepository.findByMemberId(parent.getId())).willReturn(Optional.of(parentDesign));
+        given(designRepository.findById(parent.getId())).willReturn(Optional.of(parentDesign));
         given(accountRepository.findByMember(child)).willReturn(Optional.empty()); // 자식 계좌 없음
-        given(designRepository.findByMemberId(child.getId())).willReturn(Optional.empty()); // 자식 디자인 없음
+        given(designRepository.findById(child.getId())).willReturn(Optional.empty()); // 자식 디자인 없음
 
         // 서비스 호출
         ParentAccountResponse response = parentService.showParentAccount(parent.getId());

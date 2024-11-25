@@ -25,7 +25,7 @@ public class AccountTransaction {
     private String title;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
+    @Column(nullable = false)
     private TransactionType type;
 
     @Column(precision = 20, scale = 2, nullable = false)

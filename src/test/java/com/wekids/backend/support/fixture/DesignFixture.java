@@ -11,26 +11,27 @@ import lombok.Builder;
 @Builder
 public class DesignFixture {
     @Builder.Default
-    private long id = 1L;
-    @Builder.Default
-    private Member member = null;
-    @Builder.Default
-    private ColorType color = ColorType.PINK1;
-    @Builder.Default
-    private CharacterType character = CharacterType.HEARTSPRING;
-    @Builder.Default
-    private Account account = null;
-    @Builder.Default
-    private Card card = null;
+    private Long memberId = 2L; // 예시 회원 ID
 
-    public Design from() {
+    @Builder.Default
+    private ColorType color = ColorType.PINK1; // 더미 데이터 색상 (Enum)
+
+    @Builder.Default
+    private CharacterType character = CharacterType.HEARTSPRING; // 더미 데이터 캐릭터 (Enum)
+    private Account account; // 계좌
+    private Card card; // 카드
+    private Member member; // 회원 정보
+
+    // 디자인 객체를 생성하는 메서드
+    public Design design() {
         return Design.builder()
-                .id(id)
-                .member(member)
+                .memberId(memberId)
                 .color(color)
                 .character(character)
                 .account(account)
                 .card(card)
+                .member(member)
                 .build();
     }
+
 }

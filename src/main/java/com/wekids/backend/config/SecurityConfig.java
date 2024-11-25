@@ -13,13 +13,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                 request -> request.anyRequest().permitAll()
-        );
-
-//        http.authorizeHttpRequests(
-//                request -> request.requestMatchers(PathRequest.toH2Console()).permitAll()
-//                        .anyRequest().permitAll())
-//                .csrf(csrf -> csrf.ignoringRequestMatchers(PathRequest.toH2Console()))
-//                .headers(headers ->  headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+        ).csrf(csrf -> csrf.disable());
 
         return http.build();
 

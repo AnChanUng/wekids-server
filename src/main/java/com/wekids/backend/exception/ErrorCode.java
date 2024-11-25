@@ -18,7 +18,7 @@ public enum ErrorCode {
     ACCOUNT_NOT_ACTIVE(NOT_FOUND, "계좌번호를 찾을 수 없습니다."),
     BAAS_NOT_RESPONSE(HttpStatus.GATEWAY_TIMEOUT, "BaaS 응답이 없습니다."),
     BAAS_REQUEST_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "BaaS 요청에 실패했습니다."),
-    ;
+    INVALID_CARD_STATE(BAD_REQUEST, "잘못된 카드 상태입니다.");
 
     private final HttpStatus status;
     private final String message;
