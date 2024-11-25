@@ -17,7 +17,7 @@ public class DesignController {
 
     private final DesignService designService;
 
-    private static final Long DEFAULT_MEMBER_ID = 2L;
+    private static final Long DEFAULT_MEMBER_ID = 3L;
 
     @GetMapping
     public ResponseEntity<DesignResponse> getDesign() {
