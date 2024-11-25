@@ -6,6 +6,7 @@ import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
 import com.wekids.backend.accountTransaction.dto.enums.TransactionRequestType;
 import com.wekids.backend.accountTransaction.dto.request.AccountTransactionListGetRequestParams;
+import com.wekids.backend.baas.dto.request.AccountGetRequest;
 import com.wekids.backend.baas.dto.request.AccountTransactionGetRequest;
 import com.wekids.backend.accountTransaction.dto.response.*;
 import com.wekids.backend.baas.dto.request.TransferRequest;
@@ -13,7 +14,7 @@ import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
-import com.wekids.backend.baas.aop.BaasLogAndHandleException;
+import com.wekids.backend.baas.dto.response.AccountGetResponse;
 import com.wekids.backend.baas.dto.response.AccountTransactionResponse;
 import com.wekids.backend.baas.dto.response.TransferResponse;
 import com.wekids.backend.baas.service.BaasService;
@@ -57,13 +58,15 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     @Override
     @Transactional
-    @BaasLogAndHandleException
     public void transfer(TransactionRequest transactionRequest) {
         Account parentAccount = findAccountByAccountNumber(transactionRequest.getParentAccountNumber());
         Account childAccount = findAccountByAccountNumber(transactionRequest.getChildAccountNumber());
 
         log.info("부모계좌번호 " + parentAccount);
         log.info("자식계좌번호 " + childAccount);
+
+        updateAccount(transactionRequest.getParentAccountNumber(), parentAccount);
+        updateAccount(transactionRequest.getChildAccountNumber(), childAccount);
 
         validateTransaction(transactionRequest, parentAccount, childAccount);
 
@@ -74,7 +77,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     }
 
     private void saveAccountTransaction(AccountTransactionResponse accountTransactionResponse, Account account) {
-        account.updateAccountAmount(BigDecimal.valueOf(accountTransactionResponse.getBalance()));
+        account.updateBalance(BigDecimal.valueOf(accountTransactionResponse.getBalance()));
 
         AccountTransaction accountTransaction = AccountTransaction.of(account, accountTransactionResponse);
 
@@ -90,7 +93,6 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
         return baasService.transfer(request);
     }
-
 
     private Account findAccountByAccountNumber(String accountNumber) {
         log.debug("Searching for account with account number: {}", accountNumber);  // 로그 추가
@@ -109,6 +111,15 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
             throw new WekidsException(ErrorCode.INVALID_TRANSACTION_AMOUNT, " 거래하려는 금액 " + transactionRequest.getAmount());
         }
 
+        if (parentAccount.getState() != AccountState.ACTIVE) {
+            throw new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE,
+                    "부모 계좌 상태가 활성 상태가 아닙니다. 상태: " + parentAccount.getState());
+        }
+        if (childAccount.getState() != AccountState.ACTIVE) {
+            throw new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE,
+                    "자식 계좌 상태가 활성 상태가 아닙니다. 상태: " + childAccount.getState());
+        }
+
         if (parentAccount.getBalance().compareTo(transactionRequest.getAmount()) < 0) {
             throw new WekidsException(ErrorCode.INVALID_TRANSACTION_AMOUNT,
                     "부모의 잔액" + parentAccount.getBalance() + " 거래하려는 금액 " + transactionRequest.getAmount());
@@ -119,23 +130,24 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                     "부모 AccountNum:" + parentAccount + " 자식 AccountNum" + childAccount);
         }
 
-        if (parentAccount.getState() != AccountState.ACTIVE) {
-            throw new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE,
-                    "부모 계좌 상태가 활성 상태가 아닙니다. 상태: " + parentAccount.getState());
-        }
-        if (childAccount.getState() != AccountState.ACTIVE) {
-            throw new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE,
-                    "자식 계좌 상태가 활성 상태가 아닙니다. 상태: " + childAccount.getState());
-        }
         if (parentAccount.getAccountNumber().equals(childAccount.getAccountNumber())) {
             throw new WekidsException(ErrorCode.INVALID_ACCOUNT_NUMBER,
                     "부모 계좌와 자식 계좌가 동일할 수 없습니다.");
         }
     }
 
+    private void updateAccount(String accountNumber, Account account) {
+        AccountGetResponse accountResponse = baasService.getAccount(AccountGetRequest.of(accountNumber));
+
+        if (!account.getState().equals(accountResponse.getState())) {
+            account.updateState(accountResponse.getState());
+        }
+
+        account.updateBalance(BigDecimal.valueOf(accountResponse.getBalance()));
+    }
+
     @Override
     @Transactional
-    @BaasLogAndHandleException
     public TransactionHistoryResponse showTransactionList(Long accountId, AccountTransactionListGetRequestParams params) {
         Account account = findAccountByAccountId(accountId);
         LocalDate start = params.getStart();
