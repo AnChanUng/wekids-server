@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-
-
 @RestController
 @RequestMapping("api/v1")
 @RequiredArgsConstructor
@@ -39,7 +36,7 @@ public class AccountTransactionController {
     }
 
     @PostMapping("/transactions")
-    public ResponseEntity<Void> postTransaction(@RequestBody TransactionRequest transactionRequest) {
+    public ResponseEntity<Void> postTransaction(@RequestBody @Valid TransactionRequest transactionRequest) {
         accountTransactionService.transfer(transactionRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

@@ -96,17 +96,21 @@ public class BaasServiceImpl implements BaasService {
 
     @Override
     @BaasLogAndHandleException
-    public void transfer(TransferRequest transferRequest) {
+    public TransferResponse transfer(TransferRequest transferRequest) {
+        String url = BAAS_URL + "/api/v1/transactions";
 
+        ResponseEntity<TransferResponse> response = restTemplate.postForEntity(url, transferRequest, TransferResponse.class);
+
+        return response.getBody();
     }
 
     @Override
     @BaasLogAndHandleException
-    public List<AccountTransactionGetResponse> getAccountTransactionList(AccountTransactionGetRequest accountTransactionGetRequest) {
+    public List<AccountTransactionResponse> getAccountTransactionList(AccountTransactionGetRequest accountTransactionGetRequest) {
         String url = BAAS_URL + "/api/v1/getTransactions";
 
-        ResponseEntity<AccountTransactionGetResponse[]> response = restTemplate.postForEntity(url, accountTransactionGetRequest, AccountTransactionGetResponse[].class);
-        AccountTransactionGetResponse[] body = response.getBody();
+        ResponseEntity<AccountTransactionResponse[]> response = restTemplate.postForEntity(url, accountTransactionGetRequest, AccountTransactionResponse[].class);
+        AccountTransactionResponse[] body = response.getBody();
 
         return Arrays.stream(body).toList();
     }

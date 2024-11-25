@@ -8,14 +8,14 @@ import com.wekids.backend.accountTransaction.dto.enums.TransactionRequestType;
 import com.wekids.backend.accountTransaction.dto.request.AccountTransactionListGetRequestParams;
 import com.wekids.backend.baas.dto.request.AccountTransactionGetRequest;
 import com.wekids.backend.accountTransaction.dto.response.*;
-import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
 import com.wekids.backend.baas.dto.request.TransferRequest;
 import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
 import com.wekids.backend.baas.aop.BaasLogAndHandleException;
-import com.wekids.backend.baas.dto.response.AccountTransactionGetResponse;
+import com.wekids.backend.baas.dto.response.AccountTransactionResponse;
+import com.wekids.backend.baas.dto.response.TransferResponse;
 import com.wekids.backend.baas.service.BaasService;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
@@ -67,45 +67,37 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
         validateTransaction(transactionRequest, parentAccount, childAccount);
 
-        transferBaaS(transactionRequest);
+        TransferResponse transferResponse = transferBaaS(transactionRequest);
 
-        AccountTransaction parentTransaction = createParentAccountTransaction(transactionRequest, parentAccount);
-        AccountTransaction childTransaction = createChildAccountTransaction(transactionRequest, childAccount);
-
-        accountTransactionRepository.save(parentTransaction);
-        accountTransactionRepository.save(childTransaction);
+        saveAccountTransaction(transferResponse.getSender(), parentAccount);
+        saveAccountTransaction(transferResponse.getReceiver(), childAccount);
     }
 
-    private void transferBaaS(TransactionRequest transactionRequest) {
+    private void saveAccountTransaction(AccountTransactionResponse accountTransactionResponse, Account account) {
+        account.updateAccountAmount(BigDecimal.valueOf(accountTransactionResponse.getBalance()));
+
+        AccountTransaction accountTransaction = AccountTransaction.of(account, accountTransactionResponse);
+
+        accountTransactionRepository.save(accountTransaction);
+    }
+
+    private TransferResponse transferBaaS(TransactionRequest transactionRequest) {
         TransferRequest request = TransferRequest.of(
                 transactionRequest.getParentAccountNumber(),
                 transactionRequest.getChildAccountNumber(),
                 transactionRequest.getAmount()
         );
 
-//        template.postForLocation(baasURL + "/api/v1/transactions", request);
+        return baasService.transfer(request);
     }
 
 
     private Account findAccountByAccountNumber(String accountNumber) {
         log.debug("Searching for account with account number: {}", accountNumber);  // 로그 추가
         return accountRepository.findAccountByAccountNumber(accountNumber)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND,
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND,
                         "회원 계좌번호: " + accountNumber));
     }
-
-    private AccountTransaction createParentAccountTransaction(TransactionRequest request, Account parentAccount) {
-        BigDecimal newBalance = parentAccount.getBalance().subtract(request.getAmount());
-        parentAccount.updateAccountAmount(newBalance);
-        return AccountTransaction.createTransaction(request, TransactionType.WITHDRAWAL, newBalance, parentAccount);
-    }
-
-    private AccountTransaction createChildAccountTransaction(TransactionRequest request, Account childAccount) {
-        BigDecimal newBalance = childAccount.getBalance().add(request.getAmount());
-        childAccount.updateAccountAmount(newBalance);
-        return AccountTransaction.createTransaction(request, TransactionType.DEPOSIT, newBalance, childAccount);
-    }
-
 
     private AccountTransaction findAccountTransactionById(Long transactionId, String message) {
         return accountTransactionRepository.findById(transactionId)
@@ -144,21 +136,21 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     @Override
     @Transactional
     @BaasLogAndHandleException
-    public TransactionHistoryResponse showTransactionList(Long accountId, AccountTransactionListGetRequestParams params){
+    public TransactionHistoryResponse showTransactionList(Long accountId, AccountTransactionListGetRequestParams params) {
         Account account = findAccountByAccountId(accountId);
         LocalDate start = params.getStart();
         LocalDate end = params.getEnd();
         TransactionRequestType type = params.getType();
         Pageable pageable = PageRequest.of(params.getPage(), params.getSize());
 
-        if(pageable.getPageNumber() == 0){
+        if (pageable.getPageNumber() == 0) {
             LocalDateTime mostRecentDateTime = accountTransactionRepository
                     .findMostRecentTransactionDateTime(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX)).orElse(start.atStartOfDay());
 
             AccountTransactionGetRequest request = AccountTransactionGetRequest.of(
                     account.getAccountNumber(), mostRecentDateTime.plusSeconds(1), end.atTime(LocalTime.MAX), type.toString(), pageable);
 
-            List<AccountTransactionGetResponse> accountTransactionGetResponses = baasService.getAccountTransactionList(request);
+            List<AccountTransactionResponse> accountTransactionGetResponses = baasService.getAccountTransactionList(request);
 
             accountTransactionGetResponses.forEach(accountTransactionGetResponse -> {
                 accountTransactionRepository.save(AccountTransaction.of(account, accountTransactionGetResponse));
@@ -173,7 +165,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                 transactionResultSlice.getContent());
     }
 
-    private Account findAccountByAccountId(Long id){
+    private Account findAccountByAccountId(Long id) {
         return accountRepository.findById(id)
                 .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE, "계좌를 찾을 수 없습니다."));
     }

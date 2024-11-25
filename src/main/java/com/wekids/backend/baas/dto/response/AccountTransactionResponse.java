@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class AccountTransactionGetResponse {
+public class AccountTransactionResponse {
     private String title;
     private String type;
     private Long amount;
