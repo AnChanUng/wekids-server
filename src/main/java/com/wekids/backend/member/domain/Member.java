@@ -61,5 +61,8 @@ public abstract class Member extends BaseTime {
     public void saveSimplePassword(String simplePassword) {
         this.simplePassword = simplePassword;
     }
+    public void updateCardState(CardState cardState) {
+        this.cardState = cardState;
+    }
 
 }
