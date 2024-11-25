@@ -26,9 +26,9 @@ public class ErrorResponse {
     private List<ValidErrorResponse> errors;
 
 
-    public static ErrorResponse of(String errorStatus, String message) {
+    public static ErrorResponse of(String errorCode, String message) {
         return ErrorResponse.builder()
-                .errorCode(errorStatus)
+                .errorCode(errorCode)
                 .message(message)
                 .timestamp(LocalDateTime.now())
                 .build();
