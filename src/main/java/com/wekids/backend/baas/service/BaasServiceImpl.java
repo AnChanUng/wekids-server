@@ -115,6 +115,16 @@ public class BaasServiceImpl implements BaasService {
         return Arrays.stream(body).toList();
     }
 
+    @Override
+    @BaasLogAndHandleException
+    public AccountGetResponse getAccount(AccountGetRequest accountGetRequest) {
+        String url = BAAS_URL + "/api/v1/getAccounts";
+
+        ResponseEntity<AccountGetResponse> response = restTemplate.postForEntity(url, accountGetRequest, AccountGetResponse.class);
+
+        return response.getBody();
+    }
+
     private Parent findParentByMemberId(Long memberId) {
         return parentRepository.findById(memberId).orElseThrow(
                 () -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, memberId + "가 없습니다."));

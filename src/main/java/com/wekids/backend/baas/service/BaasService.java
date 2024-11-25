@@ -13,4 +13,6 @@ public interface BaasService {
     CardCreateResponse createCard(CardCreateRequest cardCreateRequest);
     TransferResponse transfer(TransferRequest transferRequest);
     List<AccountTransactionResponse> getAccountTransactionList(AccountTransactionGetRequest accountTransactionGetRequest);
+    AccountGetResponse getAccount(AccountGetRequest accountGetRequest);
+
 }
