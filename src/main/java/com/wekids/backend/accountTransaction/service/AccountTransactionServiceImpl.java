@@ -146,9 +146,6 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                     "부모 계좌와 자식 계좌가 동일할 수 없습니다.");
         }
     }
-}
-
-
 
     @Override
     @Transactional
@@ -181,7 +178,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     private List<BaasTransactionResponse> findBaasTransactionResponseByBaas(Long accountId, BaasTransactionRequest request){
         String url = baasURL + "/api/v1/getTransactions";
 
-        ResponseEntity<List<BaasTransactionResponse>> response = restTemplate.exchange(
+        ResponseEntity<List<BaasTransactionResponse>> response = template.exchange(
                 url,
                 HttpMethod.POST,
                 new HttpEntity<>(request),

@@ -57,8 +57,8 @@ class AccountTransactionServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        childMember = ChildFixture.builder().build().from();
-        parentMember = ChildFixture.builder().name("강현우").email("5678").build().from();
+        childMember = ChildFixture.builder().build().child();
+        parentMember = ChildFixture.builder().name("강현우").email("5678").build().child();
         account = AccountFixture.builder()
                 .id(1L)
                 .accountNumber("123-456-789")
