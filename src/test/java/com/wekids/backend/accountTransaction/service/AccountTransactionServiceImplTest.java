@@ -53,14 +53,14 @@ class AccountTransactionServiceImplTest {
     }
 
     private AccountTransaction createAccountTransaction(Account account) {
-        return AccountTransactionFixture.builder().build(account);
+        return AccountTransactionFixture.builder().account(account).build().accountTransaction();
     }
 
     @Test
     void 거래_상세뷰를_id로_조회한다() {
         Long transactionId = 1L;
 
-        AccountTransaction transaction = AccountTransactionFixture.builder().build(account);
+        AccountTransaction transaction = AccountTransactionFixture.builder().account(account).build().accountTransaction();
 
         // Mocking the repository to return the transaction when queried by ID
         given(accountTransactionRepository.findById(transactionId)).willReturn(Optional.of(transaction));
@@ -94,7 +94,9 @@ class AccountTransactionServiceImplTest {
                 .receiver("Receiver Name")
                 .memo("")
                 .createdAt(LocalDateTime.now())
-                .build(account);
+                .account(account)
+                .build()
+                .accountTransaction();
 
         given(accountTransactionRepository.findById(transactionId)).willReturn(Optional.of(transaction));
 
