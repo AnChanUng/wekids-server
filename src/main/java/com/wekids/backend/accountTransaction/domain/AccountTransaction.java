@@ -2,6 +2,7 @@ package com.wekids.backend.accountTransaction.domain;
 
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
+import com.wekids.backend.accountTransaction.dto.response.BaasTransactionResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -12,8 +13,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @ToString
-@SuperBuilder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccountTransaction {
@@ -42,8 +43,7 @@ public class AccountTransaction {
 
     private String memo;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -54,5 +54,18 @@ public class AccountTransaction {
 
     public void updateMemo(String memo) {
         this.memo = memo;
+    }
+
+    public static AccountTransaction of(Account account, BaasTransactionResponse response){
+        return AccountTransaction.builder()
+                .account(account)
+                .title(response.getTitle())
+                .amount(new BigDecimal(response.getAmount()))
+                .type(TransactionType.from(response.getType()))
+                .sender(response.getSender())
+                .receiver(response.getReceiver())
+                .balance(new BigDecimal(response.getBalance()))
+                .createdAt(response.getTransactionDate())
+                .build();
     }
 }

@@ -1,8 +1,9 @@
 package com.wekids.backend.accountTransaction.service;
 
 import com.wekids.backend.account.domain.Account;
-import com.wekids.backend.account.domain.enums.AccountState;
+import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
+import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
@@ -16,11 +17,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -30,6 +33,8 @@ import static org.mockito.Mockito.verify;
 class AccountTransactionServiceImplTest {
     @Mock
     private AccountTransactionRepository accountTransactionRepository;
+    @Mock
+    private AccountRepository accountRepository;
     @InjectMocks
     private AccountTransactionServiceImpl accountTransactionService;
 
