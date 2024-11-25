@@ -40,7 +40,8 @@ public class DesignServiceImplTest {
 
         Member member = ChildFixture.builder()
                 .id(memberId)
-                .build();
+                .build()
+                .child();
 
         Design design = DesignFixture.builder()
                 .memberId(memberId)
