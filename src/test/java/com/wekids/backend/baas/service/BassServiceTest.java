@@ -4,7 +4,8 @@ import com.wekids.backend.account.dto.response.BaasAccountResponse;
 import com.wekids.backend.baas.dto.response.AllAccountResponse;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Member;
-import com.wekids.backend.member.repository.MemberRepository;
+import com.wekids.backend.member.domain.Parent;
+import com.wekids.backend.member.repository.ParentRepository;
 import com.wekids.backend.support.fixture.ParentFixture;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class BassServiceTest {
-    @Mock private MemberRepository memberRepository;
+    @Mock private ParentRepository parentRepository;
     @Mock private RestTemplate restTemplate;
     @InjectMocks private BassServiceImpl bassService;
     @Value("${baas.api.baas-url}")
@@ -39,7 +40,7 @@ class BassServiceTest {
     @Test
     void 전_계좌_리스트_조회를_할_수_있다() {
         // GIVEN
-        Member member = ParentFixture.builder().id(1L).bankMemberId(1L).build().parent();
+        Parent parent = ParentFixture.builder().id(1L).bankMemberId(1L).build().parent();
 
         List<BaasAccountResponse> baasAccountResponses = List.of(
                 new BaasAccountResponse("123-456-789", "우리은행", new BigDecimal(1000.0), "ACTIVE", "안찬웅", "상품명", "입출금통장"),
@@ -50,18 +51,18 @@ class BassServiceTest {
                 .map(AllAccountResponse::new)
                 .toList();
 
-        given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
+        given(parentRepository.findById(parent.getId())).willReturn(Optional.of(parent));
         given(restTemplate.exchange(
                 eq(baasURL + "/api/v1/baas-members/{baasMemberId}/bank-members/{bankMemberId}/accounts"),
                 eq(HttpMethod.GET),
                 eq(null),
                 any(ParameterizedTypeReference.class),
                 eq(baasMemberId),
-                eq(member.getBankMemberId())
+                eq(parent.getBankMemberId())
         )).willReturn(ResponseEntity.ok(baasAccountResponses));
 
         // When
-        List<AllAccountResponse> result = bassService.showAccounts(member.getId());
+        List<AllAccountResponse> result = bassService.showAccounts(parent.getId());
 
         // Then
         for (int i = 0; i < result.size(); i++) {
@@ -79,7 +80,7 @@ class BassServiceTest {
                 eq(null),
                 any(ParameterizedTypeReference.class),
                 eq(baasMemberId),
-                eq(member.getBankMemberId())
+                eq(parent.getBankMemberId())
         );
     }
 
@@ -89,7 +90,7 @@ class BassServiceTest {
         Long memberId = 1L;
 
         // Mock: 멤버가 존재하지 않음
-        given(memberRepository.findById(memberId)).willReturn(Optional.empty());
+        given(parentRepository.findById(memberId)).willReturn(Optional.empty());
 
         // WHEN & THEN
         Exception exception = org.junit.jupiter.api.Assertions.assertThrows(
@@ -97,6 +98,6 @@ class BassServiceTest {
         );
 
         assertThat(exception.getMessage()).contains(memberId + "가 없습니다.");
-        verify(memberRepository).findById(memberId);
+        verify(parentRepository).findById(memberId);
     }
 }

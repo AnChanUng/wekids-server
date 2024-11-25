@@ -6,7 +6,8 @@ import com.wekids.backend.baas.dto.response.AllAccountResponse;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Member;
-import com.wekids.backend.member.repository.MemberRepository;
+import com.wekids.backend.member.domain.Parent;
+import com.wekids.backend.member.repository.ParentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class BassServiceImpl implements BaasService {
-    private final MemberRepository memberRepository;
+    private final ParentRepository parentRepository;
     private final RestTemplate restTemplate;
     @Value("${baas.api.baas-url}")
     private String baasURL;
@@ -35,7 +36,8 @@ public class BassServiceImpl implements BaasService {
     @Override
     @BassLogAndHandleException
     public List<AllAccountResponse> showAccounts(Long memberId) {
-        Member member = findMemberByMemberId(memberId);
+        Parent parent = findParentByMemberId(memberId);
+
         String url = baasURL + "/api/v1/baas-members/{baasMemberId}/bank-members/{bankMemberId}/accounts";
         ResponseEntity<List<BaasAccountResponse>> response = restTemplate.exchange(
                 url,
@@ -43,15 +45,16 @@ public class BassServiceImpl implements BaasService {
                 null,
                 new ParameterizedTypeReference<List<BaasAccountResponse>>() {},
                 baasMemberId,
-                member.getBankMemberId()
+                parent.getBankMemberId()
         );
+
         return response.getBody().stream()
                 .map(AllAccountResponse::new)
                 .collect(Collectors.toList());
     }
 
-    private Member findMemberByMemberId(Long memberId){
-        return memberRepository.findById(memberId).orElseThrow(
+    private Parent findParentByMemberId(Long memberId){
+        return parentRepository.findById(memberId).orElseThrow(
                 ()-> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, memberId + "가 없습니다."));
     }
 }
