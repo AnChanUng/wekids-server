@@ -31,7 +31,7 @@ public class ParentFixture {
     private CardState cardState = CardState.NONE; // 카드 상태
     private Long bankMemberId;
 
-    public Parent from() {
+    public Parent parent() {
         return Parent.builder()
                 .id(id)
                 .name(name)

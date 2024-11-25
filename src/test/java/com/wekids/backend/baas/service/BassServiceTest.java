@@ -39,7 +39,7 @@ class BassServiceTest {
     @Test
     void 전_계좌_리스트_조회를_할_수_있다() {
         // GIVEN
-        Member member = ParentFixture.builder().id(1L).bankMemberId(1L).build().from();
+        Member member = ParentFixture.builder().id(1L).bankMemberId(1L).build().parent();
 
         List<BaasAccountResponse> baasAccountResponses = List.of(
                 new BaasAccountResponse("123-456-789", "우리은행", new BigDecimal(1000.0), "ACTIVE", "안찬웅", "상품명", "입출금통장"),
