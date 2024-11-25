@@ -12,8 +12,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static com.wekids.backend.exception.ErrorCode.INVALID_INPUT;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
+import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,9 +36,9 @@ public class GlobalExceptionHandler {
                 parameterType
         );
 
-        return ResponseEntity.status(BAD_REQUEST)
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(
-                        "BAD_REQUEST",
+                        "INTERNAL_SERVER_ERROR",
                         errorMessage
                 ));
     }
@@ -67,9 +66,9 @@ public class GlobalExceptionHandler {
                 requiredType
         );
 
-        return ResponseEntity.status(BAD_REQUEST)
+        return ResponseEntity.status(INVALID_INPUT.getStatus())
                 .body(ErrorResponse.of(
-                        "BAD_REQUEST",
+                        "INVALID_INPUT",
                         errorMessage
                 ));
     }
