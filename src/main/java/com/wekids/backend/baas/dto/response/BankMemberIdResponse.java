@@ -7,6 +7,6 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BankMemberCreateResponse {
+public class BankMemberIdResponse {
     private Long bankMemberId;
 }

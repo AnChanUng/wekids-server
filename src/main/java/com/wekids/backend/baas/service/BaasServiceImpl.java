@@ -47,7 +47,7 @@ public class BaasServiceImpl implements BaasService {
 
         bankMemberCreateRequest.setBaasMemberId(BAAS_MEMBER_ID);
 
-        ResponseEntity<BankMemberCreateResponse> response = restTemplate.postForEntity(url, bankMemberCreateRequest, BankMemberCreateResponse.class);
+        ResponseEntity<BankMemberIdResponse> response = restTemplate.postForEntity(url, bankMemberCreateRequest, BankMemberIdResponse.class);
 
         return response.getBody().getBankMemberId();
     }
@@ -101,6 +101,15 @@ public class BaasServiceImpl implements BaasService {
         String url = BAAS_URL + "/api/v1/getAccounts";
 
         ResponseEntity<AccountGetResponse> response = restTemplate.postForEntity(url, accountGetRequest, AccountGetResponse.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public BankMemberIdResponse getBankMemberId(BankMemberIdGetRequest bankMemberIdGetRequest) {
+        String url = BAAS_URL + "/api/v1/bank-members/getId";
+
+        ResponseEntity<BankMemberIdResponse> response = restTemplate.postForEntity(url, bankMemberIdGetRequest, BankMemberIdResponse.class);
 
         return response.getBody();
     }

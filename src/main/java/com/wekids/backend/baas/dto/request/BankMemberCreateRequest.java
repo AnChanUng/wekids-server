@@ -2,7 +2,6 @@ package com.wekids.backend.baas.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 
