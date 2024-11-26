@@ -98,7 +98,7 @@ class CardIssueServiceTest {
         when(restTemplate.postForEntity(eq(cardBaasUrl), any(CardCreateRequest.class), eq(CardCreateResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(cardBaasResponse));
         when(cardRepository.save(any(Card.class))).thenReturn(card);
 
-        cardIssueService.issueAccountAndCard(issueRequest);
+        cardIssueService.issueAccountAndCard(issueRequest, memberId);
 
         assertEquals(bankMemberId, child.getBankMemberId());
         assertEquals(accountPassword, child.getSimplePassword());

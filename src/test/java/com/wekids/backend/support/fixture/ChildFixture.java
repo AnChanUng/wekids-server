@@ -16,11 +16,11 @@ public class ChildFixture {
     @Builder.Default
     private String email = "1234"; // 더미 데이터 이메일
     @Builder.Default
-    private String simplePassword = "12345"; // 더미 데이터 비밀번호
+    private String simplePassword = "123456"; // 더미 데이터 비밀번호
     @Builder.Default
     private String phone = "1"; // 예시 전화번호
     @Builder.Default
-    private LocalDate birthday = LocalDate.of(1998, 5, 1); // 예시 생일
+    private LocalDate birthday = LocalDate.now().minusYears(13); // 예시 생일
     @Builder.Default
     private String profile = "https://image.com/virtual.png"; // 프로필 이미지 URL
     @Builder.Default
