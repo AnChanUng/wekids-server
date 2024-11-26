@@ -5,18 +5,19 @@ import com.wekids.backend.auth.enums.MemberType;
 import java.time.LocalDate;
 
 import com.wekids.backend.member.domain.Child;
-import com.wekids.backend.member.domain.Member;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.domain.enums.CardState;
 import com.wekids.backend.member.domain.enums.MemberState;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class SignUpRequest {
 
     @NotNull(message = "생일은 필수 입력 항목입니다.")
@@ -45,30 +46,39 @@ public class SignUpRequest {
     @Email(message = "올바른 이메일 형식이어야 합니다.")
     private String email;
 
-    public Member toParent(String simplePassword){
+    @Size(max = 50, message = "법정대리인의 이름은 최대 50자까지 입력 가능합니다.")
+    private String guardianName;
+
+    @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "법정대리인의 전화번호는 '010-1234-5678' 형식으로 입력해야 합니다.")
+    private String guardianPhone;
+
+    @Past(message = "법정대리인의 생일은 과거 날짜여야 합니다.")
+    private LocalDate guardianBirthday;
+
+    public Parent toParent(String simplePassword, SignUpRequest request){
         return Parent.builder()
-                .email(email)
-                .phone(phone)
+                .email(request.getEmail())
+                .phone(request.getPhone())
                 .cardState(CardState.NONE)
-                .birthday(birthday)
-                .name(name)
+                .birthday(request.getBirthday())
+                .name(request.getName())
                 .simplePassword(simplePassword)
                 .role("ROLE_PARENT")
-                .social(social)
+                .social(request.getSocial())
                 .state(MemberState.ACTIVE)
                 .build();
     }
 
-    public Member toChild(String simplePassword){
+    public Child toChild(String simplePassword, SignUpRequest request){
         return Child.builder()
-                .email(email)
-                .phone(phone)
+                .email(request.getEmail())
+                .phone(request.getPhone())
                 .cardState(CardState.NONE)
-                .birthday(birthday)
-                .name(name)
+                .birthday(request.getBirthday())
+                .name(request.getName())
                 .simplePassword(simplePassword)
                 .role("ROLE_CHILD")
-                .social(social)
+                .social(request.getSocial())
                 .state(MemberState.ACTIVE)
                 .build();
     }
