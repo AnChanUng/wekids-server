@@ -14,5 +14,5 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
     Optional<Parent> findParentByChildId(@Param("childId") Long childId);
 
     @Query("select p from Parent p where p.phone = :phone and p.name = :name and p.role = 'ROLE_PARENT'")
-    Optional<Parent> findByPhoneAndName(String phone, String name);
+    Optional<Parent> findByPhoneAndName(@Param("phone") String phone, @Param("name")String name);
 }
