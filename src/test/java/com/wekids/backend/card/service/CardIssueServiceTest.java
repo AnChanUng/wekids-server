@@ -6,7 +6,7 @@ import com.wekids.backend.baas.dto.request.AccountCreateRequest;
 import com.wekids.backend.baas.dto.request.BankMemberCreateRequest;
 import com.wekids.backend.baas.dto.request.CardCreateRequest;
 import com.wekids.backend.baas.dto.response.AccountCreateResponse;
-import com.wekids.backend.baas.dto.response.BankMemberCreateResponse;
+import com.wekids.backend.baas.dto.response.BankMemberIdResponse;
 import com.wekids.backend.baas.dto.response.CardCreateResponse;
 import com.wekids.backend.card.domain.Card;
 import com.wekids.backend.card.dto.request.IssueRequest;
@@ -75,8 +75,8 @@ class CardIssueServiceTest {
         Long bankMemberId = 1L;
         String accountPassword = parent.getSimplePassword();
 
-        BankMemberCreateResponse memberBaasResponse = BankMemberCreateResponse.builder().bankMemberId(bankMemberId).build();
-        when(restTemplate.postForEntity(eq(bankMemberBaasUrl), any(BankMemberCreateRequest.class), eq(BankMemberCreateResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(memberBaasResponse));
+        BankMemberIdResponse memberBaasResponse = BankMemberIdResponse.builder().bankMemberId(bankMemberId).build();
+        when(restTemplate.postForEntity(eq(bankMemberBaasUrl), any(BankMemberCreateRequest.class), eq(BankMemberIdResponse.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(memberBaasResponse));
 
         String accountBaasUrl = BAAS_URL + "/api/v1/accounts";
         Account account = AccountFixture.builder().build().account();
@@ -111,7 +111,7 @@ class CardIssueServiceTest {
 
         verify(childRepository, times(1)).findById(memberId);
         verify(parentRepository, times(1)).findParentByChildId(memberId);
-        verify(restTemplate, times(1)).postForEntity(eq(bankMemberBaasUrl), any(BankMemberCreateRequest.class), eq(BankMemberCreateResponse.class));
+        verify(restTemplate, times(1)).postForEntity(eq(bankMemberBaasUrl), any(BankMemberCreateRequest.class), eq(BankMemberIdResponse.class));
         verify(restTemplate, times(1)).postForEntity(eq(accountBaasUrl), any(AccountCreateRequest.class), eq(AccountCreateResponse.class));
         verify(accountRepository, times(1)).save(any(Account.class));
         verify(restTemplate, times(1)).postForEntity(eq(cardBaasUrl), any(CardCreateRequest.class), eq(CardCreateResponse.class));
