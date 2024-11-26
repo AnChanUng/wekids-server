@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface BaasService {
 
-    List<AllAccountResponse> showAccounts(Long memberId);
+    List<AccountGetResponse> showAccounts(Long bankMemberId);
     Long createBankMember(BankMemberCreateRequest bankMemberCreateRequest);
     AccountCreateResponse createAccount(AccountCreateRequest accountCreateRequest);
     CardCreateResponse createCard(CardCreateRequest cardCreateRequest);
