@@ -106,6 +106,7 @@ class AuthServiceImplTest {
         SignUpResponse signup = authService.signup(request);
 
         verify(memberRepository, times(1)).save(any(Child.class));
+        verify(parentChildRepository, times(1)).save(any(ParentChild.class));
         verify(passwordEncoder).encode(request.getSimplePassword());
         assertThat(signup.getToken()).isEqualTo(expectedToken);
     }
