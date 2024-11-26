@@ -1,5 +1,6 @@
 package com.wekids.backend.card.controller;
 
+import com.wekids.backend.auth.controller.MemberId;
 import com.wekids.backend.card.dto.request.IssueRequest;
 import com.wekids.backend.card.service.CardIssueService;
 import jakarta.validation.Valid;
@@ -18,8 +19,8 @@ public class CardIssueController {
     private final CardIssueService cardBaasService;
 
     @PostMapping
-    public ResponseEntity<Void> issueCard(@Valid @RequestBody IssueRequest issueRequest) {
-        cardBaasService.issueAccountAndCard(issueRequest);
+    public ResponseEntity<Void> issueCard(@Valid @RequestBody IssueRequest issueRequest, @MemberId Long memberId) {
+        cardBaasService.issueAccountAndCard(issueRequest, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

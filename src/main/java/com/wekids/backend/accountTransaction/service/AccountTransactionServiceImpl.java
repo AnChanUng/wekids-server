@@ -177,8 +177,8 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                 transactionResultSlice.getContent());
     }
 
-    private Account findAccountByAccountId(Long id) {
-        return accountRepository.findById(id)
-                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE, "계좌를 찾을 수 없습니다."));
+    private Account findAccountByAccountId(Long accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌 아이디: " + accountId));
     }
 }
