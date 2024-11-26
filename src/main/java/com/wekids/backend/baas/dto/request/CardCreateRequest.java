@@ -1,19 +1,17 @@
-package com.wekids.backend.card.dto.request;
+package com.wekids.backend.baas.dto.request;
 
-import com.wekids.backend.account.domain.Account;
-import com.wekids.backend.member.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class CardBaasRequest {
+public class CardCreateRequest {
     private String password;
     private Long bankMemberId;
     private String accountNumber;
 
-    public static CardBaasRequest of(String accountNumber, Long bankMemberId, String cardPassword) {
-        return CardBaasRequest.builder()
+    public static CardCreateRequest of(String accountNumber, Long bankMemberId, String cardPassword) {
+        return CardCreateRequest.builder()
                 .accountNumber(accountNumber)
                 .bankMemberId(bankMemberId)
                 .password(cardPassword)

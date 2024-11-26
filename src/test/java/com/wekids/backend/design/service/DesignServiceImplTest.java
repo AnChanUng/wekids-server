@@ -48,7 +48,8 @@ public class DesignServiceImplTest {
                 .member(member)
                 .color(ColorType.valueOf("PINK1"))
                 .character(CharacterType.valueOf("HEARTSPRING"))
-                .build().build();
+                .build()
+                .design();
 
         when(designRepository.findById(memberId)).thenReturn(Optional.of(design));
 
@@ -67,13 +68,14 @@ public class DesignServiceImplTest {
                 .character(CharacterType.valueOf("HEARTSPRING"))
                 .build();
 
-        DesignFixture design = DesignFixture.builder()
+        Design design = DesignFixture.builder()
                 .memberId(memberId)
                 .color(request.getColor())
                 .character(request.getCharacter())
-                .build();
+                .build()
+                .design();
 
-        when(designRepository.save(any(Design.class))).thenReturn(design.build());
+        when(designRepository.save(any(Design.class))).thenReturn(design);
 
         designService.createDesign(memberId, request);
 

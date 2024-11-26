@@ -5,7 +5,7 @@ import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
-import com.wekids.backend.accountTransaction.dto.request.BaaSTransferRequest;
+import com.wekids.backend.baas.dto.request.TransferRequest;
 import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
@@ -408,14 +408,14 @@ class AccountTransactionServiceImplTest {
 
         when(accountRepository.findAccountByAccountNumber(parentAccount.getAccountNumber())).thenReturn(Optional.of(parentAccount));
         when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
-        when(restTemplate.postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class)))
+        when(restTemplate.postForLocation(eq(baasURL + "/api/v1/transactions"), any(TransferRequest.class)))
                 .thenReturn(null);
 
         // When
         accountTransactionService.transfer(transactionRequest);
 
         // Then
-        verify(restTemplate, times(1)).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
+        verify(restTemplate, times(1)).postForLocation(eq(baasURL + "/api/v1/transactions"), any(TransferRequest.class));
     }
 
     @Test
@@ -451,7 +451,7 @@ class AccountTransactionServiceImplTest {
         when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
 
         doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "잘못된 요청"))
-                .when(restTemplate).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
+                .when(restTemplate).postForLocation(eq(baasURL + "/api/v1/transactions"), any(TransferRequest.class));
 
         // When & Then
         WekidsException exception = assertThrows(WekidsException.class, () ->
@@ -461,7 +461,7 @@ class AccountTransactionServiceImplTest {
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.BAAS_REQUEST_FAILED);
         assertThat(exception.getMessage()).contains("BaaS 요청 실패: 400 잘못된 요청");
 
-        verify(restTemplate, times(1)).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
+        verify(restTemplate, times(1)).postForLocation(eq(baasURL + "/api/v1/transactions"), any(TransferRequest.class));
     }
 
     @Test
@@ -497,7 +497,7 @@ class AccountTransactionServiceImplTest {
         when(accountRepository.findAccountByAccountNumber(childAccount.getAccountNumber())).thenReturn(Optional.of(childAccount));
 
         doThrow(new RestClientException("네트워크 오류"))
-                .when(restTemplate).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
+                .when(restTemplate).postForLocation(eq(baasURL + "/api/v1/transactions"), any(TransferRequest.class));
 
         // When & Then
         WekidsException exception = assertThrows(WekidsException.class, () ->
@@ -507,7 +507,7 @@ class AccountTransactionServiceImplTest {
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.BAAS_REQUEST_FAILED);
         assertThat(exception.getMessage()).contains("BaaS 요청 실패: 네트워크 오류 또는 알 수 없는 문제 - 네트워크 오류");
 
-        verify(restTemplate, times(1)).postForLocation(eq(baasURL + "/api/v1/transactions"), any(BaaSTransferRequest.class));
+        verify(restTemplate, times(1)).postForLocation(eq(baasURL + "/api/v1/transactions"), any(TransferRequest.class));
     }
 
 }

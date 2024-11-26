@@ -17,7 +17,8 @@ public enum ErrorCode {
     BAAS_NOT_RESPONSE(GATEWAY_TIMEOUT, "BaaS 응답이 없습니다."),
     BAAS_REQUEST_FAILED(INTERNAL_SERVER_ERROR, "BaaS 요청에 실패했습니다."),
     DESIGN_NOT_FOUND(INTERNAL_SERVER_ERROR, "디자인 정보를 찾을 수 없습니다."),
-    INVALID_CARD_STATE(INTERNAL_SERVER_ERROR, "잘못된 카드 상태입니다.");
+    INVALID_CARD_STATE(INTERNAL_SERVER_ERROR, "잘못된 카드 상태입니다."),
+    NOT_REGISTERED_BANK_MEMBER(INTERNAL_SERVER_ERROR, "아직 등록되지 않은 은행 회원입니다.");
 
     private final HttpStatus status;
     private final String message;
