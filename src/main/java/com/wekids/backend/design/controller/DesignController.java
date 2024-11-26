@@ -1,5 +1,6 @@
 package com.wekids.backend.design.controller;
 
+import com.wekids.backend.auth.controller.MemberId;
 import com.wekids.backend.design.dto.request.DesignCreateRequest;
 import com.wekids.backend.design.dto.response.DesignResponse;
 import com.wekids.backend.design.service.DesignService;
@@ -17,17 +18,15 @@ public class DesignController {
 
     private final DesignService designService;
 
-    private static final Long DEFAULT_MEMBER_ID = 3L;
-
     @GetMapping
-    public ResponseEntity<DesignResponse> getDesign() {
-        DesignResponse response = designService.showDesign(DEFAULT_MEMBER_ID);
+    public ResponseEntity<DesignResponse> getDesign(@MemberId Long memberId) {
+        DesignResponse response = designService.showDesign(memberId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<Void> createDesign(@RequestBody DesignCreateRequest request) {
-        designService.createDesign(DEFAULT_MEMBER_ID, request);
+    public ResponseEntity<Void> createDesign(@RequestBody DesignCreateRequest request, @MemberId Long memberId) {
+        designService.createDesign(memberId, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
