@@ -3,8 +3,7 @@ package com.wekids.backend.exception;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
 public enum ErrorCode {
@@ -18,7 +17,8 @@ public enum ErrorCode {
     BAAS_NOT_RESPONSE(HttpStatus.GATEWAY_TIMEOUT, "BaaS 응답이 없습니다."),
     BAAS_REQUEST_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "BaaS 요청에 실패했습니다."),
     DESIGN_NOT_FOUND(NOT_FOUND, "디자인 정보를 찾을 수 없습니다."),
-    INVALID_CARD_STATE(BAD_REQUEST, "잘못된 카드 상태입니다.");
+    INVALID_CARD_STATE(BAD_REQUEST, "잘못된 카드 상태입니다."),
+    NOT_REGISTERED_BANK_MEMBER(INTERNAL_SERVER_ERROR, "아직 등록되지 않은 은행 회원입니다.");
 
     private final HttpStatus status;
     private final String message;
