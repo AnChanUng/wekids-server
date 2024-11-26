@@ -1,4 +1,4 @@
-package com.wekids.backend.card.dto.request;
+package com.wekids.backend.baas.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,18 +7,21 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class MemberBaasRequest {
+public class BankMemberCreateRequest {
     private String name;
     private LocalDate birthday;
     private String residentRegistrationNumber;
     private Long baasMemberId;
 
-    public static MemberBaasRequest of(String name, LocalDate birthday, String residentRegistrationNumber, Long baasMemberId) {
-        return MemberBaasRequest.builder()
+    public static BankMemberCreateRequest of(String name, LocalDate birthday, String residentRegistrationNumber) {
+        return BankMemberCreateRequest.builder()
                 .name(name)
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
-                .baasMemberId(baasMemberId)
                 .build();
+    }
+
+    public void setBaasMemberId(Long baasMemberId) {
+        this.baasMemberId = baasMemberId;
     }
 }

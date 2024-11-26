@@ -1,11 +1,11 @@
-package com.wekids.backend.accountTransaction.dto.response;
+package com.wekids.backend.baas.dto.response;
 
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class BaasTransactionResponse {
+public class AccountTransactionResponse {
     private String title;
     private String type;
     private Long amount;

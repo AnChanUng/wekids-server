@@ -1,9 +1,8 @@
 package com.wekids.backend.card.domain;
 
 import com.wekids.backend.account.domain.Account;
+import com.wekids.backend.baas.dto.response.CardCreateResponse;
 import com.wekids.backend.card.domain.enums.CardState;
-import com.wekids.backend.card.dto.request.CardBaasRequest;
-import com.wekids.backend.card.dto.response.CardBaasResponse;
 import com.wekids.backend.common.entity.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
@@ -53,14 +52,14 @@ public class Card extends BaseTime {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public static Card of(CardBaasResponse cardResponse, String cardPassword, Account account, String cardName) {
+    public static Card of(CardCreateResponse cardCreateResponse, String cardPassword, Account account, String cardName) {
         return Card.builder()
-                .cardNumber(cardResponse.getCardNumber())
-                .validThru(cardResponse.getValidThru())
-                .cvc(cardResponse.getCvc())
-                .memberName(cardResponse.getBankMemberName())
+                .cardNumber(cardCreateResponse.getCardNumber())
+                .validThru(cardCreateResponse.getValidThru())
+                .cvc(cardCreateResponse.getCvc())
+                .memberName(cardCreateResponse.getBankMemberName())
                 .cardName(cardName)
-                .newDate(cardResponse.getNewDate())
+                .newDate(cardCreateResponse.getNewDate())
                 .password(cardPassword)
                 .account(account)
                 .build();
