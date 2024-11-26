@@ -1,23 +1,33 @@
 package com.wekids.backend.account.dto.response;
 
-import com.wekids.backend.account.domain.Account;
-import com.wekids.backend.account.domain.enums.AccountDesignType;
-import com.wekids.backend.account.domain.enums.AccountState;
-import lombok.Getter;
-import lombok.Setter;
+import com.wekids.backend.baas.dto.response.AccountGetResponse;
+import lombok.*;
 
-import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccountResponse {
 
     private String accountNumber;
     private String bankName;
-    private BigDecimal balance;
+    private Long balance;
 
-    public AccountResponse(BaasAccountResponse baasAccountResponse){
-        this.accountNumber = baasAccountResponse.getAccountNumber();
-        this.bankName = baasAccountResponse.getBankName();
-        this.balance = baasAccountResponse.getBalance();
+    public static AccountResponse from(AccountGetResponse accountGetResponse) {
+        return AccountResponse.builder()
+                .accountNumber(accountGetResponse.getAccountNumber())
+                .bankName(accountGetResponse.getBankName())
+                .balance(accountGetResponse.getBalance())
+                .build();
+    }
+
+    public static List<AccountResponse> from(List<AccountGetResponse> accountGetResponses) {
+        return accountGetResponses.stream()
+                .map(AccountResponse::from)
+                .collect(Collectors.toList());
     }
 }
