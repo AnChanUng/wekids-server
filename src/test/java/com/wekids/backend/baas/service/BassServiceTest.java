@@ -1,7 +1,7 @@
 package com.wekids.backend.baas.service;
 
-import com.wekids.backend.account.dto.response.BaasAccountResponse;
-import com.wekids.backend.baas.dto.response.AllAccountResponse;
+import com.wekids.backend.account.domain.enums.AccountState;
+import com.wekids.backend.baas.dto.response.AccountGetResponse;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.repository.ParentRepository;
@@ -17,9 +17,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,14 +41,12 @@ class BassServiceTest {
         // GIVEN
         Parent parent = ParentFixture.builder().id(1L).bankMemberId(1L).build().parent();
 
-        List<BaasAccountResponse> baasAccountResponses = List.of(
-                new BaasAccountResponse("123-456-789", "우리은행", new BigDecimal(1000.0), "ACTIVE", "안찬웅", "상품명", "입출금통장"),
-                new BaasAccountResponse("987-654-321", "하나은행", new BigDecimal(1000.0), "ACTIVE", "조예은", "상품명", "입출금통장")
+        List<AccountGetResponse> accountGetResponses = List.of(
+                new AccountGetResponse("123-456-789", "우리은행", 1000L, AccountState.ACTIVE, "안찬웅", "상품명", "입출금통장"),
+                new AccountGetResponse("987-654-321", "하나은행", 1000L, AccountState.ACTIVE, "조예은", "상품명", "입출금통장")
         );
 
-        List<AllAccountResponse> expectedAccounts = baasAccountResponses.stream()
-                .map(AllAccountResponse::new)
-                .toList();
+        List<AccountGetResponse> expectedAccounts = accountGetResponses.stream().collect(Collectors.toList());
 
         given(parentRepository.findById(parent.getId())).willReturn(Optional.of(parent));
         given(restTemplate.exchange(
@@ -58,15 +56,15 @@ class BassServiceTest {
                 any(ParameterizedTypeReference.class),
                 eq(baasMemberId),
                 eq(parent.getBankMemberId())
-        )).willReturn(ResponseEntity.ok(baasAccountResponses));
+        )).willReturn(ResponseEntity.ok(accountGetResponses));
 
         // When
-        List<AllAccountResponse> result = bassService.showAccounts(parent.getId());
+        List<AccountGetResponse> result = bassService.showAccounts(parent.getId());
 
         // Then
         for (int i = 0; i < result.size(); i++) {
-            AllAccountResponse actual = result.get(i);
-            AllAccountResponse expected = expectedAccounts.get(i);
+            AccountGetResponse actual = result.get(i);
+            AccountGetResponse expected = expectedAccounts.get(i);
 
             assertThat(actual.getAccountNumber()).isEqualTo(expected.getAccountNumber());
             assertThat(actual.getBankName()).isEqualTo(expected.getBankName());
