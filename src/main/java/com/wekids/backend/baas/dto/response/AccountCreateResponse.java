@@ -1,4 +1,4 @@
-package com.wekids.backend.card.dto.response;
+package com.wekids.backend.baas.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountBaasResponse {
+public class AccountCreateResponse {
     private String accountNumber; // 계좌번호
     private String type;          // 계좌 종류
     private LocalDateTime expireDate; // 만료일시

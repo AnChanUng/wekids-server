@@ -1,4 +1,4 @@
-package com.wekids.backend.card.dto.response;
+package com.wekids.backend.baas.dto.response;
 
 import lombok.*;
 
@@ -7,6 +7,6 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberBaasResponse {
+public class BankMemberIdResponse {
     private Long bankMemberId;
 }

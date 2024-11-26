@@ -2,8 +2,7 @@ package com.wekids.backend.accountTransaction.domain;
 
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
-import com.wekids.backend.accountTransaction.dto.response.BaasTransactionResponse;
-import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
+import com.wekids.backend.baas.dto.response.AccountTransactionResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,7 +39,8 @@ public class AccountTransaction {
     @Column(nullable = false)
     private String receiver;
 
-    private String memo;
+    @Builder.Default
+    private String memo = "";
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -50,35 +50,19 @@ public class AccountTransaction {
     @ToString.Exclude
     private Account account;
 
-
     public void updateMemo(String memo) {
         this.memo = memo;
     }
 
-    public static AccountTransaction createTransaction(TransactionRequest request, TransactionType type, BigDecimal
-            balance, Account account) {
-        return AccountTransaction.builder()
-                .title(request.getSender())
-                .type(type)
-                .amount(request.getAmount())
-                .balance(balance)
-                .sender(request.getSender())
-                .receiver(request.getReceiver())
-                .memo("")
-                .createdAt(LocalDateTime.now())
-                .account(account)
-                .build();
-    }
-
-    public static AccountTransaction of(Account account, BaasTransactionResponse response){
+    public static AccountTransaction of(Account account, AccountTransactionResponse response){
         return AccountTransaction.builder()
                 .account(account)
                 .title(response.getTitle())
-                .amount(new BigDecimal(response.getAmount()))
+                .amount(BigDecimal.valueOf(response.getAmount()))
                 .type(TransactionType.from(response.getType()))
                 .sender(response.getSender())
                 .receiver(response.getReceiver())
-                .balance(new BigDecimal(response.getBalance()))
+                .balance(BigDecimal.valueOf(response.getBalance()))
                 .createdAt(response.getTransactionDate())
                 .build();
     }

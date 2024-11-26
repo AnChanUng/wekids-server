@@ -12,8 +12,8 @@ import org.springframework.web.client.RestClientException;
 
 @Aspect
 @Component
-public class BassExceptionHandlingAspect {
-    @Around("@annotation(com.wekids.backend.baas.aop.BassLogAndHandleException)")
+public class BaasExceptionHandlingAspect {
+    @Around("@annotation(com.wekids.backend.baas.aop.BaasLogAndHandleException)")
     public Object logAndHandleException(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();
