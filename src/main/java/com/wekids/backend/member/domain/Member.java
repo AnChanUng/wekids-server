@@ -38,8 +38,12 @@ public abstract class Member extends BaseTime {
     @Column(nullable = false)
     private String email;
 
-    @Column(length = 20)
     private String simplePassword;
+
+    @Column(nullable = false)
+    private String social;
+
+    private String role;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -63,6 +67,14 @@ public abstract class Member extends BaseTime {
     }
     public void updateCardState(CardState cardState) {
         this.cardState = cardState;
+    }
+
+    public void updateSocialInfo(String name, String phone, String email, LocalDate birthday, String profile){
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.birthday = birthday;
+        this.profile = profile;
     }
 
 }

@@ -4,14 +4,17 @@ import com.wekids.backend.common.entity.BaseTime;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @IdClass(ParentChildId.class)
-public class ParentChild {
-
+@SuperBuilder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ParentChild extends BaseTime {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
@@ -22,7 +25,10 @@ public class ParentChild {
     @JoinColumn(name = "child_id")
     private Child child;
 
-    @CreatedDate
-    @Column(name = "created_at",updatable = false, nullable = false)
-    private LocalDateTime createdAt;
+    public static ParentChild of(Parent parent, Child child){
+        return ParentChild.builder()
+                .parent(parent)
+                .child(child)
+                .build();
+    }
 }

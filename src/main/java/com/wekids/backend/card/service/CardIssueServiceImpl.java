@@ -36,11 +36,10 @@ public class CardIssueServiceImpl implements CardIssueService {
     private final ParentRepository parentRepository;
     private final DesignRepository designRepository;
     private final BaasService baasService;
-    private Long memberId = 3L;
 
     @Override
     @Transactional
-    public void issueAccountAndCard(IssueRequest issueRequest) {
+    public void issueAccountAndCard(IssueRequest issueRequest, Long memberId) {
         Child child = getChild(memberId);
         Design design = getDesign(memberId);
         Parent parent = getParentOfChild(memberId);
