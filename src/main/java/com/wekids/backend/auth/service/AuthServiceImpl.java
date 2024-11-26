@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService{
         LocalDate today = LocalDate.now();
         Period age = Period.between(birthdate, today);
         if (age.getYears() < 19) {
-            throw new WekidsException(ErrorCode.INVALID_SIGNUP_AGE, "현재 나이는 " + age + "입니다. 19세 이상이어야 합니다");
+            throw new WekidsException(ErrorCode.INVALID_SIGNUP_AGE, "현재 나이는 " + age.getYears() + "입니다. 19세 이상이어야 합니다");
         }
     }
 
@@ -85,7 +85,7 @@ public class AuthServiceImpl implements AuthService{
         LocalDate today = LocalDate.now();
         Period age = Period.between(birthdate, today);
         if (age.getYears() >= 14) {
-            throw new WekidsException(ErrorCode.INVALID_SIGNUP_AGE, "현재 나이는 " + age + "입니다. 14세 미만이어야 합니다.");
+            throw new WekidsException(ErrorCode.INVALID_SIGNUP_AGE, "현재 나이는 " + age.getYears() + "입니다. 14세 미만이어야 합니다.");
         }
     }
 
