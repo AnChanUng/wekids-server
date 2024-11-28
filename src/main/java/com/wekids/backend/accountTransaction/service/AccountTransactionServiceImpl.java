@@ -44,7 +44,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
     @Override
     public TransactionDetailSearchResponse showTransaction(Long transactionId) {
-        AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "transaction id값");
+        AccountTransaction accountTransaction = findAccountTransactionById(transactionId);
         return TransactionDetailSearchResponse.from(accountTransaction);
 
     }
@@ -52,7 +52,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     @Override
     @Transactional
     public void updateMemo(Long transactionId, UpdateMemoRequest request) {
-        AccountTransaction accountTransaction = findAccountTransactionById(transactionId, "memo업데이트를 하는 거래내역id");
+        AccountTransaction accountTransaction = findAccountTransactionById(transactionId);
         accountTransaction.updateMemo(request.getMemo());
     }
 
@@ -65,23 +65,45 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         log.info("부모계좌번호 " + parentAccount);
         log.info("자식계좌번호 " + childAccount);
 
-        updateAccount(transactionRequest.getParentAccountNumber(), parentAccount);
-        updateAccount(transactionRequest.getChildAccountNumber(), childAccount);
+        updateAccount(parentAccount);
+        updateAccount(childAccount);
 
         validateTransaction(transactionRequest, parentAccount, childAccount);
 
         TransferResponse transferResponse = transferBaaS(transactionRequest);
-
-        saveAccountTransaction(transferResponse.getSender(), parentAccount);
-        saveAccountTransaction(transferResponse.getReceiver(), childAccount);
     }
 
-    private void saveAccountTransaction(AccountTransactionResponse accountTransactionResponse, Account account) {
-        account.updateBalance(BigDecimal.valueOf(accountTransactionResponse.getBalance()));
+    @Override
+    @Transactional
+    public TransactionHistoryResponse showTransactionList(Long accountId, AccountTransactionListGetRequestParams params) {
+        Account account = findAccountByAccountId(accountId);
+        LocalDate start = params.getStart();
+        LocalDate end = params.getEnd();
+        TransactionRequestType type = params.getType();
+        Pageable pageable = PageRequest.of(params.getPage(), params.getSize());
 
-        AccountTransaction accountTransaction = AccountTransaction.of(account, accountTransactionResponse);
+        if (pageable.getPageNumber() == 0) {
+            updateAccount(account);
 
-        accountTransactionRepository.save(accountTransaction);
+            LocalDateTime mostRecentDateTime = accountTransactionRepository
+                    .findMostRecentTransactionDateTime(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX)).orElse(start.atStartOfDay());
+
+            AccountTransactionGetRequest request = AccountTransactionGetRequest.of(
+                    account.getAccountNumber(), mostRecentDateTime.plusSeconds(1), end.atTime(LocalTime.MAX), type.toString(), pageable);
+
+            List<AccountTransactionResponse> accountTransactionGetResponses = baasService.getAccountTransactionList(request);
+
+            accountTransactionGetResponses.forEach(accountTransactionGetResponse -> {
+                accountTransactionRepository.save(AccountTransaction.of(account, accountTransactionGetResponse));
+            });
+        }
+
+        Slice<TransactionResult> transactionResultSlice = accountTransactionRepository.findAccountTransactionByTypeSortedByTimeDesc(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX), pageable);
+
+        return TransactionHistoryResponse.of(
+                account.getBalance().longValue(),
+                transactionResultSlice.hasNext(),
+                transactionResultSlice.getContent());
     }
 
     private TransferResponse transferBaaS(TransactionRequest transactionRequest) {
@@ -94,6 +116,11 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         return baasService.transfer(request);
     }
 
+    private Account findAccountByAccountId(Long id) {
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_ACTIVE, "계좌를 찾을 수 없습니다."));
+    }
+
     private Account findAccountByAccountNumber(String accountNumber) {
         log.debug("Searching for account with account number: {}", accountNumber);  // 로그 추가
         return accountRepository.findAccountByAccountNumber(accountNumber)
@@ -101,9 +128,9 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
                         "회원 계좌번호: " + accountNumber));
     }
 
-    private AccountTransaction findAccountTransactionById(Long transactionId, String message) {
+    private AccountTransaction findAccountTransactionById(Long transactionId) {
         return accountTransactionRepository.findById(transactionId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, message + transactionId));
+                .orElseThrow(() -> new WekidsException(ErrorCode.TRANSACTION_NOT_FOUND, "거래 아이디: " + transactionId));
     }
 
     private void validateTransaction(TransactionRequest transactionRequest, Account parentAccount, Account childAccount) {
@@ -136,49 +163,13 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         }
     }
 
-    private void updateAccount(String accountNumber, Account account) {
-        AccountGetResponse accountResponse = baasService.getAccount(AccountGetRequest.of(accountNumber));
+    private void updateAccount(Account account) {
+        AccountGetResponse accountResponse = baasService.getAccount(AccountGetRequest.of(account.getAccountNumber()));
 
         if (!account.getState().equals(accountResponse.getState())) {
             account.updateState(accountResponse.getState());
         }
 
         account.updateBalance(BigDecimal.valueOf(accountResponse.getBalance()));
-    }
-
-    @Override
-    @Transactional
-    public TransactionHistoryResponse showTransactionList(Long accountId, AccountTransactionListGetRequestParams params) {
-        Account account = findAccountByAccountId(accountId);
-        LocalDate start = params.getStart();
-        LocalDate end = params.getEnd();
-        TransactionRequestType type = params.getType();
-        Pageable pageable = PageRequest.of(params.getPage(), params.getSize());
-
-        if (pageable.getPageNumber() == 0) {
-            LocalDateTime mostRecentDateTime = accountTransactionRepository
-                    .findMostRecentTransactionDateTime(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX)).orElse(start.atStartOfDay());
-
-            AccountTransactionGetRequest request = AccountTransactionGetRequest.of(
-                    account.getAccountNumber(), mostRecentDateTime.plusSeconds(1), end.atTime(LocalTime.MAX), type.toString(), pageable);
-
-            List<AccountTransactionResponse> accountTransactionGetResponses = baasService.getAccountTransactionList(request);
-
-            accountTransactionGetResponses.forEach(accountTransactionGetResponse -> {
-                accountTransactionRepository.save(AccountTransaction.of(account, accountTransactionGetResponse));
-            });
-        }
-
-        Slice<TransactionResult> transactionResultSlice = accountTransactionRepository.findAccountTransactionByTypeSortedByTimeDesc(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX), pageable);
-
-        return TransactionHistoryResponse.of(
-                account.getBalance().longValue(),
-                transactionResultSlice.hasNext(),
-                transactionResultSlice.getContent());
-    }
-
-    private Account findAccountByAccountId(Long accountId) {
-        return accountRepository.findById(accountId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌 아이디: " + accountId));
     }
 }
