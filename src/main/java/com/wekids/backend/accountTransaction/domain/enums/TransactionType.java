@@ -8,6 +8,6 @@ public enum TransactionType {
             return TransactionType.DEPOSIT;
         }
 
-        return TransactionType.DEPOSIT;
+        return TransactionType.WITHDRAWAL;
     }
 }
