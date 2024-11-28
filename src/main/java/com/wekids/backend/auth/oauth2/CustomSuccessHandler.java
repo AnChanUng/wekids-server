@@ -27,7 +27,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.addCookie(createCookie("name", customUserDetails.getName()));
             response.addCookie(createCookie("email", customUserDetails.getEmail()));
             response.addCookie(createCookie("birthday", customUserDetails.getBirthday()));
-                response.sendRedirect("http://localhost:3000/select");
+                response.sendRedirect("http://localhost:3000/signup/select");
             return;
         }
 
