@@ -74,8 +74,25 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public MissionGetResponse getMissionDetail(Long missionId, Long memberId) {
-        return null;
+    public MissionGetResponse getMissionDetail(Long missionId, Long memberId, String role) {
+        Mission mission = getMission(missionId);
+
+        validateMember(missionId, memberId, role, mission);
+
+        return MissionGetResponse.from(mission);
+    }
+
+    private void validateMember(Long missionId, Long memberId, String role, Mission mission) {
+        Long missionMemberId = null;
+
+        if(role.contains("PARENT")) missionMemberId = mission.getParent().getId();
+        if(role.contains("CHILD")) missionMemberId = mission.getChild().getId();
+
+        if(missionMemberId != memberId) throw  new WekidsException(ErrorCode.NOT_ALLOWED_MEMBER_ACCESS, "미션 아이디: " + missionId);
+    }
+
+    private Mission getMission(Long missionId) {
+        return missionRepository.findById(missionId).orElseThrow(() -> new WekidsException(ErrorCode.MISSION_NOT_FOUND, "미션 아이디: " + missionId));
     }
 
     @Override

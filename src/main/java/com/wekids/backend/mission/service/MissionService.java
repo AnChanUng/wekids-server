@@ -11,7 +11,7 @@ public interface MissionService {
 
     List<MissionGetResponse> getMissionList(MissionListGetRequestParams params, Long memberId, String role);
 
-    MissionGetResponse getMissionDetail(Long missionId, Long memberId);
+    MissionGetResponse getMissionDetail(Long missionId, Long memberId, String role);
 
     void submitMission(Long missionId, Long memberId);
 
