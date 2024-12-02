@@ -9,7 +9,7 @@ import java.util.List;
 public interface MissionService {
     void createMission(MissionCreateRequest request, Long memberId);
 
-    List<MissionGetResponse> getMissionList(MissionListGetRequestParams params, Long memberId);
+    List<MissionGetResponse> getMissionList(MissionListGetRequestParams params, Long memberId, String role);
 
     MissionGetResponse getMissionDetail(Long missionId, Long memberId);
 

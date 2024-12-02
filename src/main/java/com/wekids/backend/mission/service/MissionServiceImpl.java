@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class MissionServiceImpl implements MissionService{
+public class MissionServiceImpl implements MissionService {
     private final MissionRepository missionRepository;
     private final ParentRepository parentRepository;
     private final ChildRepository childRepository;
@@ -43,7 +43,8 @@ public class MissionServiceImpl implements MissionService{
     private void validateMemberRelationship(Long parentId, Long childId) {
         ParentChildId parentChildId = ParentChildId.of(parentId, childId);
         boolean checkRelationship = parentChildRepository.existsById(parentChildId);
-        if(!checkRelationship) throw new WekidsException(ErrorCode.INVALID_MEMBER_RELATIONSHIP, "부모 회원 아이디: " + parentId + " 자식 회원 아이디: " + childId);
+        if (!checkRelationship)
+            throw new WekidsException(ErrorCode.INVALID_MEMBER_RELATIONSHIP, "부모 회원 아이디: " + parentId + " 자식 회원 아이디: " + childId);
     }
 
     private Child getChild(Long childId) {
@@ -55,8 +56,21 @@ public class MissionServiceImpl implements MissionService{
     }
 
     @Override
-    public List<MissionGetResponse> getMissionList(MissionListGetRequestParams params, Long memberId) {
-        return null;
+    public List<MissionGetResponse> getMissionList(MissionListGetRequestParams params, Long memberId, String role) {
+        Parent parent = null;
+        Child child = null;
+
+        if (role.contains("PARENT")) {
+            parent = getParent(memberId);
+            if(params.getChild() != null) child = getChild(params.getChild());
+        }
+
+        if (role.contains("CHILD")) {
+            child = getChild(memberId);
+        }
+
+        List<Mission> missionList = missionRepository.findAllByCondition(params.getState(), params.getCategory(), parent, child);
+        return MissionGetResponse.from(missionList);
     }
 
     @Override
