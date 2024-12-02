@@ -5,6 +5,7 @@ import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.mission.domain.enums.MissionCategory;
 import com.wekids.backend.mission.domain.enums.MissionState;
+import com.wekids.backend.mission.dto.request.MissionCreateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,9 +37,11 @@ public class Mission extends BaseTime {
     private BigDecimal amount;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private MissionCategory category;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private MissionState state;
 
     private String image;
@@ -52,4 +55,17 @@ public class Mission extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "child_id", nullable = false)
     private Child child;
+
+    public static Mission createNewMission(MissionCreateRequest request, Parent parent, Child child) {
+        return Mission.builder()
+                .title(request.getTitle())
+                .content(request.getContent())
+                .deadline(request.getDeadline())
+                .amount(BigDecimal.valueOf(request.getAmount()))
+                .category(request.getCategory())
+                .state(MissionState.NEW)
+                .parent(parent)
+                .child(child)
+                .build();
+    }
 }
