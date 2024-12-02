@@ -32,8 +32,8 @@ public class MissionController {
     }
 
     @GetMapping("/{missionId}")
-    public ResponseEntity<MissionGetResponse> showMissionDetail(@PathVariable Long missionId, @MemberId Long memberId) {
-        MissionGetResponse response = missionService.getMissionDetail(missionId, memberId);
+    public ResponseEntity<MissionGetResponse> showMissionDetail(@PathVariable Long missionId, @MemberId Long memberId, @Role String role) {
+        MissionGetResponse response = missionService.getMissionDetail(missionId, memberId, role);
         return ResponseEntity.ok(response);
     }
 
