@@ -19,7 +19,7 @@ public class MissionController {
     private final MissionService missionService;
 
     @PostMapping
-    public ResponseEntity<Void> createMission(MissionCreateRequest request, @MemberId Long memberId) {
+    public ResponseEntity<Void> createMission(@RequestBody MissionCreateRequest request, @MemberId Long memberId) {
         missionService.createMission(request, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
