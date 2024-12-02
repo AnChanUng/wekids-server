@@ -6,6 +6,7 @@ import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.mission.domain.enums.MissionCategory;
 import com.wekids.backend.mission.domain.enums.MissionState;
 import com.wekids.backend.mission.dto.request.MissionCreateRequest;
+import com.wekids.backend.mission.dto.request.MissionSubmitRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +21,7 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Mission extends BaseTime {
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -42,7 +43,8 @@ public class Mission extends BaseTime {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MissionState state;
+    @Builder.Default
+    private MissionState state = MissionState.NEW;
 
     private String image;
 
@@ -63,9 +65,14 @@ public class Mission extends BaseTime {
                 .deadline(request.getDeadline())
                 .amount(BigDecimal.valueOf(request.getAmount()))
                 .category(request.getCategory())
-                .state(MissionState.NEW)
                 .parent(parent)
                 .child(child)
                 .build();
+    }
+
+    public void submit(MissionSubmitRequest request, String fileName) {
+        this.memo = request == null ? null : request.getMemo();
+        this.image = fileName;
+        this.state = MissionState.SUBMIT;
     }
 }
