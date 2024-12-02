@@ -4,12 +4,14 @@ import com.wekids.backend.auth.controller.MemberId;
 import com.wekids.backend.auth.controller.Role;
 import com.wekids.backend.mission.dto.request.MissionCreateRequest;
 import com.wekids.backend.mission.dto.request.MissionListGetRequestParams;
+import com.wekids.backend.mission.dto.request.MissionSubmitRequest;
 import com.wekids.backend.mission.dto.response.MissionGetResponse;
 import com.wekids.backend.mission.service.MissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -38,8 +40,8 @@ public class MissionController {
     }
 
     @PatchMapping("/{missionId}/submit")
-    public ResponseEntity<Void> submitMission(@PathVariable Long missionId, @MemberId Long memberId) {
-        missionService.submitMission(missionId, memberId);
+    public ResponseEntity<Void> submitMission(@RequestPart(value="data", required = false) MissionSubmitRequest request, @RequestPart(value = "image", required = false) MultipartFile image, @PathVariable Long missionId, @MemberId Long memberId) {
+        missionService.submitMission(request, image, missionId, memberId);
         return ResponseEntity.noContent().build();
     }
 
