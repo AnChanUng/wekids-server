@@ -2,7 +2,9 @@ package com.wekids.backend.mission.service;
 
 import com.wekids.backend.mission.dto.request.MissionCreateRequest;
 import com.wekids.backend.mission.dto.request.MissionListGetRequestParams;
+import com.wekids.backend.mission.dto.request.MissionSubmitRequest;
 import com.wekids.backend.mission.dto.response.MissionGetResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -13,7 +15,7 @@ public interface MissionService {
 
     MissionGetResponse getMissionDetail(Long missionId, Long memberId, String role);
 
-    void submitMission(Long missionId, Long memberId);
+    void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId, Long memberId);
 
     void acceptMission(Long missionId, Long memberId);
 

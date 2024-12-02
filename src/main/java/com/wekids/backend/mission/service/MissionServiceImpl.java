@@ -1,5 +1,7 @@
 package com.wekids.backend.mission.service;
 
+import com.wekids.backend.aws.s3.AmazonS3Manager;
+import com.wekids.backend.aws.s3.Filepath;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
@@ -11,11 +13,13 @@ import com.wekids.backend.member.repository.ParentRepository;
 import com.wekids.backend.mission.domain.Mission;
 import com.wekids.backend.mission.dto.request.MissionCreateRequest;
 import com.wekids.backend.mission.dto.request.MissionListGetRequestParams;
+import com.wekids.backend.mission.dto.request.MissionSubmitRequest;
 import com.wekids.backend.mission.dto.response.MissionGetResponse;
 import com.wekids.backend.mission.repository.MissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,6 +31,7 @@ public class MissionServiceImpl implements MissionService {
     private final ParentRepository parentRepository;
     private final ChildRepository childRepository;
     private final ParentChildRepository parentChildRepository;
+    private final AmazonS3Manager amazonS3Manager;
 
     @Override
     @Transactional
@@ -96,8 +101,17 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public void submitMission(Long missionId, Long memberId) {
+    @Transactional
+    public void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId, Long memberId) {
+        Mission mission = getMission(missionId);
+        String fileName = null;
 
+        if(image != null) {
+            String keyName = amazonS3Manager.makeKeyName(Filepath.MISSION);
+            fileName = amazonS3Manager.uploadFile(keyName, image);
+        }
+
+        mission.submit(request, fileName);
     }
 
     @Override
