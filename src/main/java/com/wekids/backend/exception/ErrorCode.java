@@ -20,7 +20,9 @@ public enum ErrorCode {
     INVALID_CARD_STATE(INTERNAL_SERVER_ERROR, "잘못된 카드 상태입니다."),
     NOT_REGISTERED_BANK_MEMBER(INTERNAL_SERVER_ERROR, "아직 등록되지 않은 은행 회원입니다."),
     EMAIL_ALREADY_EXIST(CONFLICT, "이미 존재하는 이메일입니다."),
-    INVALID_SIGNUP_AGE(INTERNAL_SERVER_ERROR, "회원가입할 수 없는 나이입니다.");
+    INVALID_SIGNUP_AGE(INTERNAL_SERVER_ERROR, "회원가입할 수 없는 나이입니다."),
+    FAILED_SAVE_IMAGE(INTERNAL_SERVER_ERROR, "이미지 저장에 실패했습니다."),
+    FAILED_DELETE_IMAGE(INTERNAL_SERVER_ERROR, "이미지 삭제에 실패했습니다.");
 
     private final HttpStatus status;
     private final String message;
