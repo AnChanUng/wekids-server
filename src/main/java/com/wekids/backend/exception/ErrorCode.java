@@ -22,7 +22,8 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXIST(CONFLICT, "이미 존재하는 이메일입니다."),
     INVALID_SIGNUP_AGE(INTERNAL_SERVER_ERROR, "회원가입할 수 없는 나이입니다."),
     FAILED_SAVE_IMAGE(INTERNAL_SERVER_ERROR, "이미지 저장에 실패했습니다."),
-    FAILED_DELETE_IMAGE(INTERNAL_SERVER_ERROR, "이미지 삭제에 실패했습니다.");
+    FAILED_DELETE_IMAGE(INTERNAL_SERVER_ERROR, "이미지 삭제에 실패했습니다."),
+    INVALID_MEMBER_RELATIONSHIP(INTERNAL_SERVER_ERROR, "부모 자식 관계가 아닙니다.");
 
     private final HttpStatus status;
     private final String message;
