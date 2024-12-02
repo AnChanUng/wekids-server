@@ -1,6 +1,7 @@
 package com.wekids.backend.mission.controller;
 
 import com.wekids.backend.auth.controller.MemberId;
+import com.wekids.backend.auth.controller.Role;
 import com.wekids.backend.mission.dto.request.MissionCreateRequest;
 import com.wekids.backend.mission.dto.request.MissionListGetRequestParams;
 import com.wekids.backend.mission.dto.response.MissionGetResponse;
@@ -25,8 +26,8 @@ public class MissionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MissionGetResponse>> showMissionList(@ModelAttribute MissionListGetRequestParams params, @MemberId Long memberId) {
-        List<MissionGetResponse> response = missionService.getMissionList(params, memberId);
+    public ResponseEntity<List<MissionGetResponse>> showMissionList(@ModelAttribute MissionListGetRequestParams params, @MemberId Long memberId, @Role String role) {
+        List<MissionGetResponse> response = missionService.getMissionList(params, memberId, role);
         return ResponseEntity.ok(response);
     }
 
