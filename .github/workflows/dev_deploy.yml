@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest # (3).OS환경
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'test'
 
     steps:
       - name: Checkout
@@ -53,8 +53,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACTION_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY }}
-          application_name: wekids-dev3
-          environment_name: Wekids-dev3-env
+          application_name: wekids-dev5
+          environment_name: Wekids-dev5-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           region: ap-northeast-1
           deployment_package: deploy/deploy.zip
