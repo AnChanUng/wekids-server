@@ -62,7 +62,7 @@ jobs:
           --build-arg S3_KEY=${{ secrets.S3_KEY }} \
           --build-arg S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} \
           --build-arg BAAS_URL=${{ secrets.BAAS_URL }} \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Upload to S3
