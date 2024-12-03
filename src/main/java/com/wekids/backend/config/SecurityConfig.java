@@ -2,6 +2,8 @@ package com.wekids.backend.config;
 
 import com.wekids.backend.auth.jwt.JWTFilter;
 import com.wekids.backend.auth.jwt.JWTUtil;
+import com.wekids.backend.auth.oauth2.CustomAccessDeniedHandler;
+import com.wekids.backend.auth.oauth2.CustomAuthenticationEntryPoint;
 import com.wekids.backend.auth.oauth2.CustomSuccessHandler;
 import com.wekids.backend.auth.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +31,8 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
-
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
     @Bean
     public PasswordEncoder passwordEncoder() {
         DelegatingPasswordEncoder passwordEncoder =
@@ -73,10 +76,17 @@ public class SecurityConfig {
         http
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
 
-        http.oauth2Login((oauth2)-> oauth2
-                .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+        http
+                .oauth2Login((oauth2)-> oauth2
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                         .userService(customOAuth2UserService))
                 .successHandler(customSuccessHandler));
+
+        http
+                .exceptionHandling((exceptionConfig) -> exceptionConfig
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                         .accessDeniedHandler(accessDeniedHandler)
+                );
 
         http
                 .authorizeHttpRequests((auth)->auth
