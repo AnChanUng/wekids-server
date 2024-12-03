@@ -3,6 +3,8 @@ package com.wekids.backend.auth.oauth2;
 import com.wekids.backend.auth.dto.response.CustomOAuth2User;
 import com.wekids.backend.auth.enums.LoginState;
 import com.wekids.backend.auth.jwt.JWTUtil;
+import com.wekids.backend.exception.ErrorCode;
+import com.wekids.backend.exception.WekidsException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,6 +14,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
@@ -37,12 +41,17 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
     private Cookie createCookie(String key, String value){
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60 * 60 * 60);
-//        cookie.setSecure(true); //https에서만 설정할 수 있도록
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        return cookie;
+        try {
+            String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+            Cookie cookie = new Cookie(key, encodedValue);
+            cookie.setMaxAge(60 * 60 * 60);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+//            cookie.setSecure(true); // HTTPS에서만 설정
+            return cookie;
+        }
+        catch (Exception e){
+            throw new WekidsException(ErrorCode.FAILED_COOKIE_ENCODING, "쿠키 인코딩 에러");
+        }
     }
 }
