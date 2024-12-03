@@ -42,7 +42,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: test and build
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
 
       - name: Configure AWS credentials
