@@ -1,5 +1,6 @@
 package com.wekids.backend.mission.service;
 
+import com.wekids.backend.mission.dto.request.MissionAcceptRequest;
 import com.wekids.backend.mission.dto.request.MissionCreateRequest;
 import com.wekids.backend.mission.dto.request.MissionListGetRequestParams;
 import com.wekids.backend.mission.dto.request.MissionSubmitRequest;
@@ -17,7 +18,7 @@ public interface MissionService {
 
     void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId, Long memberId);
 
-    void acceptMission(Long missionId, Long memberId);
+    void acceptMission(MissionAcceptRequest request, Long missionId, Long memberId);
 
     void deleteMission(Long missionId, Long memberId);
 }

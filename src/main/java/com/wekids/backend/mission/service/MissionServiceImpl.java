@@ -1,5 +1,6 @@
 package com.wekids.backend.mission.service;
 
+import com.wekids.backend.accountTransaction.service.AccountTransactionService;
 import com.wekids.backend.aws.s3.AmazonS3Manager;
 import com.wekids.backend.aws.s3.Filepath;
 import com.wekids.backend.exception.ErrorCode;
@@ -11,6 +12,7 @@ import com.wekids.backend.member.repository.ChildRepository;
 import com.wekids.backend.member.repository.ParentChildRepository;
 import com.wekids.backend.member.repository.ParentRepository;
 import com.wekids.backend.mission.domain.Mission;
+import com.wekids.backend.mission.dto.request.MissionAcceptRequest;
 import com.wekids.backend.mission.dto.request.MissionCreateRequest;
 import com.wekids.backend.mission.dto.request.MissionListGetRequestParams;
 import com.wekids.backend.mission.dto.request.MissionSubmitRequest;
@@ -32,6 +34,7 @@ public class MissionServiceImpl implements MissionService {
     private final ChildRepository childRepository;
     private final ParentChildRepository parentChildRepository;
     private final AmazonS3Manager amazonS3Manager;
+    private final AccountTransactionService accountTransactionService;
 
     @Override
     @Transactional
@@ -115,8 +118,11 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public void acceptMission(Long missionId, Long memberId) {
-
+    @Transactional
+    public void acceptMission(MissionAcceptRequest request, Long missionId, Long memberId) {
+        Mission mission = getMission(missionId);
+        accountTransactionService.transfer(mission, request.getSimplePassword());
+        mission.accept();
     }
 
     @Override
