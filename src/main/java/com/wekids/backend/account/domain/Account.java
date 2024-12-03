@@ -27,6 +27,8 @@ public class Account extends BaseTime {
     @Column(precision = 20, scale = 2, nullable = false)
     private BigDecimal balance;
 
+    private String password;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     @Builder.Default
