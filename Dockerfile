@@ -34,7 +34,7 @@ ENV RDS_ENDPOINT=${RDS_ENDPOINT} \
 WORKDIR /app
 
 # Copy the JAR file from the builder stage
-COPY --from=BUILDER /app_source/build/libs/*.jar app.jar
+COPY --from=BUILDER /app_source/build/libs/*-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
