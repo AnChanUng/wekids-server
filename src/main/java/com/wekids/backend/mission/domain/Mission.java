@@ -75,4 +75,8 @@ public class Mission extends BaseTime {
         this.image = fileName;
         this.state = MissionState.SUBMIT;
     }
+
+    public void accept() {
+        this.state = MissionState.ACCEPT;
+    }
 }
