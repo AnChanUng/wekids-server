@@ -1,9 +1,9 @@
 name: wekids Release CI/CD
 
 on:
-  push:
-    branches: [ ci/#72-releasecicd ]
-
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
 
 env:
   AWS_REGION: ap-northeast-2
@@ -17,6 +17,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
 
     steps:
       - uses: actions/checkout@v3
