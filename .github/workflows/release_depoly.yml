@@ -1,9 +1,8 @@
-name: wekids Relase CI/CD
+name: wekids Release CI/CD
 
 on:
   push:
-    branches: [ ci/#72-releasecicd ]
-
+    branches: [ci/#72-releasecicd]
 
 env:
   AWS_REGION: ap-northeast-2
@@ -13,7 +12,6 @@ env:
 
 permissions:
   contents: read
-
 
 jobs:
   build:
@@ -31,7 +29,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: test and build
+      - name: Test and build
         run: ./gradlew clean build -x test
 
       - name: Configure AWS credentials
@@ -55,17 +53,17 @@ jobs:
           IMAGE_TAG: latest
         run: |
           docker build \
-          --build-arg RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }} \
-          --build-arg RDS_USERNAME=${{ secrets.RDS_USERNAME }} \
-          --build-arg RDS_PASSWORD=${{ secrets.RDS_PASSWORD }} \
-          --build-arg JWT_KEY=${{ secrets.JWT_KEY }} \
-          --build-arg NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
-          --build-arg NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
-          --build-arg NAVER_REDIRECT_URI=${{ secrets.NAVER_REDIRECT_URI }} \
-          --build-arg S3_KEY=${{ secrets.S3_KEY }} \
-          --build-arg S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} \
-          --build-arg BAAS_URL=${{ secrets.BAAS_URL }} \
-          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+            --build-arg RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }} \
+            --build-arg RDS_USERNAME=${{ secrets.RDS_USERNAME }} \
+            --build-arg RDS_PASSWORD=${{ secrets.RDS_PASSWORD }} \
+            --build-arg JWT_KEY=${{ secrets.JWT_KEY }} \
+            --build-arg NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
+            --build-arg NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
+            --build-arg NAVER_REDIRECT_URI=${{ secrets.NAVER_REDIRECT_URI }} \
+            --build-arg S3_KEY=${{ secrets.S3_KEY }} \
+            --build-arg S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} \
+            --build-arg BAAS_URL=${{ secrets.BAAS_URL }} \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Upload to S3
