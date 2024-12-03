@@ -47,6 +47,8 @@ jobs:
           S3_KEY: ${{ secrets.S3_KEY }}
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
           BAAS_URL: ${{ secrets.BAAS_URL }}
+        run: echo "Environment variables defined"
+
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
