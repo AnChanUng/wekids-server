@@ -1,15 +1,25 @@
 name: wekids Relase CI/CD
 
 on:
-  pull_request:
-    types: [closed]
-  workflow_dispatch:
+  push:
+    branches: [ ci/#72-releasecicd ]
+
 
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: release-wekids-depoly
   CODE_DEPLOY_APPLICATION_NAME: release-wekids
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: release-wekids-group
+  RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
+  RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
+  RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+  JWT_KEY: ${{ secrets.JWT_KEY }}
+  NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+  NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+  NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
+  S3_KEY: ${{ secrets.S3_KEY }}
+  S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+  BAAS_URL: ${{ secrets.BAAS_URL }}
 
 permissions:
   contents: read
@@ -18,7 +28,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'test-release'
 
     steps:
       - uses: actions/checkout@v3
@@ -34,20 +43,6 @@ jobs:
 
       - name: test and build
         run: ./gradlew clean build
-
-      - name: Define environment variables
-        env:
-          RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-          RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
-          RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
-          JWT_KEY: ${{ secrets.JWT_KEY }}
-          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
-          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
-          NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
-          S3_KEY: ${{ secrets.S3_KEY }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-          BAAS_URL: ${{ secrets.BAAS_URL }}
-        run: echo "Environment variables defined"
 
 
       - name: Configure AWS credentials
