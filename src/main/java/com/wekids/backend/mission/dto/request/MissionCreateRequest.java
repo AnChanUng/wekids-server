@@ -19,12 +19,12 @@ public class MissionCreateRequest {
     @NotBlank
     private String title;
     private String content;
-    @NotBlank
+    @NotNull
     private LocalDate deadline;
     @NotNull
     @Positive
     private Long amount;
-    @NotBlank
+    @NotNull
     private MissionCategory category;
     @NotNull
     @Positive
