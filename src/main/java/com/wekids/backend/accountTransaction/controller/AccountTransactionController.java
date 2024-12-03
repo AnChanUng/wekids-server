@@ -5,6 +5,7 @@ import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.dto.response.TransactionHistoryResponse;
+import com.wekids.backend.accountTransaction.dto.response.TransferResultResponse;
 import com.wekids.backend.accountTransaction.service.AccountTransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +37,9 @@ public class AccountTransactionController {
     }
 
     @PostMapping("/transactions")
-    public ResponseEntity<Void> postTransaction(@RequestBody @Valid TransactionRequest transactionRequest) {
-        accountTransactionService.transfer(transactionRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<TransferResultResponse> postTransaction(@RequestBody @Valid TransactionRequest transactionRequest) {
+        TransferResultResponse response = accountTransactionService.transfer(transactionRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/accounts/{accountId}/transactions")
