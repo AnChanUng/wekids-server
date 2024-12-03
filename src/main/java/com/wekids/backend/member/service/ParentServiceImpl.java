@@ -2,7 +2,10 @@ package com.wekids.backend.member.service;
 
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
+import com.wekids.backend.baas.dto.request.AccountGetRequest;
 import com.wekids.backend.baas.dto.request.BankMemberIdGetRequest;
+import com.wekids.backend.baas.dto.request.WekidsRegistrationRequest;
+import com.wekids.backend.baas.dto.response.AccountGetResponse;
 import com.wekids.backend.baas.dto.response.BankMemberIdResponse;
 import com.wekids.backend.baas.service.BaasService;
 import com.wekids.backend.design.domain.Design;
@@ -14,6 +17,7 @@ import com.wekids.backend.member.domain.Member;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.domain.enums.MemberState;
 import com.wekids.backend.member.dto.request.AccountInquiryAgreeRequest;
+import com.wekids.backend.member.dto.request.ParentAccountRegistrationRequest;
 import com.wekids.backend.member.dto.response.ChildResponse;
 import com.wekids.backend.member.dto.response.ParentAccountResponse;
 import com.wekids.backend.member.dto.response.ParentResponse;
@@ -54,13 +58,24 @@ public class ParentServiceImpl implements ParentService {
     public void agreeAccountInquiry(AccountInquiryAgreeRequest accountInquiryAgreeRequest, Long memberId) {
         Parent parent = getParent(memberId);
 
-        BankMemberIdGetRequest bankMemberIdGetRequest = BankMemberIdGetRequest.builder()
-                .residentRegistrationNumber(accountInquiryAgreeRequest.getResidentRegistrationNumber())
-                .build();
+        WekidsRegistrationRequest wekidsRegistrationRequest = WekidsRegistrationRequest.of(parent.getName(), parent.getBirthday(), accountInquiryAgreeRequest.getResidentRegistrationNumber());
 
-        BankMemberIdResponse response = baasService.getBankMemberId(bankMemberIdGetRequest);
+        BankMemberIdResponse response = baasService.registerWekids(wekidsRegistrationRequest);
 
         parent.saveBankMemberId(response.getBankMemberId());
+    }
+
+    @Override
+    @Transactional
+    public void registerParentAccount(ParentAccountRegistrationRequest request, Long memberId) {
+        Parent parent = getParent(memberId);
+
+        AccountGetRequest accountGetRequest = AccountGetRequest.of(request.getAccountNumber());
+        AccountGetResponse accountGetResponse = baasService.getAccount(accountGetRequest);
+
+        Account account = Account.of(accountGetResponse, parent);
+
+        accountRepository.save(account);
     }
 
     private Parent getParent(Long memberId) {
