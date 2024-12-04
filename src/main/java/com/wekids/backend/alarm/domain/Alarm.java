@@ -61,4 +61,8 @@ public class Alarm extends BaseTime {
                 .member(child)
                 .build();
     }
+
+    public void check() {
+        this.isChecked = true;
+    }
 }
