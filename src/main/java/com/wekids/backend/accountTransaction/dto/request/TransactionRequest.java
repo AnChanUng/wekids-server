@@ -26,5 +26,18 @@ public class TransactionRequest {
     private String sender;  //부모이름
     @NotBlank(message = "받는 분은 빈값일 수 없습니다")
     private String receiver;    //자식이름
+    @NotBlank(message = "간편 비밀번호는 빈 값일 수 없습니다.")
+    @Pattern(regexp = "^\\d{6}$", message = "간편 비밀번호는 6자리 숫자여야 합니다.")
+    private String simplePassword;
 
+    public static TransactionRequest of(String parentAccountNumber, String childAccountNumber, BigDecimal amount, String sender, String receiver, String simplePassword) {
+        return TransactionRequest.builder()
+                .parentAccountNumber(parentAccountNumber)
+                .childAccountNumber(childAccountNumber)
+                .amount(amount)
+                .sender(sender)
+                .receiver(receiver)
+                .simplePassword(simplePassword)
+                .build();
+    }
 }

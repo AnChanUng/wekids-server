@@ -105,11 +105,20 @@ public class BaasServiceImpl implements BaasService {
         return response.getBody();
     }
 
-    @Override
+    @Override // TODO: 2024-12-03 삭제 필요
     public BankMemberIdResponse getBankMemberId(BankMemberIdGetRequest bankMemberIdGetRequest) {
         String url = BAAS_URL + "/api/v1/bank-members/getId";
 
         ResponseEntity<BankMemberIdResponse> response = restTemplate.postForEntity(url, bankMemberIdGetRequest, BankMemberIdResponse.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public BankMemberIdResponse registerWekids(WekidsRegistrationRequest wekidsRegistrationRequest) {
+        String url = BAAS_URL + "/api/v1/registration";
+
+        ResponseEntity<BankMemberIdResponse> response = restTemplate.postForEntity(url, wekidsRegistrationRequest, BankMemberIdResponse.class);
 
         return response.getBody();
     }
