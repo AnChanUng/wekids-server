@@ -9,15 +9,13 @@ import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.domain.enums.CardState;
 import com.wekids.backend.member.domain.enums.MemberState;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 public class SignUpRequest {
 
     @NotNull(message = "생일은 필수 입력 항목입니다.")
