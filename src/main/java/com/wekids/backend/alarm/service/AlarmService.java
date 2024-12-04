@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface AlarmService {
     List<AlarmGetResponse> getAlarmList(Long memberId);
+
+    void checkAlarm(Long alarmId);
 }

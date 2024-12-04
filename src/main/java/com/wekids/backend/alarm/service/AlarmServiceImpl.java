@@ -29,6 +29,17 @@ public class AlarmServiceImpl implements AlarmService{
         return AlarmGetResponse.from(alarms);
     }
 
+    @Override
+    @Transactional
+    public void checkAlarm(Long alarmId) {
+        Alarm alarm = getAlarm(alarmId);
+        alarm.check();
+    }
+
+    private Alarm getAlarm(Long alarmId) {
+        return alarmRepository.findById(alarmId).orElseThrow(() -> new WekidsException(ErrorCode.ALARM_NOT_FOUND, "알림 아이디: " + alarmId));
+    }
+
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "회원 아이디: " + memberId));
     }
