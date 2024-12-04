@@ -9,6 +9,8 @@ import com.wekids.backend.baas.dto.response.AccountGetResponse;
 import com.wekids.backend.baas.dto.response.BankMemberIdResponse;
 import com.wekids.backend.baas.service.BaasService;
 import com.wekids.backend.design.domain.Design;
+import com.wekids.backend.design.domain.enums.CharacterType;
+import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.design.repository.DesignRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
@@ -80,6 +82,11 @@ public class ParentServiceImpl implements ParentService {
         Account account = Account.of(accountGetResponse, parent);
 
         accountRepository.save(account);
+
+        Design design = Design.create(parent, ColorType.BLUE, CharacterType.DADAPING);
+        design.updateAccount(account);
+
+        designRepository.save(design);
     }
 
     private Parent getParent(Long memberId) {

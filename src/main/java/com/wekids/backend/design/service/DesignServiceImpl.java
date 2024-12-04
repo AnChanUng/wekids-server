@@ -31,16 +31,16 @@ public class DesignServiceImpl implements DesignService {
     private final ParentChildRepository parentChildRepository;
 
     @Override
-    public DesignResponse showDesign(Long memberId) {
-        Design design = findDesignByMemberId(memberId);
+    public DesignResponse showDesign(Long designId) {
+        Design design = getDesign(designId);
         return DesignResponse.of(design.getColor().name(), design.getCharacter().name());
     }
 
     @Override
     @Transactional
-    public void createDesign(Long memberId, DesignCreateRequest request) {
-        Child child = getChild(memberId);
-        ParentChild relationship = findParentChildByChild(child);
+    public void createDesign(Long childId, DesignCreateRequest request) {
+        Child child = getChild(childId);
+        ParentChild relationship = findRelationshipByChild(child);
         Parent parent = relationship.getParent();
 
         validateCardState(child);
@@ -62,12 +62,12 @@ public class DesignServiceImpl implements DesignService {
         return childRepository.findById(memberId).orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "아이디: " + memberId));
     }
 
-    private Design findDesignByMemberId(Long memberId) {
-        return designRepository.findById(memberId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "디자인을 저장 할 memberId는 " + memberId));
+    private Design getDesign(Long designId) {
+        return designRepository.findById(designId)
+                .orElseThrow(() -> new WekidsException(ErrorCode.DESIGN_NOT_FOUND, "디자인 아이디: " + designId));
     }
 
-    private ParentChild findParentChildByChild(Child child) {
+    private ParentChild findRelationshipByChild(Child child) {
         return parentChildRepository.findParentChildByChild(child).orElseThrow(() -> new WekidsException(ErrorCode.RELATIONSHIP_NOT_FOUND, "자식 회원 아이디: " + child.getId()));
     }
 
