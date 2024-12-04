@@ -3,10 +3,10 @@ package com.wekids.backend.accountTransaction.service;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.account.repository.AccountRepository;
+import com.wekids.backend.account.service.AccountService;
 import com.wekids.backend.accountTransaction.domain.AccountTransaction;
 import com.wekids.backend.accountTransaction.dto.enums.TransactionRequestType;
 import com.wekids.backend.accountTransaction.dto.request.AccountTransactionListGetRequestParams;
-import com.wekids.backend.baas.dto.request.AccountGetRequest;
 import com.wekids.backend.baas.dto.request.AccountTransactionGetRequest;
 import com.wekids.backend.accountTransaction.dto.response.*;
 import com.wekids.backend.baas.dto.request.TransferRequest;
@@ -14,7 +14,6 @@ import com.wekids.backend.accountTransaction.dto.request.TransactionRequest;
 import com.wekids.backend.accountTransaction.dto.request.UpdateMemoRequest;
 import com.wekids.backend.accountTransaction.dto.response.TransactionDetailSearchResponse;
 import com.wekids.backend.accountTransaction.repository.AccountTransactionRepository;
-import com.wekids.backend.baas.dto.response.AccountGetResponse;
 import com.wekids.backend.baas.dto.response.AccountTransactionResponse;
 import com.wekids.backend.baas.dto.response.TransferResponse;
 import com.wekids.backend.baas.service.BaasService;
@@ -46,6 +45,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     private final AccountTransactionRepository accountTransactionRepository;
     private final AccountRepository accountRepository;
     private final BaasService baasService;
+    private final AccountService accountService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -101,8 +101,8 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
     }
 
     private TransferResultResponse executeTransfer(Account parentAccount, Account childAccount, BigDecimal amount) {
-        updateAccount(parentAccount);
-        updateAccount(childAccount);
+        accountService.updateAccount(parentAccount);
+        accountService.updateAccount(childAccount);
 
         validateTransaction(amount, parentAccount, childAccount);
 
@@ -124,7 +124,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         Pageable pageable = PageRequest.of(params.getPage(), params.getSize());
 
         if (pageable.getPageNumber() == 0) {
-            updateAccount(account);
+            accountService.updateAccount(account);
 
             LocalDateTime mostRecentDateTime = accountTransactionRepository
                     .findMostRecentTransactionDateTime(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX)).orElse(start.atStartOfDay());
@@ -202,15 +202,5 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
             throw new WekidsException(ErrorCode.INVALID_ACCOUNT_NUMBER,
                     "부모 계좌와 자식 계좌가 동일할 수 없습니다.");
         }
-    }
-
-    private void updateAccount(Account account) {
-        AccountGetResponse accountResponse = baasService.getAccount(AccountGetRequest.of(account.getAccountNumber()));
-
-        if (!account.getState().equals(accountResponse.getState())) {
-            account.updateState(accountResponse.getState());
-        }
-
-        account.updateBalance(BigDecimal.valueOf(accountResponse.getBalance()));
     }
 }

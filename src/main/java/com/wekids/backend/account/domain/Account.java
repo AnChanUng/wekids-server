@@ -45,10 +45,11 @@ public class Account extends BaseTime {
     public void updateBalance(BigDecimal newBalance) {
         this.balance = newBalance;
     }
-    public static Account of(String accountNumber, Member member) {
+    public static Account of(String accountNumber, String password, Member member) {
         return Account.builder()
                 .accountNumber(accountNumber)
                 .balance(BigDecimal.ZERO)
+                .password(password)
                 .member(member)
                 .build();
     }
