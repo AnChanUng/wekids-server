@@ -2,6 +2,8 @@ package com.wekids.backend.card.service;
 
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
+import com.wekids.backend.alarm.domain.Alarm;
+import com.wekids.backend.alarm.repository.AlarmRepository;
 import com.wekids.backend.baas.dto.request.AccountCreateRequest;
 import com.wekids.backend.baas.dto.request.BankMemberCreateRequest;
 import com.wekids.backend.baas.dto.request.CardCreateRequest;
@@ -35,6 +37,7 @@ public class CardIssueServiceImpl implements CardIssueService {
     private final ChildRepository childRepository;
     private final ParentRepository parentRepository;
     private final DesignRepository designRepository;
+    private final AlarmRepository alarmRepository;
     private final BaasService baasService;
 
     @Override
@@ -47,12 +50,6 @@ public class CardIssueServiceImpl implements CardIssueService {
         String cardPassword = issueRequest.getPassword();
         String residentRegistrationNumber = issueRequest.getResidentRegistrationNumber();
 
-        /**
-         * BaaS에서 member가 존재하는지 조회한 후 없을 때만 생성해야 함
-         * 현재 BaaS에 bankMember 여부를 조회하는 API가 없음 일단 무조건 wekids 자식회원은 은행 회원이 아니라고 가정하고 구현
-         * 추후에 BaaS API 추가하고나서 bankMember인지 여부 확인해서 이미 회원이면 해당 정보 이용해서 계좌랑 카드 생성하도록 수정 필요
-         */
-
         Long bankMemberId = createBankMember(child, residentRegistrationNumber, accountPassword);
 
         Account account = createAccount(bankMemberId, accountPassword, child, design);
@@ -61,6 +58,9 @@ public class CardIssueServiceImpl implements CardIssueService {
 
         validateCardState(child.getCardState());
         child.updateCardState(CardState.CREATED);
+
+        Alarm alarm = Alarm.createCardCreatedAlarm(child);
+        alarmRepository.save(alarm);
     }
 
     private Card createCard(Account account, Child child, String cardPassword, Design design) {
