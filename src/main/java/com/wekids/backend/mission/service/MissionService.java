@@ -10,15 +10,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface MissionService {
-    void createMission(MissionCreateRequest request, Long memberId);
+    void createMission(MissionCreateRequest request, Long parentId);
 
     List<MissionGetResponse> getMissionList(MissionListGetRequestParams params, Long memberId, String role);
 
     MissionGetResponse getMissionDetail(Long missionId, Long memberId, String role);
 
-    void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId, Long memberId);
+    void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId, Long childId);
 
-    void acceptMission(MissionAcceptRequest request, Long missionId, Long memberId);
+    void acceptMission(MissionAcceptRequest request, Long missionId, Long parentId);
 
-    void deleteMission(Long missionId, Long memberId);
+    void deleteMission(Long missionId, Long parentId);
 }

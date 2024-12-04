@@ -1,12 +1,15 @@
 package com.wekids.backend.mission.service;
 
 import com.wekids.backend.accountTransaction.service.AccountTransactionService;
+import com.wekids.backend.alarm.domain.Alarm;
+import com.wekids.backend.alarm.repository.AlarmRepository;
 import com.wekids.backend.aws.s3.AmazonS3Manager;
 import com.wekids.backend.aws.s3.Filepath;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
+import com.wekids.backend.member.domain.mapping.ParentChild;
 import com.wekids.backend.member.domain.mapping.ParentChildId;
 import com.wekids.backend.member.repository.ChildRepository;
 import com.wekids.backend.member.repository.ParentChildRepository;
@@ -33,19 +36,23 @@ public class MissionServiceImpl implements MissionService {
     private final ParentRepository parentRepository;
     private final ChildRepository childRepository;
     private final ParentChildRepository parentChildRepository;
+    private final AlarmRepository alarmRepository;
     private final AmazonS3Manager amazonS3Manager;
     private final AccountTransactionService accountTransactionService;
 
     @Override
     @Transactional
-    public void createMission(MissionCreateRequest request, Long memberId) {
-        Parent parent = getParent(memberId);
+    public void createMission(MissionCreateRequest request, Long parentId) {
+        Parent parent = getParent(parentId);
         Child child = getChild(request.getChildId());
 
         validateMemberRelationship(parent.getId(), child.getId());
 
         Mission mission = Mission.createNewMission(request, parent, child);
-        missionRepository.save(mission);
+        Mission savedMission = missionRepository.save(mission);
+
+        Alarm alarm = Alarm.createMissionAlarm(savedMission, child);
+        alarmRepository.save(alarm);
     }
 
     private void validateMemberRelationship(Long parentId, Long childId) {
@@ -105,8 +112,12 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     @Transactional
-    public void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId, Long memberId) {
+    public void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId, Long childId) {
         Mission mission = getMission(missionId);
+        Child child = getChild(childId);
+        ParentChild relationship = findRelationshipByChild(child);
+        Parent parent = relationship.getParent();
+
         String fileName = null;
 
         if(image != null) {
@@ -115,18 +126,36 @@ public class MissionServiceImpl implements MissionService {
         }
 
         mission.submit(request, fileName);
+
+        Alarm alarm = Alarm.createMissionAlarm(mission, parent);
+        alarmRepository.save(alarm);
+    }
+
+    private ParentChild findRelationshipByChild(Child child) {
+        return parentChildRepository.findParentChildByChild(child).orElseThrow(() -> new WekidsException(ErrorCode.RELATIONSHIP_NOT_FOUND, "자식 회원 아이디: " + child.getId()));
     }
 
     @Override
     @Transactional
-    public void acceptMission(MissionAcceptRequest request, Long missionId, Long memberId) {
+    public void acceptMission(MissionAcceptRequest request, Long missionId, Long parentId) {
         Mission mission = getMission(missionId);
+        Parent parent = getParent(parentId);
+        ParentChild relationship = findRelationshipByParent(parent);
+        Child child = relationship.getChild();
+
         accountTransactionService.transfer(mission, request.getSimplePassword());
         mission.accept();
+
+        Alarm alarm = Alarm.createMissionAlarm(mission, child);
+        alarmRepository.save(alarm);
+    }
+
+    private ParentChild findRelationshipByParent(Parent parent) {
+        return parentChildRepository.findParentChildByParent(parent).orElseThrow(() -> new WekidsException(ErrorCode.RELATIONSHIP_NOT_FOUND, "부모 회원 아이디: " + parent.getId()));
     }
 
     @Override
-    public void deleteMission(Long missionId, Long memberId) {
+    public void deleteMission(Long missionId, Long parentId) {
 
     }
 }
