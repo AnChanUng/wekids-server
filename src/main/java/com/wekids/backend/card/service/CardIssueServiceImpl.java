@@ -42,15 +42,17 @@ public class CardIssueServiceImpl implements CardIssueService {
 
     @Override
     @Transactional
-    public void issueAccountAndCard(IssueRequest issueRequest, Long memberId) {
-        Child child = getChild(memberId);
-        Design design = getDesign(memberId);
-        Parent parent = getParentOfChild(memberId);
-        String accountPassword = parent.getSimplePassword();
-        String cardPassword = issueRequest.getPassword();
+    public void issueAccountAndCard(IssueRequest issueRequest, Long parentId) {
+        Parent parent = getParent(parentId);
+        Child child = getChild(issueRequest.getChildId());
+        Design design = getDesign(child.getId());
+
+        String simplePassword = parent.getSimplePassword();
+        String accountPassword = issueRequest.getAccountPassword();
+        String cardPassword = issueRequest.getCardPassword();
         String residentRegistrationNumber = issueRequest.getResidentRegistrationNumber();
 
-        Long bankMemberId = createBankMember(child, residentRegistrationNumber, accountPassword);
+        Long bankMemberId = createBankMember(child, residentRegistrationNumber, simplePassword);
 
         Account account = createAccount(bankMemberId, accountPassword, child, design);
 
@@ -61,6 +63,10 @@ public class CardIssueServiceImpl implements CardIssueService {
 
         Alarm alarm = Alarm.createCardCreatedAlarm(child);
         alarmRepository.save(alarm);
+    }
+
+    private Parent getParent(Long parentId) {
+        return parentRepository.findById(parentId).orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "부모 회원 아이디: " + parentId));
     }
 
     private Card createCard(Account account, Child child, String cardPassword, Design design) {
@@ -116,10 +122,4 @@ public class CardIssueServiceImpl implements CardIssueService {
         return childRepository.findById(memberId)
                 .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("회원 아이디: %s", memberId)));
     }
-
-    private Parent getParentOfChild(Long childId) {
-        return parentRepository.findParentByChildId(childId)
-                .orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, String.format("자식 아이디: ", childId)));
-    }
-
 }
