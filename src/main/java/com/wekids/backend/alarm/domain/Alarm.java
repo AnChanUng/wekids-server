@@ -1,9 +1,11 @@
 package com.wekids.backend.alarm.domain;
 
-import com.wekids.backend.alarm.domain.enums.AlarmTargetState;
 import com.wekids.backend.alarm.domain.enums.AlarmType;
 import com.wekids.backend.common.entity.BaseTime;
+import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Member;
+import com.wekids.backend.member.domain.Parent;
+import com.wekids.backend.mission.domain.Mission;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,13 +26,39 @@ public class Alarm extends BaseTime {
 
     private Long targetId;
 
-    @Enumerated(EnumType.STRING)
-    private AlarmTargetState targetState;
+    private String targetState;
 
     @Column(nullable = false)
-    private Boolean isChecked;
+    @Builder.Default
+    private Boolean isChecked = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public static Alarm createMissionAlarm(Mission mission, Member member) {
+        return Alarm.builder()
+                .type(AlarmType.MISSION)
+                .targetId(mission.getId())
+                .targetState(mission.getState().name())
+                .member(member)
+                .build();
+    }
+
+    public static Alarm createCardDesignedAlarm(Child child, Parent parent) {
+        return Alarm.builder()
+                .type(AlarmType.CARD)
+                .targetId(child.getId())
+                .targetState(child.getCardState().name())
+                .member(parent)
+                .build();
+    }
+
+    public static Alarm createCardCreatedAlarm(Child child) {
+        return Alarm.builder()
+                .type(AlarmType.CARD)
+                .targetState(child.getCardState().name())
+                .member(child)
+                .build();
+    }
 }
