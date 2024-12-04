@@ -22,6 +22,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXIST(CONFLICT, "이미 존재하는 이메일입니다."),
     INVALID_SIGNUP_AGE(INTERNAL_SERVER_ERROR, "회원가입할 수 없는 나이입니다."),
     FAILED_COOKIE_ENCODING(INTERNAL_SERVER_ERROR, "쿠키 인코딩에 실패했습니다."),
+    FAILED_READ_LOG(INTERNAL_SERVER_ERROR, "로그 읽기에 실패했습니다."),
     FAILED_SAVE_IMAGE(INTERNAL_SERVER_ERROR, "이미지 저장에 실패했습니다."),
     FAILED_DELETE_IMAGE(INTERNAL_SERVER_ERROR, "이미지 삭제에 실패했습니다.");
 
