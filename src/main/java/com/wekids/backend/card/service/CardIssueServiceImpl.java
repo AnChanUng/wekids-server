@@ -5,9 +5,10 @@ import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.alarm.domain.Alarm;
 import com.wekids.backend.alarm.repository.AlarmRepository;
 import com.wekids.backend.baas.dto.request.AccountCreateRequest;
-import com.wekids.backend.baas.dto.request.BankMemberCreateRequest;
 import com.wekids.backend.baas.dto.request.CardCreateRequest;
+import com.wekids.backend.baas.dto.request.WekidsRegistrationRequest;
 import com.wekids.backend.baas.dto.response.AccountCreateResponse;
+import com.wekids.backend.baas.dto.response.BankMemberIdResponse;
 import com.wekids.backend.baas.dto.response.CardCreateResponse;
 import com.wekids.backend.baas.service.BaasService;
 import com.wekids.backend.card.dto.request.IssueRequest;
@@ -94,12 +95,13 @@ public class CardIssueServiceImpl implements CardIssueService {
         return account;
     }
 
-    private Long createBankMember(Child child, String residentRegistrationNumber, String accountPassword) {
-        BankMemberCreateRequest bankMemberCreateRequest = BankMemberCreateRequest.of(child.getName(), child.getBirthday(), residentRegistrationNumber);
-        Long bankMemberId = baasService.createBankMember(bankMemberCreateRequest);
+    private Long createBankMember(Child child, String residentRegistrationNumber, String simplePassword) {
+        WekidsRegistrationRequest wekidsRegistrationRequest = WekidsRegistrationRequest.of(child.getName(), child.getBirthday(), residentRegistrationNumber);
+        BankMemberIdResponse bankMemberIdResponse = baasService.registerWekids(wekidsRegistrationRequest);
+        Long bankMemberId = bankMemberIdResponse.getBankMemberId();
 
         child.saveBankMemberId(bankMemberId);
-        child.saveSimplePassword(accountPassword);
+        child.saveSimplePassword(simplePassword);
 
         return bankMemberId;
     }
