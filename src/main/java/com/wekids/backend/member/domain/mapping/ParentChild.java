@@ -6,10 +6,12 @@ import com.wekids.backend.member.domain.Parent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
+@Getter
 @IdClass(ParentChildId.class)
 @SuperBuilder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
