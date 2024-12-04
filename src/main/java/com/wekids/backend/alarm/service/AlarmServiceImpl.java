@@ -2,6 +2,7 @@ package com.wekids.backend.alarm.service;
 
 import com.wekids.backend.alarm.domain.Alarm;
 import com.wekids.backend.alarm.dto.response.AlarmGetResponse;
+import com.wekids.backend.alarm.dto.response.NewAlarmCountResponse;
 import com.wekids.backend.alarm.repository.AlarmRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
@@ -34,6 +35,13 @@ public class AlarmServiceImpl implements AlarmService{
     public void checkAlarm(Long alarmId) {
         Alarm alarm = getAlarm(alarmId);
         alarm.check();
+    }
+
+    @Override
+    public NewAlarmCountResponse getNewAlarmCount(Long memberId) {
+        Member member = getMember(memberId);
+        Long count = alarmRepository.countAlarmsByIsCheckedFalseAndMember(member);
+        return NewAlarmCountResponse.of(count);
     }
 
     private Alarm getAlarm(Long alarmId) {
