@@ -49,6 +49,7 @@ public class AuthServiceImpl implements AuthService{
 
     private SignUpResponse signupParent(SignUpRequest request){
         validateAdult(request.getBirthday());
+        validateSimplePassword(request);
 
         String encode = passwordEncoder.encode(request.getSimplePassword());
         Parent parent = request.toParent(encode, request);
@@ -58,7 +59,7 @@ public class AuthServiceImpl implements AuthService{
         return SignUpResponse.from(jwtUtil.createJwt(memberId, "ROLE_"+MemberType.PARENT));
     }
 
-    public void validateAdult(LocalDate birthdate) {
+    private void validateAdult(LocalDate birthdate) {
         LocalDate today = LocalDate.now();
         Period age = Period.between(birthdate, today);
         if (age.getYears() < 19) {
@@ -66,13 +67,18 @@ public class AuthServiceImpl implements AuthService{
         }
     }
 
+    private void validateSimplePassword(SignUpRequest request){
+        if(request.getSimplePassword() == null){
+            throw new WekidsException(ErrorCode.INVALID_INPUT, request.getEmail() + "님은 간편 비밀번호가 없습니다");
+        }
+    }
+
 
     private SignUpResponse signupChild(SignUpRequest request){
         validateUnderFourteen(request.getBirthday());
 
-        String encode = passwordEncoder.encode(request.getSimplePassword());
         Parent parent = findParentByPhoneAndName(request.getGuardianPhone(), request.getGuardianName());
-        Child child = request.toChild(encode, request);
+        Child child = request.toChild(request);
         ParentChild parentChild = ParentChild.of(parent, child);
 
         Long memberId = memberRepository.save(child).getId();

@@ -32,7 +32,6 @@ public class SignUpRequest {
     @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호는 '010-1234-5678' 형식으로 입력해야 합니다.")
     private String phone;
 
-    @NotBlank(message = "간단 비밀번호는 필수 입력 항목입니다.")
     @Pattern(regexp = "^.{6}$", message = "비밀번호는 반드시 6자로 입력해야 합니다.")
     private String simplePassword;
 
@@ -69,14 +68,13 @@ public class SignUpRequest {
                 .build();
     }
 
-    public Child toChild(String simplePassword, SignUpRequest request){
+    public Child toChild(SignUpRequest request){
         return Child.builder()
                 .email(request.getEmail())
                 .phone(request.getPhone())
                 .cardState(CardState.NONE)
                 .birthday(request.getBirthday())
                 .name(request.getName())
-                .simplePassword(simplePassword)
                 .role("ROLE_CHILD")
                 .social(request.getSocial())
                 .state(MemberState.ACTIVE)
