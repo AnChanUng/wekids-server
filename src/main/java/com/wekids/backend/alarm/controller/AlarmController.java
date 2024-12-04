@@ -20,4 +20,10 @@ public class AlarmController {
         List<AlarmGetResponse> response = alarmService.getAlarmList(memberId);
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/{alarmId}/check")
+    public ResponseEntity<Void> checkAlarm(@PathVariable Long alarmId) {
+        alarmService.checkAlarm(alarmId);
+        return ResponseEntity.noContent().build();
+    }
 }
