@@ -32,7 +32,7 @@ public class ChildServiceImpl implements ChildService {
         Account childAccount = findChildAccountByMember(child);
         Design design = findDesignById(childId);
 
-        accountService.updateAccount(childAccount);
+        if(childAccount != null) accountService.updateAccount(childAccount);
 
         return ChildResponse.of(child, childAccount, design);
     }
