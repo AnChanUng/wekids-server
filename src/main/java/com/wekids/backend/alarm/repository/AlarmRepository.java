@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
     List<Alarm> findAllByMember(Member member);
+    Long countAlarmsByIsCheckedFalseAndMember(Member member);
 }
