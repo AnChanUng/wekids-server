@@ -1,6 +1,7 @@
 package com.wekids.backend.alarm.controller;
 
 import com.wekids.backend.alarm.dto.response.AlarmGetResponse;
+import com.wekids.backend.alarm.dto.response.NewAlarmCountResponse;
 import com.wekids.backend.alarm.service.AlarmService;
 import com.wekids.backend.auth.controller.MemberId;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,11 @@ public class AlarmController {
     public ResponseEntity<Void> checkAlarm(@PathVariable Long alarmId) {
         alarmService.checkAlarm(alarmId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<NewAlarmCountResponse> getNewAlarmCount(@MemberId Long memberId) {
+        NewAlarmCountResponse response = alarmService.getNewAlarmCount(memberId);
+        return ResponseEntity.ok(response);
     }
 }
