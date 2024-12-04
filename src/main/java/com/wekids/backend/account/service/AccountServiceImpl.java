@@ -4,6 +4,7 @@ import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.dto.response.AccountChildResponse;
 import com.wekids.backend.account.dto.response.AccountResponse;
 import com.wekids.backend.account.repository.AccountRepository;
+import com.wekids.backend.baas.dto.request.AccountGetRequest;
 import com.wekids.backend.baas.dto.response.AccountGetResponse;
 import com.wekids.backend.baas.service.BaasService;
 import com.wekids.backend.exception.ErrorCode;
@@ -13,6 +14,8 @@ import com.wekids.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -43,5 +46,17 @@ public class AccountServiceImpl implements AccountService{
 
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "회원 아이디: " + memberId));
+    }
+
+    @Override
+    @Transactional
+    public void updateAccount(Account account) {
+        AccountGetResponse accountResponse = baasService.getAccount(AccountGetRequest.of(account.getAccountNumber()));
+
+        if (!account.getState().equals(accountResponse.getState())) {
+            account.updateState(accountResponse.getState());
+        }
+
+        account.updateBalance(BigDecimal.valueOf(accountResponse.getBalance()));
     }
 }

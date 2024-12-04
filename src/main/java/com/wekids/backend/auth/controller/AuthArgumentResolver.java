@@ -10,13 +10,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(MemberId.class);
+        return parameter.hasParameterAnnotation(MemberId.class) || parameter.hasParameterAnnotation(Role.class);
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+    public Object resolveArgument(MethodParameter parameter,
+                                  ModelAndViewContainer mavContainer,
+                                  NativeWebRequest webRequest,
+                                  WebDataBinderFactory binderFactory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;
@@ -24,7 +28,15 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
         Object principal = authentication.getPrincipal();
         if (principal instanceof CustomOAuth2User) {
-            return ((CustomOAuth2User) principal).getMemberId();
+            CustomOAuth2User customUser = (CustomOAuth2User) principal;
+
+            if (parameter.hasParameterAnnotation(MemberId.class)) {
+                return customUser.getMemberId();
+            }
+
+            if (parameter.hasParameterAnnotation(Role.class)) {
+                return customUser.getRole();
+            }
         }
 
         return null;

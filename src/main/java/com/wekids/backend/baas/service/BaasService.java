@@ -13,5 +13,6 @@ public interface BaasService {
     TransferResponse transfer(TransferRequest transferRequest);
     List<AccountTransactionResponse> getAccountTransactionList(AccountTransactionGetRequest accountTransactionGetRequest);
     AccountGetResponse getAccount(AccountGetRequest accountGetRequest);
-    BankMemberIdResponse getBankMemberId(BankMemberIdGetRequest bankMemberIdGetRequest);
+    BankMemberIdResponse getBankMemberId(BankMemberIdGetRequest bankMemberIdGetRequest); // TODO: 2024-12-03 삭제 필요
+    BankMemberIdResponse registerWekids(WekidsRegistrationRequest wekidsRegistrationRequest);
 }
