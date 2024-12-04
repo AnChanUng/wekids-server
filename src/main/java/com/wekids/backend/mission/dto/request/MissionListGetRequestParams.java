@@ -2,12 +2,10 @@ package com.wekids.backend.mission.dto.request;
 
 import com.wekids.backend.mission.domain.enums.MissionCategory;
 import com.wekids.backend.mission.domain.enums.MissionState;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
