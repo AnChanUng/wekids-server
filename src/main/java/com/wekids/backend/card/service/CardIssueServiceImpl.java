@@ -86,7 +86,7 @@ public class CardIssueServiceImpl implements CardIssueService {
         AccountCreateRequest accountBaasRequest = AccountCreateRequest.of(bankMemberId, accountPassword);
         AccountCreateResponse accountCreateResponse = baasService.createAccount(accountBaasRequest);
 
-        Account account = Account.of(accountCreateResponse.getAccountNumber(), child);
+        Account account = Account.of(accountCreateResponse.getAccountNumber(), accountPassword, child);
         accountRepository.save(account);
 
         design.updateAccount(account);
