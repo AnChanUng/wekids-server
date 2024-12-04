@@ -9,7 +9,6 @@ import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.Parent;
-import com.wekids.backend.member.domain.mapping.ParentChild;
 import com.wekids.backend.member.domain.mapping.ParentChildId;
 import com.wekids.backend.member.repository.ChildRepository;
 import com.wekids.backend.member.repository.ParentChildRepository;
@@ -22,6 +21,7 @@ import com.wekids.backend.mission.dto.request.MissionSubmitRequest;
 import com.wekids.backend.mission.dto.response.MissionGetResponse;
 import com.wekids.backend.mission.repository.MissionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +39,9 @@ public class MissionServiceImpl implements MissionService {
     private final AlarmRepository alarmRepository;
     private final AmazonS3Manager amazonS3Manager;
     private final AccountTransactionService accountTransactionService;
+    @Value("${cloud.aws.s3.url}")
+    private String S3URL;
+
 
     @Override
     @Transactional
@@ -77,7 +80,7 @@ public class MissionServiceImpl implements MissionService {
 
         if (role.contains("PARENT")) {
             parent = getParent(memberId);
-            if(params.getChild() != null) child = getChild(params.getChild());
+            if (params.getChild() != null) child = getChild(params.getChild());
         }
 
         if (role.contains("CHILD")) {
@@ -100,10 +103,11 @@ public class MissionServiceImpl implements MissionService {
     private void validateMember(Long missionId, Long memberId, String role, Mission mission) {
         Long missionMemberId = null;
 
-        if(role.contains("PARENT")) missionMemberId = mission.getParent().getId();
-        if(role.contains("CHILD")) missionMemberId = mission.getChild().getId();
+        if (role.contains("PARENT")) missionMemberId = mission.getParent().getId();
+        if (role.contains("CHILD")) missionMemberId = mission.getChild().getId();
 
-        if(missionMemberId != memberId) throw  new WekidsException(ErrorCode.NOT_ALLOWED_MEMBER_ACCESS, "미션 아이디: " + missionId);
+        if (missionMemberId != memberId)
+            throw new WekidsException(ErrorCode.NOT_ALLOWED_MEMBER_ACCESS, "미션 아이디: " + missionId);
     }
 
     private Mission getMission(Long missionId) {
@@ -118,7 +122,7 @@ public class MissionServiceImpl implements MissionService {
 
         String fileName = null;
 
-        if(image != null) {
+        if (image != null) {
             String keyName = amazonS3Manager.makeKeyName(Filepath.MISSION);
             fileName = amazonS3Manager.uploadFile(keyName, image);
         }
@@ -143,7 +147,15 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
+    @Transactional
     public void deleteMission(Long missionId) {
+        Mission mission = getMission(missionId);
+        if (mission.getImage() != null) deleteS3Image(mission.getImage());
+        missionRepository.delete(mission);
+    }
 
+    private void deleteS3Image(String image) {
+        String KeyName = image.replace(S3URL, "");
+        amazonS3Manager.deleteFile(KeyName);
     }
 }
