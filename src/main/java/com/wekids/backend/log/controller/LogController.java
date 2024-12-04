@@ -16,6 +16,6 @@ public class LogController {
 
     @GetMapping
     public ResponseEntity<Map<String, String>> getLogs(@ModelAttribute LogRequestParams requestParams) {
-        return ResponseEntity.ok(logService.getLogs(requestParams));
+        return ResponseEntity.ok(logService.showLogs(requestParams));
     }
 }

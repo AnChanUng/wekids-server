@@ -18,7 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LogServiceImpl implements LogService {
     private final String LOG_DIR = "./logs";
-    public Map<String, String> getLogs(LogRequestParams requestParams) {
+    public Map<String, String> showLogs(LogRequestParams requestParams) {
         Map<String, String> logMap = new HashMap<>();
         LocalDate currentDate = requestParams.getStart();
 
@@ -35,13 +35,17 @@ public class LogServiceImpl implements LogService {
         return logMap;
     }
 
-    public void removeLog(LogLevel logLevel, LocalDate date) {
+    public void removeLog(LogLevel level, LocalDate date) {
         try {
-            String logFilePath = LOG_DIR + "/" + logLevel + "/" + logLevel + "-" + date + ".log";
+            String logFilePath = LOG_DIR + "/" + level + "/" + level + "-" + date + ".log";
             Path path = Paths.get(logFilePath);
             Files.delete(path);
         }
         catch (NoSuchFileException e) {}
         catch (IOException e) {}
+    }
+
+    private void backupLog(){
+
     }
 }

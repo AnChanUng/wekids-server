@@ -6,5 +6,5 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.util.Map;
 
 public interface LogService {
-    public Map<String, String> getLogs(@ModelAttribute LogRequestParams requestParams);
+    public Map<String, String> showLogs(@ModelAttribute LogRequestParams requestParams);
 }
