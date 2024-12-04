@@ -1,13 +1,17 @@
 package com.wekids.backend.baas.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AccountTransactionGetRequest {
     private String accountNumber;
     private LocalDateTime start;

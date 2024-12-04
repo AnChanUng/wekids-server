@@ -2,8 +2,10 @@ package com.wekids.backend.alarm.dto.response;
 
 import com.wekids.backend.alarm.domain.Alarm;
 import com.wekids.backend.alarm.domain.enums.AlarmType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AlarmGetResponse {
     private AlarmType type;
     private Long targetId;

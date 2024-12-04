@@ -4,8 +4,10 @@ import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.mission.domain.Mission;
 import com.wekids.backend.mission.domain.enums.MissionCategory;
 import com.wekids.backend.mission.domain.enums.MissionState;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MissionGetResponse {
     private Long missionId;
     private String title;

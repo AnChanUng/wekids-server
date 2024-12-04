@@ -18,12 +18,6 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<?> handleNotFound(NoHandlerFoundException ex) {
-        return ResponseEntity.status(NOT_FOUND).body(ex.getBody());
-    }
-
     @ExceptionHandler(WekidsException.class)
     public ResponseEntity<ErrorResponse> handleWeKidsException(WekidsException exception) {
         ErrorCode errorCode = exception.getErrorCode();
@@ -98,5 +92,12 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException exception) {
         return ResponseEntity.status(INVALID_INPUT.getStatus())
                 .body(ErrorResponse.of(exception.getBindingResult() .getFieldErrors(), INVALID_INPUT));
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> commonException(Exception exception) {
+        return ResponseEntity.status(INVALID_INPUT.getStatus())
+                .body(ErrorResponse.of(INVALID_INPUT, "unknown error: " + exception.getMessage()));
     }
 }
