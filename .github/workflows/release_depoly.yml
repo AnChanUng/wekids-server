@@ -61,6 +61,7 @@ jobs:
             --build-arg NAVER_REDIRECT_URI="${{ secrets.NAVER_REDIRECT_URI }}" \
             --build-arg S3_KEY="${{ secrets.S3_KEY }}" \
             --build-arg S3_SECRET_KEY="${{ secrets.S3_SECRET_KEY }}" \
+            --build-arg S3_URL="${{ secrets.S3_URL }}" \
             --build-arg BAAS_URL="${{ secrets.BAAS_URL }}" \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
