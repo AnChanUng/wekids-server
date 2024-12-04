@@ -16,9 +16,9 @@ public interface MissionService {
 
     MissionGetResponse getMissionDetail(Long missionId, Long memberId, String role);
 
-    void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId, Long childId);
+    void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId);
 
-    void acceptMission(MissionAcceptRequest request, Long missionId, Long parentId);
+    void acceptMission(MissionAcceptRequest request, Long missionId);
 
-    void deleteMission(Long missionId, Long parentId);
+    void deleteMission(Long missionId);
 }

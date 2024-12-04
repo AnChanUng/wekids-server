@@ -112,11 +112,9 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     @Transactional
-    public void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId, Long childId) {
+    public void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId) {
         Mission mission = getMission(missionId);
-        Child child = getChild(childId);
-        ParentChild relationship = findRelationshipByChild(child);
-        Parent parent = relationship.getParent();
+        Parent parent = mission.getParent();
 
         String fileName = null;
 
@@ -131,17 +129,11 @@ public class MissionServiceImpl implements MissionService {
         alarmRepository.save(alarm);
     }
 
-    private ParentChild findRelationshipByChild(Child child) {
-        return parentChildRepository.findParentChildByChild(child).orElseThrow(() -> new WekidsException(ErrorCode.RELATIONSHIP_NOT_FOUND, "자식 회원 아이디: " + child.getId()));
-    }
-
     @Override
     @Transactional
-    public void acceptMission(MissionAcceptRequest request, Long missionId, Long parentId) {
+    public void acceptMission(MissionAcceptRequest request, Long missionId) {
         Mission mission = getMission(missionId);
-        Parent parent = getParent(parentId);
-        ParentChild relationship = findRelationshipByParent(parent);
-        Child child = relationship.getChild();
+        Child child = mission.getChild();
 
         accountTransactionService.transfer(mission, request.getSimplePassword());
         mission.accept();
@@ -150,12 +142,8 @@ public class MissionServiceImpl implements MissionService {
         alarmRepository.save(alarm);
     }
 
-    private ParentChild findRelationshipByParent(Parent parent) {
-        return parentChildRepository.findParentChildByParent(parent).orElseThrow(() -> new WekidsException(ErrorCode.RELATIONSHIP_NOT_FOUND, "부모 회원 아이디: " + parent.getId()));
-    }
-
     @Override
-    public void deleteMission(Long missionId, Long parentId) {
+    public void deleteMission(Long missionId) {
 
     }
 }
