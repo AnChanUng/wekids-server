@@ -37,7 +37,7 @@ public class ParentController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity<Void> changeSimplePassword(@MemberId Long memberId, @RequestBody ParentSimplePasswordRequest request){
+    public ResponseEntity<Void> changeSimplePassword(@MemberId Long memberId, @Valid @RequestBody ParentSimplePasswordRequest request){
         parentService.changeSimplePassword(memberId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
