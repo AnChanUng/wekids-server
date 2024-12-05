@@ -52,6 +52,10 @@ public class Card extends BaseTime {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
+    public void updateState(CardState cardState){
+        this.state = cardState;
+    }
+
     public static Card of(CardCreateResponse cardCreateResponse, String cardPassword, Account account, String cardName) {
         return Card.builder()
                 .cardNumber(cardCreateResponse.getCardNumber())

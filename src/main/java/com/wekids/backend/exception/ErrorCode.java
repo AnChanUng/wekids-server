@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.*;
 public enum ErrorCode {
     INVALID_INPUT(INTERNAL_SERVER_ERROR, "잘못된 입력 값입니다."),
     MEMBER_NOT_FOUND(INTERNAL_SERVER_ERROR, "회원을 찾을 수 없습니다."),
+    CARD_NOT_FOUND(INTERNAL_SERVER_ERROR, "카드를 찾을 수 없습니다."),
     TRANSACTION_NOT_FOUND(INTERNAL_SERVER_ERROR, "거래 내역을 찾을 수 없습니다."),
     INVALID_TRANSACTION_AMOUNT(INTERNAL_SERVER_ERROR, "거래 할 수 없는 금액입니다."),
     INVALID_ACCOUNT_NUMBER(INTERNAL_SERVER_ERROR, "계좌번호를 찾을 수 없습니다."),
