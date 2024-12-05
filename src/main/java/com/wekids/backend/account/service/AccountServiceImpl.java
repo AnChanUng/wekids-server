@@ -63,7 +63,7 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     @Transactional
-    public void updateAccountState(Long accountId, AccountStateRequest request) {
+    public void changeAccountState(Long accountId, AccountStateRequest request) {
         Account account = getAccount(accountId);
         account.updateState(request.getState());
     }

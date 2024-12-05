@@ -16,7 +16,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     @Override
     @Transactional
-    public void updateMemberState(Long memberId, MemberStateRequest request) {
+    public void changeMemberState(Long memberId, MemberStateRequest request) {
         Member member = findMemberByMemberId(memberId);
         member.updateState(request.getState());
     }

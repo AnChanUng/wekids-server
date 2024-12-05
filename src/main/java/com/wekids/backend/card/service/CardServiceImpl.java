@@ -18,7 +18,7 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     @Override
     @Transactional
-    public void updateCardState(Long cardId, CardStateRequest request) {
+    public void changeState(Long cardId, CardStateRequest request) {
         Card card = findCardByCardId(cardId);
         card.updateState(request.getState());
     }

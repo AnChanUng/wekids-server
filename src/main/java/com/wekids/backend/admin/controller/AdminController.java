@@ -44,25 +44,25 @@ public class AdminController {
 
     @PostMapping("/cards/{cardId}/state")
     public ResponseEntity<Void> changeCardState(@PathVariable("cardId") Long cardId, @Valid @RequestBody CardStateRequest request) {
-        cardService.updateCardState(cardId, request);
+        cardService.changeState(cardId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/accounts/{accountId}/state")
     public ResponseEntity<Void> changeAccountState(@PathVariable("accountId") Long accountId, @Valid @RequestBody AccountStateRequest request) {
-        accountService.updateAccountState(accountId, request);
+        accountService.changeAccountState(accountId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/members/{memberId}/state")
     public ResponseEntity<Void> changeMemberState(@PathVariable("memberId") Long memberId, @Valid @RequestBody MemberStateRequest request) {
-        memberService.updateMemberState(memberId, request);
+        memberService.changeMemberState(memberId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/parent/{parentId}/password")
     public ResponseEntity<Void> changeMemberSimplePassword(@PathVariable("parentId") Long parentId, @Valid @RequestBody MemberSimplePasswordRequest request) {
-        parentService.updateSimeplePassword(parentId, request);
+        parentService.chageSimeplePassword(parentId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -9,5 +9,5 @@ public interface ParentService {
     ParentAccountResponse showParentAccount(Long parentId);
     void agreeAccountInquiry(AccountInquiryAgreeRequest accountInquiryAgreeRequest, Long memberId);
     void registerParentAccount(ParentAccountRegistrationRequest request, Long memberId);
-    void updateSimeplePassword(Long memberId, MemberSimplePasswordRequest request);
+    void chageSimeplePassword(Long memberId, MemberSimplePasswordRequest request);
 }

@@ -94,7 +94,7 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     @Transactional
-    public void updateSimeplePassword(Long memberId, MemberSimplePasswordRequest request) {
+    public void chageSimeplePassword(Long memberId, MemberSimplePasswordRequest request) {
         Parent parent = getParent(memberId);
         String encode = passwordEncoder.encode(request.getNewPassword());
         parent.changeSimplePassword(encode);
