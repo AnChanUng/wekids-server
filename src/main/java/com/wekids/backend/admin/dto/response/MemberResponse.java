@@ -1,6 +1,7 @@
 package com.wekids.backend.admin.dto.response;
 
 import com.wekids.backend.member.domain.Member;
+import com.wekids.backend.member.domain.enums.MemberState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class MemberResponse {
     private String profile;
     private String email;
     private String role;
+    private MemberState memberState;
     private LocalDateTime inactiveDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -34,6 +36,7 @@ public class MemberResponse {
                 .profile(member.getProfile())
                 .email(member.getEmail())
                 .role(member.getRole())
+                .memberState(member.getState())
                 .inactiveDate(member.getInactiveDate())
                 .createdAt(member.getCreatedAt())
                 .updatedAt(member.getUpdatedAt())
