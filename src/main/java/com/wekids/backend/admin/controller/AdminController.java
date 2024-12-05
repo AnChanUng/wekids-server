@@ -44,7 +44,7 @@ public class AdminController {
 
     @PostMapping("/cards/{cardId}/state")
     public ResponseEntity<Void> changeCardState(@PathVariable("cardId") Long cardId, @Valid @RequestBody CardStateRequest request) {
-        cardService.changeState(cardId, request);
+        cardService.updateCardState(cardId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
