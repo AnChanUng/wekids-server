@@ -6,7 +6,9 @@ import com.wekids.backend.account.dto.response.AccountResponse;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.admin.dto.request.AccountStateRequest;
 import com.wekids.backend.baas.dto.request.AccountGetRequest;
+import com.wekids.backend.baas.dto.request.AccountStateChangeRequest;
 import com.wekids.backend.baas.dto.response.AccountGetResponse;
+import com.wekids.backend.baas.dto.response.AccountStateChangeResponse;
 import com.wekids.backend.baas.service.BaasService;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
@@ -65,11 +67,22 @@ public class AccountServiceImpl implements AccountService{
     @Transactional
     public void changeAccountState(Long accountId, AccountStateRequest request) {
         Account account = getAccount(accountId);
-        account.updateState(request.getState());
+
+        Long bankMemberId = findBankMemberIdByAccountId(accountId);
+
+        AccountStateChangeRequest accountStateChangeRequest = AccountStateChangeRequest.of(bankMemberId, account, request.getState());
+
+        AccountStateChangeResponse accountStateChangeResponse = baasService.changeAccountState(accountStateChangeRequest);
+
+        account.updateState(request.getState(), accountStateChangeResponse.getInactiveDate());
     }
 
     private Account getAccount(Long accountId) {
         return accountRepository.findById(accountId).orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "회원 아이디: " + accountId));
     }
 
+    private Long findBankMemberIdByAccountId(Long accountId){
+        return memberRepository.findBankMemberIdByAccountId(accountId).orElseThrow(()->
+                new WekidsException(ErrorCode.INVALID_INPUT, accountId+"의 고객은 bankMemberId가 존재 하지 않습니다"));
+    }
 }

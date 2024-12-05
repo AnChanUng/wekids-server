@@ -15,4 +15,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT m.bankMemberId FROM Card c JOIN c.account a JOIN a.member m where c.id = :cardId")
     Optional<Long> findBankMemberIdByCardId(@Param("cardId") Long cardId);
+
+    @Query("SELECT m.bankMemberId FROM Account a JOIN a.member m where a.id = :accountId")
+    Optional<Long> findBankMemberIdByAccountId(@Param("accountId") Long accountId);
 }
