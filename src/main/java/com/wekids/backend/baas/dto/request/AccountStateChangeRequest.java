@@ -1,5 +1,6 @@
 package com.wekids.backend.baas.dto.request;
 
+import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.domain.enums.AccountState;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -35,17 +36,18 @@ public class AccountStateChangeRequest {
 
     public static AccountStateChangeRequest of(
             Long bankMemberId,
-            Long baasMemberId,
-            String accountNumber,
-            String password,
+            Account account,
             AccountState state
     ) {
         return AccountStateChangeRequest.builder()
                 .bankMemberId(bankMemberId)
-                .baasMemberId(baasMemberId)
-                .accountNumber(accountNumber)
-                .password(password)
+                .accountNumber(account.getAccountNumber())
+                .password(account.getPassword())
                 .state(state)
                 .build();
+    }
+
+    public void setBaasMemberId(Long baasMemberId) {
+        this.baasMemberId = baasMemberId;
     }
 }

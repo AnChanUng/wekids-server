@@ -12,4 +12,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email);
     boolean existsAllByEmail(String email);
     Optional<Member> findByNameAndPhone(String name, String phone);
+
+    @Query("SELECT m.bankMemberId FROM Card c JOIN c.account a JOIN a.member m where c.id = :cardId")
+    Optional<Long> findBankMemberIdByCardId(@Param("cardId") Long cardId);
 }

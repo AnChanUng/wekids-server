@@ -1,5 +1,6 @@
 package com.wekids.backend.baas.dto.request;
 
+import com.wekids.backend.card.domain.Card;
 import com.wekids.backend.card.domain.enums.CardState;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -36,19 +37,19 @@ public class CardStateChangeRequest {
 
     public static CardStateChangeRequest of(
             Long bankMemberId,
-            Long baasMemberId,
-            String cardNumber,
-            String cvc,
-            String password,
+            Card card,
             CardState state
     ){
         return CardStateChangeRequest.builder()
                 .bankMemberId(bankMemberId)
-                .baasMemberId(baasMemberId)
-                .cardNumber(cardNumber)
-                .cvc(cvc)
-                .password(password)
+                .cardNumber(card.getCardNumber())
+                .cvc(card.getCvc())
+                .password(card.getPassword())
                 .state(state)
                 .build();
+    }
+
+    public void setBaasMemberId(Long baasMemberId) {
+        this.baasMemberId = baasMemberId;
     }
 }

@@ -124,8 +124,11 @@ public class BaasServiceImpl implements BaasService {
     }
 
     @Override
+    @BaasLogAndHandleException
     public CardStateChangeResponse changeCardState(CardStateChangeRequest cardStateChangeRequest) {
         String url = BAAS_URL + "/api/v1/cards/state";
+
+        cardStateChangeRequest.setBaasMemberId(BAAS_MEMBER_ID);
 
         ResponseEntity<CardStateChangeResponse> response = restTemplate.postForEntity(url, cardStateChangeRequest, CardStateChangeResponse.class);
 
@@ -133,8 +136,11 @@ public class BaasServiceImpl implements BaasService {
     }
 
     @Override
+    @BaasLogAndHandleException
     public AccountStateChangeResponse changeAccountState(AccountStateChangeRequest accountStateChangeRequest) {
         String url = BAAS_URL + "/api/v1/accounts/state";
+
+        accountStateChangeRequest.setBaasMemberId(BAAS_MEMBER_ID);
 
         ResponseEntity<AccountStateChangeResponse> response = restTemplate.postForEntity(url, accountStateChangeRequest, AccountStateChangeResponse.class);
 
