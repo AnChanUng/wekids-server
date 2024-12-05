@@ -1,9 +1,9 @@
 -- -- `member` 테이블에 대한 더미 데이터
 INSERT INTO member (id, `name`, member_type, phone, birthday, profile, email, simple_password, `state`, inactive_date, card_state, bank_member_id, created_at, updated_at, `role`, social)
 VALUES
-    (1, '강현우', 'PARENT', '010-1234-5678', '1985-01-05', null, 'tngkr7410@naver.com', '{bcrypt}$2a$10$H4hK3cIdFrHEk7dSiLF/KeBZcp99zsX2qCb6PlfupNcxZUPh3Ev7O', 'ACTIVE', null, 'NONE', 1, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 'ROLE_PARENT', 'naver'),
-    (2, '구자빈', 'CHILD', '010-2345-6789', '2018-03-03', null, 'koreanjb1221@naver.com', '{bcrypt}$2a$10$A.yrgthceIagp5pCoPNbvug3sSpLBBBZWGZk/A8Wr4EpSO4JDvOr6', 'ACTIVE', null, 'CREATED', 2, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 'ROLE_CHILD', 'naver'),
-    (3, '최윤정', 'CHILD', '010-3456-6789', '2019-05-02', null, 'cbj0010@naver.com', '{bcrypt}$2a$10$oVd5oA3bSa4zh8JSiCLyeeVaRId17Lm.ay5ALzu9kGJD8wpNtlody', 'ACTIVE', null, 'CREATED', 3, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 'ROLE_CHILD', 'naver');
+    (1, '강현우', 'PARENT', '010-1234-5678', '1985-01-05', null, 'wekids1@naver.com', '{bcrypt}$2a$10$H4hK3cIdFrHEk7dSiLF/KeBZcp99zsX2qCb6PlfupNcxZUPh3Ev7O', 'ACTIVE', null, 'NONE', 1, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 'ROLE_PARENT', 'naver'),
+    (2, '구자빈', 'CHILD', '010-2345-6789', '2018-03-03', null, 'wekids2@naver.com', '{bcrypt}$2a$10$A.yrgthceIagp5pCoPNbvug3sSpLBBBZWGZk/A8Wr4EpSO4JDvOr6', 'ACTIVE', null, 'CREATED', 2, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 'ROLE_CHILD', 'naver'),
+    (3, '최윤정', 'CHILD', '010-3456-6789', '2019-05-02', null, 'wekids3@naver.com', '{bcrypt}$2a$10$oVd5oA3bSa4zh8JSiCLyeeVaRId17Lm.ay5ALzu9kGJD8wpNtlody', 'ACTIVE', null, 'CREATED', 3, '2024-01-01 00:00:00', '2024-01-01 00:00:00', 'ROLE_CHILD', 'naver');
 
 INSERT INTO account (id, account_number, balance, password, `state`, inactive_date, member_id, created_at, updated_at)
 VALUES
