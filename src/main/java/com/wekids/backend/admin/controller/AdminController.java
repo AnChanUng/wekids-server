@@ -62,7 +62,7 @@ public class AdminController {
 
     @PostMapping("/parent/{parentId}/password")
     public ResponseEntity<Void> changeMemberSimplePassword(@PathVariable("parentId") Long parentId, @Valid @RequestBody MemberSimplePasswordRequest request) {
-        parentService.chageSimeplePassword(parentId, request);
+        parentService.updateSimeplePassword(parentId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
