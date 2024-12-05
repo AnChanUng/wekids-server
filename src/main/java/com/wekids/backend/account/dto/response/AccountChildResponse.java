@@ -1,6 +1,5 @@
 package com.wekids.backend.account.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wekids.backend.account.domain.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AccountChildResponse {
     private final String name;
-    private final String acocuntNumber;
+    private final String accountNumber;
     private final String profile;
     private final long accountId;
 
