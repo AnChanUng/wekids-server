@@ -15,4 +15,6 @@ public interface BaasService {
     AccountGetResponse getAccount(AccountGetRequest accountGetRequest);
     BankMemberIdResponse getBankMemberId(BankMemberIdGetRequest bankMemberIdGetRequest); // TODO: 2024-12-03 삭제 필요
     BankMemberIdResponse registerWekids(WekidsRegistrationRequest wekidsRegistrationRequest);
+    CardStateChangeResponse changeCardState(CardStateChangeRequest cardStateChangeRequest);
+    AccountStateChangeResponse changeAccountState(AccountStateChangeRequest accountStateChangeRequest);
 }

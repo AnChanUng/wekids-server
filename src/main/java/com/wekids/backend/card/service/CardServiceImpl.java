@@ -1,6 +1,7 @@
 package com.wekids.backend.card.service;
 
 import com.wekids.backend.admin.dto.request.CardStateRequest;
+import com.wekids.backend.baas.service.BaasService;
 import com.wekids.backend.card.domain.Card;
 import com.wekids.backend.card.repository.CardRepository;
 import com.wekids.backend.exception.ErrorCode;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
+    private final BaasService baasService;
+
     @Override
     @Transactional
     public void changeState(Long cardId, CardStateRequest request) {

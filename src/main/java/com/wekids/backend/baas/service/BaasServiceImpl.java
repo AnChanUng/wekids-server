@@ -122,4 +122,22 @@ public class BaasServiceImpl implements BaasService {
 
         return response.getBody();
     }
+
+    @Override
+    public CardStateChangeResponse changeCardState(CardStateChangeRequest cardStateChangeRequest) {
+        String url = BAAS_URL + "/api/v1/cards/state";
+
+        ResponseEntity<CardStateChangeResponse> response = restTemplate.postForEntity(url, cardStateChangeRequest, CardStateChangeResponse.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public AccountStateChangeResponse changeAccountState(AccountStateChangeRequest accountStateChangeRequest) {
+        String url = BAAS_URL + "/api/v1/accounts/state";
+
+        ResponseEntity<AccountStateChangeResponse> response = restTemplate.postForEntity(url, accountStateChangeRequest, AccountStateChangeResponse.class);
+
+        return response.getBody();
+    }
 }
