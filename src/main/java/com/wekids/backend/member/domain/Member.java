@@ -68,6 +68,12 @@ public abstract class Member extends BaseTime {
     public void updateCardState(CardState cardState) {
         this.cardState = cardState;
     }
+    public void updateState(MemberState state) {
+        if(state.equals(MemberState.SLEEP) || state.equals(MemberState.LEAVE)){
+            this.inactiveDate = LocalDateTime.now();
+        }
+        this.state = state;
+    }
 
     public void updateSocialInfo(String name, String phone, String email, LocalDate birthday, String profile){
         this.name = name;
