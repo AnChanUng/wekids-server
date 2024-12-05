@@ -4,6 +4,7 @@ import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.dto.response.AccountChildResponse;
 import com.wekids.backend.account.dto.response.AccountResponse;
 import com.wekids.backend.account.repository.AccountRepository;
+import com.wekids.backend.admin.dto.request.AccountStateRequest;
 import com.wekids.backend.baas.dto.request.AccountGetRequest;
 import com.wekids.backend.baas.dto.response.AccountGetResponse;
 import com.wekids.backend.baas.service.BaasService;
@@ -59,4 +60,16 @@ public class AccountServiceImpl implements AccountService{
 
         account.updateBalance(BigDecimal.valueOf(accountResponse.getBalance()));
     }
+
+    @Override
+    @Transactional
+    public void updateAccountState(Long accountId, AccountStateRequest request) {
+        Account account = getAccount(accountId);
+        account.updateState(request.getState());
+    }
+
+    private Account getAccount(Long accountId) {
+        return accountRepository.findById(accountId).orElseThrow(() -> new WekidsException(ErrorCode.ACCOUNT_NOT_FOUND, "회원 아이디: " + accountId));
+    }
+
 }

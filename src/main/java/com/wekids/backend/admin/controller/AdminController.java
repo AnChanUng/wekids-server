@@ -1,5 +1,7 @@
 package com.wekids.backend.admin.controller;
 
+import com.wekids.backend.account.service.AccountService;
+import com.wekids.backend.admin.dto.request.AccountStateRequest;
 import com.wekids.backend.admin.dto.request.CardStateRequest;
 import com.wekids.backend.admin.dto.response.MemberInfoResponse;
 import com.wekids.backend.admin.service.AdminService;
@@ -22,6 +24,7 @@ public class AdminController {
     private final LogService logService;
     private final AdminService adminService;
     private final CardService cardService;
+    private final AccountService accountService;
 
     @GetMapping("/logs")
     public ResponseEntity<Map<String, String>> getLogs(@ModelAttribute LogRequestParams requestParams) {
@@ -37,6 +40,12 @@ public class AdminController {
     @PostMapping("/cards/{cardId}/state")
     public ResponseEntity<Void> changeCardState(@PathVariable("cardId") Long cardId, @Valid @RequestBody CardStateRequest request) {
         cardService.changeState(cardId, request);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/accounts/{accountId}/state")
+    public ResponseEntity<Void> changeAccountState(@PathVariable("accountId") Long accountId, @Valid @RequestBody AccountStateRequest request) {
+        accountService.updateAccountState(accountId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
