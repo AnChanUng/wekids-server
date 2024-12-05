@@ -79,4 +79,8 @@ public class Mission extends BaseTime {
     public void accept() {
         this.state = MissionState.ACCEPT;
     }
+
+    public void cancel() {
+        this.state = MissionState.CANCEL;
+    }
 }

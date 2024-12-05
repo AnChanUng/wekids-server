@@ -148,6 +148,18 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     @Transactional
+    public void cancelMission(Long missionId) {
+        Mission mission = getMission(missionId);
+        Child child = mission.getChild();
+
+        mission.cancel();
+
+        Alarm alarm = Alarm.createMissionAlarm(mission, child);
+        alarmRepository.save(alarm);
+    }
+
+    @Override
+    @Transactional
     public void deleteMission(Long missionId) {
         Mission mission = getMission(missionId);
         if (mission.getImage() != null) deleteS3Image(mission.getImage());

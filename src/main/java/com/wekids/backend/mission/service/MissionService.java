@@ -19,6 +19,7 @@ public interface MissionService {
     void submitMission(MissionSubmitRequest request, MultipartFile image, Long missionId);
 
     void acceptMission(MissionAcceptRequest request, Long missionId);
+    void cancelMission(Long missionId);
 
     void deleteMission(Long missionId);
 }

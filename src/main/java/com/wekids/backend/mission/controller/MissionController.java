@@ -53,6 +53,12 @@ public class MissionController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{missionId}/cancel")
+    public ResponseEntity<Void> cancelMission(@PathVariable Long missionId) {
+        missionService.cancelMission(missionId);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{missionId}")
     public ResponseEntity<Void> deleteMission(@PathVariable Long missionId) {
         missionService.deleteMission(missionId);
