@@ -38,7 +38,7 @@ public abstract class Member extends BaseTime {
     @Column(nullable = false)
     private String email;
 
-    private String simplePassword;
+    protected String simplePassword;
 
     @Column(nullable = false)
     private String social;
