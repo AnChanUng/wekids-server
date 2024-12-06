@@ -52,9 +52,9 @@ public class Card extends BaseTime {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public void updateState(CardState cardState){
+    public void updateState(CardState cardState, LocalDateTime inactiveDate){
         if(cardState.equals(CardState.INACTIVE)){
-            this.inactiveDate = LocalDateTime.now();
+            this.inactiveDate = inactiveDate;
         }
         this.state = cardState;
     }

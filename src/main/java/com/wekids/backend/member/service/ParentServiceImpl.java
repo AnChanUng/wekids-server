@@ -23,6 +23,7 @@ import com.wekids.backend.member.dto.request.ParentAccountRegistrationRequest;
 import com.wekids.backend.member.dto.response.ChildResponse;
 import com.wekids.backend.member.dto.response.ParentAccountResponse;
 import com.wekids.backend.member.dto.response.ParentResponse;
+import com.wekids.backend.member.dto.response.ParentSimplePasswordRequest;
 import com.wekids.backend.member.repository.ChildRepository;
 import com.wekids.backend.member.repository.ParentRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,18 @@ public class ParentServiceImpl implements ParentService {
         return ParentAccountResponse.of(parentResponse, childResponses);
     }
 
+    private List<ChildResponse> showChildAccount(Long parentId) {
+        return childRepository.findChildrenByParentId(parentId).stream()
+                .filter(child -> child.getState().equals(MemberState.ACTIVE))
+                .map(child -> {
+                    Account childAccount = findAccountByMember(child);
+                    Design childDesign = findDesignByMemberId(child.getId());
+                    if(childAccount != null) accountService.updateAccount(childAccount);
+                    return ChildResponse.of(child, childAccount, childDesign);
+                })
+                .collect(Collectors.toList());
+    }
+
     @Override
     @Transactional
     public void agreeAccountInquiry(AccountInquiryAgreeRequest accountInquiryAgreeRequest, Long memberId) {
@@ -94,26 +107,35 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     @Transactional
-    public void chageSimeplePassword(Long memberId, MemberSimplePasswordRequest request) {
+    public void changeSimplePassword(Long memberId, MemberSimplePasswordRequest request) {
         Parent parent = getParent(memberId);
         String encode = passwordEncoder.encode(request.getNewPassword());
         parent.changeSimplePassword(encode);
     }
 
-    private Parent getParent(Long memberId) {
-        return parentRepository.findById(memberId).orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "회원 아이디: " + memberId));
+    @Override
+    @Transactional
+    public void changeSimplePassword(Long memberId, ParentSimplePasswordRequest request) {
+        Parent parent = getParent(memberId);
+
+        validationSimplePassword(request, parent.getSimplePassword());
+
+        String encode = passwordEncoder.encode(request.getNewPassword());
+        parent.changeSimplePassword(encode);
     }
 
-    private List<ChildResponse> showChildAccount(Long parentId) {
-        return childRepository.findChildrenByParentId(parentId).stream()
-                .filter(child -> child.getState().equals(MemberState.ACTIVE))
-                .map(child -> {
-                    Account childAccount = findAccountByMember(child);
-                    Design childDesign = findDesignByMemberId(child.getId());
-                    if(childAccount != null) accountService.updateAccount(childAccount);
-                    return ChildResponse.of(child, childAccount, childDesign);
-                })
-                .collect(Collectors.toList());
+    private void validationSimplePassword(ParentSimplePasswordRequest request, String encodedPassword){
+        if(request.getRawPassword().equals(request.getNewPassword())){
+            throw new WekidsException(ErrorCode.FAILED_UPDATE_PASSWORD,  "기존 비밀번호와 변경할 비밀반호가 일치합니다.");
+        }
+
+        if(!passwordEncoder.matches(request.getRawPassword(), encodedPassword)){
+            throw new WekidsException(ErrorCode.NOT_MATCHED_PASSWORD, request.getRawPassword() + "는 틀린 비밀번호입니다.");
+        }
+    }
+
+    private Parent getParent(Long memberId) {
+        return parentRepository.findById(memberId).orElseThrow(() -> new WekidsException(ErrorCode.MEMBER_NOT_FOUND, "회원 아이디: " + memberId));
     }
 
     private Account findAccountByMember(Member member) {

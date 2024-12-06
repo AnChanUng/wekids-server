@@ -4,6 +4,7 @@ import com.wekids.backend.auth.controller.MemberId;
 import com.wekids.backend.member.dto.request.AccountInquiryAgreeRequest;
 import com.wekids.backend.member.dto.request.ParentAccountRegistrationRequest;
 import com.wekids.backend.member.dto.response.ParentAccountResponse;
+import com.wekids.backend.member.dto.response.ParentSimplePasswordRequest;
 import com.wekids.backend.member.service.ParentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,12 @@ public class ParentController {
     public ResponseEntity<Void> registerParentAccount(@RequestBody @Valid ParentAccountRegistrationRequest request, @MemberId Long memberId) {
         parentService.registerParentAccount(request,memberId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<Void> changeSimplePassword(@MemberId Long memberId, @Valid @RequestBody ParentSimplePasswordRequest request){
+        parentService.changeSimplePassword(memberId, request);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }
