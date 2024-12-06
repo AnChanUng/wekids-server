@@ -31,13 +31,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.addCookie(createCookie("name", customUserDetails.getName()));
             response.addCookie(createCookie("email", customUserDetails.getEmail()));
             response.addCookie(createCookie("birthday", customUserDetails.getBirthday()));
-                response.sendRedirect("http://localhost:3000/signup/select");
+                response.sendRedirect("https://we-kids-fe-gold.vercel.app/signup/select");
             return;
         }
 
         String token = jwtUtil.createJwt(customUserDetails.getMemberId(), customUserDetails.getRole());
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("https://we-kids-fe-gold.vercel.app/");
     }
 
     private Cookie createCookie(String key, String value){
