@@ -19,7 +19,7 @@ public class DesignController {
     private final DesignService designService;
 
     @GetMapping("/{designId}")
-    public ResponseEntity<DesignResponse> getDesign(@PathVariable Long designId) {
+    public ResponseEntity<DesignResponse> getDesign(@PathVariable("designId") Long designId) {
         DesignResponse response = designService.showDesign(designId);
         return ResponseEntity.ok(response);
     }

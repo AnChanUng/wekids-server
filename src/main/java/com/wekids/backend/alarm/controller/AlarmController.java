@@ -23,7 +23,7 @@ public class AlarmController {
     }
 
     @PatchMapping("/{alarmId}/check")
-    public ResponseEntity<Void> checkAlarm(@PathVariable Long alarmId) {
+    public ResponseEntity<Void> checkAlarm(@PathVariable("alarmId") Long alarmId) {
         alarmService.checkAlarm(alarmId);
         return ResponseEntity.noContent().build();
     }

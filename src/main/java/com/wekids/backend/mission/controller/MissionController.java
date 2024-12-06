@@ -36,31 +36,31 @@ public class MissionController {
     }
 
     @GetMapping("/{missionId}")
-    public ResponseEntity<MissionGetResponse> showMissionDetail(@PathVariable Long missionId, @MemberId Long memberId, @Role String role) {
+    public ResponseEntity<MissionGetResponse> showMissionDetail(@PathVariable("missionId") Long missionId, @MemberId Long memberId, @Role String role) {
         MissionGetResponse response = missionService.getMissionDetail(missionId, memberId, role);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{missionId}/submit")
-    public ResponseEntity<Void> submitMission(@RequestPart(value="data", required = false) @Valid MissionSubmitRequest request, @RequestPart(value = "image", required = false) MultipartFile image, @PathVariable Long missionId) {
+    public ResponseEntity<Void> submitMission(@RequestPart(value="data", required = false) @Valid MissionSubmitRequest request, @RequestPart(value = "image", required = false) MultipartFile image, @PathVariable("missionId") Long missionId) {
         missionService.submitMission(request, image, missionId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{missionId}/accept")
-    public ResponseEntity<Void> acceptMission(@RequestBody @Valid MissionAcceptRequest request, @PathVariable Long missionId) {
+    public ResponseEntity<Void> acceptMission(@RequestBody @Valid MissionAcceptRequest request, @PathVariable("missionId") Long missionId) {
         missionService.acceptMission(request, missionId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{missionId}/cancel")
-    public ResponseEntity<Void> cancelMission(@PathVariable Long missionId) {
+    public ResponseEntity<Void> cancelMission(@PathVariable("missionId") Long missionId) {
         missionService.cancelMission(missionId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{missionId}")
-    public ResponseEntity<Void> deleteMission(@PathVariable Long missionId) {
+    public ResponseEntity<Void> deleteMission(@PathVariable("missionId") Long missionId) {
         missionService.deleteMission(missionId);
         return ResponseEntity.noContent().build();
     }
