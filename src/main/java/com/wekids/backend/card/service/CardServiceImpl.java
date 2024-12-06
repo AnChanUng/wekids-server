@@ -1,6 +1,7 @@
 package com.wekids.backend.card.service;
 
 import com.wekids.backend.admin.dto.request.CardStateRequest;
+import com.wekids.backend.admin.dto.response.InActiveDateResponse;
 import com.wekids.backend.baas.dto.request.CardStateChangeRequest;
 import com.wekids.backend.baas.dto.response.CardStateChangeResponse;
 import com.wekids.backend.baas.service.BaasService;
@@ -25,7 +26,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
-    public void changeState(Long cardId, CardStateRequest request) {
+    public InActiveDateResponse changeState(Long cardId, CardStateRequest request) {
         Card card = findCardByCardId(cardId);
 
         Long bankMemberId = findBankMemberIdByCardId(cardId);
@@ -35,6 +36,8 @@ public class CardServiceImpl implements CardService {
         CardStateChangeResponse cardStateChangeResponse = baasService.changeCardState(cardStateChangeRequest);
 
         card.updateState(request.getState(), cardStateChangeResponse.getInactiveDate());
+
+        return InActiveDateResponse.from(card.getInactiveDate());
     }
 
     private Card findCardByCardId(Long cardId){
