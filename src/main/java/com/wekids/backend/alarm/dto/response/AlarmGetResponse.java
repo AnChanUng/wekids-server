@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AlarmGetResponse {
+    private Long alarmId;
     private AlarmType type;
     private Long targetId;
     private String targetState;
@@ -24,6 +25,7 @@ public class AlarmGetResponse {
 
     public static AlarmGetResponse from(Alarm alarm) {
         return AlarmGetResponse.builder()
+                .alarmId(alarm.getId())
                 .type(alarm.getType())
                 .targetId(alarm.getTargetId())
                 .targetState(alarm.getTargetState())
