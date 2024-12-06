@@ -5,6 +5,7 @@ import com.wekids.backend.admin.dto.request.AccountStateRequest;
 import com.wekids.backend.admin.dto.request.CardStateRequest;
 import com.wekids.backend.admin.dto.request.MemberSimplePasswordRequest;
 import com.wekids.backend.admin.dto.request.MemberStateRequest;
+import com.wekids.backend.admin.dto.response.InActiveDateResponse;
 import com.wekids.backend.admin.dto.response.MemberInfoResponse;
 import com.wekids.backend.admin.service.AdminService;
 import com.wekids.backend.card.service.CardService;
@@ -43,21 +44,21 @@ public class AdminController {
     }
 
     @PostMapping("/cards/{cardId}/state")
-    public ResponseEntity<Void> changeCardState(@PathVariable("cardId") Long cardId, @Valid @RequestBody CardStateRequest request) {
-        cardService.changeState(cardId, request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<InActiveDateResponse> changeCardState(@PathVariable("cardId") Long cardId, @Valid @RequestBody CardStateRequest request) {
+        InActiveDateResponse response = cardService.changeState(cardId, request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/accounts/{accountId}/state")
-    public ResponseEntity<Void> changeAccountState(@PathVariable("accountId") Long accountId, @Valid @RequestBody AccountStateRequest request) {
-        accountService.changeAccountState(accountId, request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<InActiveDateResponse> changeAccountState(@PathVariable("accountId") Long accountId, @Valid @RequestBody AccountStateRequest request) {
+        InActiveDateResponse response = accountService.changeAccountState(accountId, request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/members/{memberId}/state")
-    public ResponseEntity<Void> changeMemberState(@PathVariable("memberId") Long memberId, @Valid @RequestBody MemberStateRequest request) {
-        memberService.changeMemberState(memberId, request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<InActiveDateResponse> changeMemberState(@PathVariable("memberId") Long memberId, @Valid @RequestBody MemberStateRequest request) {
+        InActiveDateResponse response = memberService.changeMemberState(memberId, request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/parent/{parentId}/password")

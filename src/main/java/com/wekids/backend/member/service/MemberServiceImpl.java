@@ -1,6 +1,7 @@
 package com.wekids.backend.member.service;
 
 import com.wekids.backend.admin.dto.request.MemberStateRequest;
+import com.wekids.backend.admin.dto.response.InActiveDateResponse;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
 import com.wekids.backend.member.domain.Member;
@@ -17,9 +18,11 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     @Override
     @Transactional
-    public void changeMemberState(Long memberId, MemberStateRequest request) {
+    public InActiveDateResponse changeMemberState(Long memberId, MemberStateRequest request) {
         Member member = findMemberByMemberId(memberId);
         member.updateState(request.getState());
+
+        return InActiveDateResponse.from(member.getInactiveDate());
     }
 
     @Override

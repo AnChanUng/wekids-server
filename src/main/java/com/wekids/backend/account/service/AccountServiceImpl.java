@@ -5,6 +5,7 @@ import com.wekids.backend.account.dto.response.AccountChildResponse;
 import com.wekids.backend.account.dto.response.AccountResponse;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.admin.dto.request.AccountStateRequest;
+import com.wekids.backend.admin.dto.response.InActiveDateResponse;
 import com.wekids.backend.baas.dto.request.AccountGetRequest;
 import com.wekids.backend.baas.dto.request.AccountStateChangeRequest;
 import com.wekids.backend.baas.dto.response.AccountGetResponse;
@@ -65,7 +66,7 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     @Transactional
-    public void changeAccountState(Long accountId, AccountStateRequest request) {
+    public InActiveDateResponse changeAccountState(Long accountId, AccountStateRequest request) {
         Account account = getAccount(accountId);
 
         Long bankMemberId = findBankMemberIdByAccountId(accountId);
@@ -75,6 +76,8 @@ public class AccountServiceImpl implements AccountService{
         AccountStateChangeResponse accountStateChangeResponse = baasService.changeAccountState(accountStateChangeRequest);
 
         account.updateState(request.getState(), accountStateChangeResponse.getInactiveDate());
+
+        return InActiveDateResponse.from(account.getInactiveDate());
     }
 
     private Account getAccount(Long accountId) {
