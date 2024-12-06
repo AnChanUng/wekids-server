@@ -66,4 +66,11 @@ public class Account extends BaseTime {
     public void updateState(AccountState state) {
         this.state = state;
     }
+
+    public void updateState(AccountState state, LocalDateTime inactiveDate) {
+        if(state.equals(AccountState.INACTIVE)){
+            this.inactiveDate = inactiveDate;
+        }
+        this.state = state;
+    }
 }

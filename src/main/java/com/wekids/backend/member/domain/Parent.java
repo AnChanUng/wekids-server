@@ -13,4 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Parent extends Member{
+    public void changeSimplePassword(String simplePassword){
+        this.simplePassword = simplePassword;
+    }
 }

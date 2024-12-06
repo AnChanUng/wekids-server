@@ -3,6 +3,7 @@ package com.wekids.backend.member.service;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.account.repository.AccountRepository;
 import com.wekids.backend.account.service.AccountService;
+import com.wekids.backend.admin.dto.request.MemberSimplePasswordRequest;
 import com.wekids.backend.baas.dto.request.AccountGetRequest;
 import com.wekids.backend.baas.dto.request.WekidsRegistrationRequest;
 import com.wekids.backend.baas.dto.response.AccountGetResponse;
@@ -26,6 +27,7 @@ import com.wekids.backend.member.repository.ChildRepository;
 import com.wekids.backend.member.repository.ParentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +45,7 @@ public class ParentServiceImpl implements ParentService {
     private final DesignRepository designRepository;
     private final BaasService baasService;
     private final AccountService accountService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -87,6 +90,14 @@ public class ParentServiceImpl implements ParentService {
         design.updateAccount(account);
 
         designRepository.save(design);
+    }
+
+    @Override
+    @Transactional
+    public void chageSimeplePassword(Long memberId, MemberSimplePasswordRequest request) {
+        Parent parent = getParent(memberId);
+        String encode = passwordEncoder.encode(request.getNewPassword());
+        parent.changeSimplePassword(encode);
     }
 
     private Parent getParent(Long memberId) {
