@@ -11,5 +11,5 @@ public interface AccountService {
     List<AccountChildResponse> showChildrenAccountList(Long parentId);
     List<AccountResponse> showAllAccountList(Long memberId);
     void updateAccount(Account account);
-    void updateAccountState(Long accountId, AccountStateRequest request);
+    void changeAccountState(Long accountId, AccountStateRequest request);
 }

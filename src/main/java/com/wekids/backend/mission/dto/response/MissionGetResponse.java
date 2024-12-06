@@ -23,6 +23,7 @@ public class MissionGetResponse {
     private String content;
     private MissionState state;
     private LocalDate deadline;
+    private Long amount;
     private MissionCategory category;
     private String childName;
     private String childProfile;
@@ -38,6 +39,7 @@ public class MissionGetResponse {
                 .content(mission.getContent())
                 .state(mission.getState())
                 .deadline(mission.getDeadline())
+                .amount(mission.getAmount().longValue())
                 .category(mission.getCategory())
                 .childName(child.getName())
                 .childProfile(child.getProfile())

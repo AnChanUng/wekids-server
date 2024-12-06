@@ -50,13 +50,13 @@ public class AdminController {
 
     @PostMapping("/accounts/{accountId}/state")
     public ResponseEntity<Void> changeAccountState(@PathVariable("accountId") Long accountId, @Valid @RequestBody AccountStateRequest request) {
-        accountService.updateAccountState(accountId, request);
+        accountService.changeAccountState(accountId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/members/{memberId}/state")
     public ResponseEntity<Void> changeMemberState(@PathVariable("memberId") Long memberId, @Valid @RequestBody MemberStateRequest request) {
-        memberService.updateMemberState(memberId, request);
+        memberService.changeMemberState(memberId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
