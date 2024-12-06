@@ -13,6 +13,7 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
     private static final String CLIENT_LOCALHOST = "http://localhost:3000";
     private static final String CLIENT_SECURE_LOCALHOST = "https://localhost:3000";
+    private static final String CLIENT_PRODUCTION = "https://we-kids-fe-gold.vercel.app";
 
     private static final String CORS_ALLOWED_METHODS =
             "GET,POST,HEAD,PUT,PATCH,DELETE,TRACE,OPTIONS";
@@ -21,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedMethods(CORS_ALLOWED_METHODS.split(","))
-                .allowedOrigins(CLIENT_LOCALHOST, CLIENT_SECURE_LOCALHOST)
+                .allowedOrigins(CLIENT_LOCALHOST, CLIENT_SECURE_LOCALHOST, CLIENT_PRODUCTION)
                 .exposedHeaders(HttpHeaders.SET_COOKIE, HttpHeaders.LOCATION)
                 .allowCredentials(true);
     }
