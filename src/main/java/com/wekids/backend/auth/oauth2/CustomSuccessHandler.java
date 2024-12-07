@@ -28,23 +28,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
         LoginState loginState = customUserDetails.getLoginState();
 
-        if(loginState.equals(LoginState.JOIN)){
-//            response.addCookie(createCookie("name", customUserDetails.getName()));
-//            response.addCookie(createCookie("email", customUserDetails.getEmail()));
-//            response.addCookie(createCookie("birthday", customUserDetails.getBirthday()));
-            CookieUtil.addCookie(response, "name", customUserDetails.getName());
-            CookieUtil.addCookie(response, "email", customUserDetails.getEmail());
-            CookieUtil.addCookie(response, "birthday", customUserDetails.getBirthday());
+        if (loginState.equals(LoginState.JOIN)) {
+            response.setHeader("name", customUserDetails.getName());
+            response.setHeader("email", customUserDetails.getEmail());
+            response.setHeader("birthday", customUserDetails.getBirthday());
             response.sendRedirect("https://we-kids-fe-gold.vercel.app/signup/select");
             return;
         }
 
         String token = jwtUtil.createJwt(customUserDetails.getMemberId(), customUserDetails.getRole());
-        //response.addCookie(createCookie("Authorization", token));
-        CookieUtil.addCookie(response, "Authorization", token);
+        response.setHeader("Authorization", "Bearer " + token); // JWT 토큰을 헤더에 추가
 
         response.sendRedirect("https://we-kids-fe-gold.vercel.app/");
     }
+
 
     private Cookie createCookie(String key, String value){
         try {
