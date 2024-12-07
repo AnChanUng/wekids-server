@@ -64,13 +64,13 @@ public class SecurityConfig {
         };
     }
 
-    @Bean
-    public CookieSerializer cookieSerializer() {
-        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-        serializer.setSameSite("None"); // 'Strict', 'Lax', 'None' 중 선택
-        serializer.setUseSecureCookie(true); // none 사용시 필수 설정
-        return serializer;
-    }
+//    @Bean
+//    public CookieSerializer cookieSerializer() {
+//        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+//        serializer.setSameSite("None"); // 'Strict', 'Lax', 'None' 중 선택
+//        serializer.setUseSecureCookie(true); // none 사용시 필수 설정
+//        return serializer;
+//    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -108,14 +108,14 @@ public class SecurityConfig {
         http.sessionManagement((session) ->session
                 .sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
         
-        http.headers(headers -> headers
-                .addHeaderWriter((request, response) -> {
-                    if (response.containsHeader("Set-Cookie")) {
-                        String originalHeader = response.getHeader("Set-Cookie");
-                        response.setHeader("Set-Cookie", originalHeader + "; SameSite=None; Secure");
-                    }
-                })
-        );
+//        http.headers(headers -> headers
+//                .addHeaderWriter((request, response) -> {
+//                    if (response.containsHeader("Set-Cookie")) {
+//                        String originalHeader = response.getHeader("Set-Cookie");
+//                        response.setHeader("Set-Cookie", originalHeader + "; SameSite=None; Secure");
+//                    }
+//                })
+//        );
 
         return http.build();
     }
