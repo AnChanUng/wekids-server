@@ -67,7 +67,7 @@ public class SecurityConfig {
     @Bean
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-        serializer.setSameSite("None"); // 'Strict', 'Lax', 'None' 중 선택
+        serializer.setSameSite(""); // 'Strict', 'Lax', 'None' 중 선택
         serializer.setUseSecureCookie(true); // none 사용시 필수 설정
         return serializer;
     }
