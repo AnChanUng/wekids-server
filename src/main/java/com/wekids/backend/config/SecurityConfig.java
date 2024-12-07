@@ -20,6 +20,8 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -63,8 +65,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
-        return CookieSameSiteSupplier.ofStrict();
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        serializer.setSameSite("None"); // 'Strict', 'Lax', 'None' 중 선택
+        serializer.setUseSecureCookie(true); // none 사용시 필수 설정
+        return serializer;
     }
 
     @Bean
@@ -103,14 +108,14 @@ public class SecurityConfig {
         http.sessionManagement((session) ->session
                 .sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
         
-//        http.headers(headers -> headers
-//                .addHeaderWriter((request, response) -> {
-//                    if (response.containsHeader("Set-Cookie")) {
-//                        String originalHeader = response.getHeader("Set-Cookie");
-//                        response.setHeader("Set-Cookie", originalHeader + "; SameSite=None; Secure");
-//                    }
-//                })
-//        );
+        http.headers(headers -> headers
+                .addHeaderWriter((request, response) -> {
+                    if (response.containsHeader("Set-Cookie")) {
+                        String originalHeader = response.getHeader("Set-Cookie");
+                        response.setHeader("Set-Cookie", originalHeader + "; SameSite=None; Secure");
+                    }
+                })
+        );
 
         return http.build();
     }
