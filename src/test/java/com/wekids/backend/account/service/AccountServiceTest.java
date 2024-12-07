@@ -44,13 +44,13 @@ public class AccountServiceTest {
 
         AccountChildResponse response1 = responses.get(0);
         assertThat(response1.getName()).isEqualTo(child1.getName());
-        assertThat(response1.getAcocuntNumber()).isEqualTo(account1.getAccountNumber());
+        assertThat(response1.getAccountNumber()).isEqualTo(account1.getAccountNumber());
         assertThat(response1.getProfile()).isEqualTo(child1.getProfile());
         assertThat(response1.getAccountId()).isEqualTo(account1.getId());
 
         AccountChildResponse response2 = responses.get(1);
         assertThat(response2.getName()).isEqualTo(child2.getName());
-        assertThat(response2.getAcocuntNumber()).isEqualTo(account2.getAccountNumber());
+        assertThat(response2.getAccountNumber()).isEqualTo(account2.getAccountNumber());
         assertThat(response2.getProfile()).isEqualTo(child2.getProfile());
         assertThat(response2.getAccountId()).isEqualTo(account2.getId());
     }

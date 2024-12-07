@@ -1,5 +1,6 @@
 package com.wekids.backend.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -16,7 +18,6 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(WekidsException.class)
     public ResponseEntity<ErrorResponse> handleWeKidsException(WekidsException exception) {
         ErrorCode errorCode = exception.getErrorCode();
@@ -91,5 +92,12 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException exception) {
         return ResponseEntity.status(INVALID_INPUT.getStatus())
                 .body(ErrorResponse.of(exception.getBindingResult() .getFieldErrors(), INVALID_INPUT));
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> commonException(Exception exception) {
+        return ResponseEntity.status(INVALID_INPUT.getStatus())
+                .body(ErrorResponse.of(INVALID_INPUT, "unknown error: " + exception.getMessage()));
     }
 }

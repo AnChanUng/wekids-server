@@ -1,10 +1,7 @@
 package com.wekids.backend.accountTransaction.dto.response;
 
 import com.wekids.backend.accountTransaction.domain.enums.TransactionType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 public class TransactionResult {
     private Long accountTransactionId;
     private String title;

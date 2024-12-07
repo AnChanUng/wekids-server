@@ -106,4 +106,5 @@ application*.yml
 
 # application-dev.yml과 application-prod.yml은 무시하지 않음
 !application-dev.yml
-!application-prod.yml
+!application-release.yml
+/logs
