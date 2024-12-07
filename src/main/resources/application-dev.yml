@@ -7,6 +7,9 @@ server:
     session:
       cookie:
         sameSite: None
+        http-only: true
+        path: /
+        secure: true
 
 spring:
   application:
