@@ -1,5 +1,6 @@
 package com.wekids.backend.auth.oauth2;
 
+import com.wekids.backend.auth.cookie.CookieUtil;
 import com.wekids.backend.auth.dto.response.CustomOAuth2User;
 import com.wekids.backend.auth.enums.LoginState;
 import com.wekids.backend.auth.jwt.JWTUtil;
@@ -28,15 +29,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         LoginState loginState = customUserDetails.getLoginState();
 
         if(loginState.equals(LoginState.JOIN)){
-            response.addCookie(createCookie("name", customUserDetails.getName()));
-            response.addCookie(createCookie("email", customUserDetails.getEmail()));
-            response.addCookie(createCookie("birthday", customUserDetails.getBirthday()));
-                response.sendRedirect("https://we-kids-fe-gold.vercel.app/signup/select");
+//            response.addCookie(createCookie("name", customUserDetails.getName()));
+//            response.addCookie(createCookie("email", customUserDetails.getEmail()));
+//            response.addCookie(createCookie("birthday", customUserDetails.getBirthday()));
+            CookieUtil.addCookie(response, "name", customUserDetails.getName());
+            CookieUtil.addCookie(response, "email", customUserDetails.getEmail());
+            CookieUtil.addCookie(response, "birthday", customUserDetails.getBirthday());
+            response.sendRedirect("https://we-kids-fe-gold.vercel.app/signup/select");
             return;
         }
 
         String token = jwtUtil.createJwt(customUserDetails.getMemberId(), customUserDetails.getRole());
-        response.addCookie(createCookie("Authorization", token));
+        //response.addCookie(createCookie("Authorization", token));
+        CookieUtil.addCookie(response, "Authorization", token);
+
         response.sendRedirect("https://we-kids-fe-gold.vercel.app/");
     }
 
