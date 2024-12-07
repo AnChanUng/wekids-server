@@ -8,6 +8,7 @@ import com.wekids.backend.auth.oauth2.CustomSuccessHandler;
 import com.wekids.backend.auth.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -61,7 +62,10 @@ public class SecurityConfig {
         };
     }
 
-
+    @Bean
+    public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
+        return CookieSameSiteSupplier.ofStrict();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -99,14 +103,14 @@ public class SecurityConfig {
         http.sessionManagement((session) ->session
                 .sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
         
-        http.headers(headers -> headers
-                .addHeaderWriter((request, response) -> {
-                    if (response.containsHeader("Set-Cookie")) {
-                        String originalHeader = response.getHeader("Set-Cookie");
-                        response.setHeader("Set-Cookie", originalHeader + "; SameSite=None; Secure");
-                    }
-                })
-        );
+//        http.headers(headers -> headers
+//                .addHeaderWriter((request, response) -> {
+//                    if (response.containsHeader("Set-Cookie")) {
+//                        String originalHeader = response.getHeader("Set-Cookie");
+//                        response.setHeader("Set-Cookie", originalHeader + "; SameSite=None; Secure");
+//                    }
+//                })
+//        );
 
         return http.build();
     }
