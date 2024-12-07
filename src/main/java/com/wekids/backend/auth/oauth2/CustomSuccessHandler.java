@@ -29,7 +29,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         LoginState loginState = customUserDetails.getLoginState();
 
         if (loginState.equals(LoginState.JOIN)) {
-            response.setHeader("name", customUserDetails.getName());
+            response.setHeader("name", URLEncoder.encode(customUserDetails.getName(), StandardCharsets.UTF_8.toString()));
             response.setHeader("email", customUserDetails.getEmail());
             response.setHeader("birthday", customUserDetails.getBirthday());
             response.sendRedirect("https://we-kids-fe-gold.vercel.app/signup/select");
