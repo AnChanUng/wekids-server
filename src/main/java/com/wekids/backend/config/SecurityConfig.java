@@ -98,6 +98,15 @@ public class SecurityConfig {
 
         http.sessionManagement((session) ->session
                 .sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
+        
+        http.headers(headers -> headers
+                .addHeaderWriter((request, response) -> {
+                    if (response.containsHeader("Set-Cookie")) {
+                        String originalHeader = response.getHeader("Set-Cookie");
+                        response.setHeader("Set-Cookie", originalHeader + "; SameSite=None; Secure");
+                    }
+                })
+        );
 
         return http.build();
     }
