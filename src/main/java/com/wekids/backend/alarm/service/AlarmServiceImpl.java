@@ -26,7 +26,7 @@ public class AlarmServiceImpl implements AlarmService{
     @Override
     public List<AlarmGetResponse> getAlarmList(Long memberId) {
         Member member = getMember(memberId);
-        List<Alarm> alarms = alarmRepository.findAllByMember(member);
+        List<Alarm> alarms = alarmRepository.findByMemberOrderByCreatedAtDesc(member);
         return AlarmGetResponse.from(alarms);
     }
 
