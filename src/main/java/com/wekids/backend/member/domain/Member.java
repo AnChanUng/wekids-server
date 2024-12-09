@@ -35,6 +35,7 @@ public abstract class Member extends BaseTime {
     private LocalDate birthday;
 
 //    private String profile;
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     private CharacterType profile = CharacterType.DADAPING;
 
