@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Builder
@@ -27,6 +28,5 @@ public class MissionCreateRequest {
     @NotNull
     private MissionCategory category;
     @NotNull
-    @Positive
-    private Long childId;
+    private List<Long> childrenId;
 }
