@@ -1,11 +1,10 @@
 package com.wekids.backend.member.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wekids.backend.account.domain.Account;
-import com.wekids.backend.account.domain.enums.AccountState;
 import com.wekids.backend.design.domain.Design;
 import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.design.domain.enums.ColorType;
+import com.wekids.backend.utils.masking.service.DataMaskingService;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.enums.CardState;
 import lombok.AllArgsConstructor;
@@ -24,11 +23,18 @@ public class ChildResponse {
     String name;
     String accountNumber;
     String profile;
-    BigDecimal balance;
+    String balance;
     Long accountId;
     CardState cardState;
     ColorType color;
     CharacterType character;
+
+    public void applyMasking(DataMaskingService maskingService) {
+        this.name = maskingService.maskData(this.name);
+        this.accountNumber = maskingService.maskData(this.accountNumber);
+        this.balance = maskingService.maskBalance(new BigDecimal(this.balance));
+    }
+
 
     public static ChildResponse of(Child child, Account account, Design design) {
         ChildResponse.ChildResponseBuilder builder = ChildResponse.builder()
@@ -37,10 +43,10 @@ public class ChildResponse {
                 .profile(child.getProfile())
                 .cardState(child.getCardState());
 
-        if(account != null){
+        if (account != null) {
             builder.accountNumber(account.getAccountNumber())
-                .balance(account.getBalance())
-                .accountId(account.getId());
+                    .balance(account.getBalance().toPlainString())
+                    .accountId(account.getId());
         }
 
         if (design != null) {
