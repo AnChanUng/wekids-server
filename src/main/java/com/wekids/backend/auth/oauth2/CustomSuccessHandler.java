@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JWTUtil jwtUtil;
+    @Value("${client.url}")
+    private String CLIENT_URL;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -31,13 +34,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.addCookie(createCookie("name", customUserDetails.getName()));
             response.addCookie(createCookie("email", customUserDetails.getEmail()));
             response.addCookie(createCookie("birthday", customUserDetails.getBirthday()));
-                response.sendRedirect("https://we-kids-fe-gold.vercel.app/signup/select");
+                response.sendRedirect(CLIENT_URL+"/signup/select");
             return;
         }
 
         String token = jwtUtil.createJwt(customUserDetails.getMemberId(), customUserDetails.getRole());
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("https://we-kids-fe-gold.vercel.app/");
+        response.sendRedirect(CLIENT_URL);
     }
 
     private Cookie createCookie(String key, String value){

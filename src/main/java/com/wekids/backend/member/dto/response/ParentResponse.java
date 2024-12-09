@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 public class ParentResponse {
     String name;
     String accountNumber;
-    String profile;
+    CharacterType profile;
     BigDecimal balance;
     ColorType color;
     CharacterType character;

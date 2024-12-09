@@ -23,7 +23,7 @@ public class ChildResponse {
     Long childId;
     String name;
     String accountNumber;
-    String profile;
+    CharacterType profile;
     BigDecimal balance;
     Long accountId;
     CardState cardState;
