@@ -4,7 +4,7 @@ import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.design.domain.Design;
 import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.design.domain.enums.ColorType;
-import com.wekids.backend.utils.masking.service.DataMaskingService;
+import com.wekids.backend.utils.masking.service.DataMaskingServiceImpl;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.member.domain.enums.CardState;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ public class ChildResponse {
     ColorType color;
     CharacterType character;
 
-    public void applyMasking(DataMaskingService maskingService) {
+    public void applyMasking(DataMaskingServiceImpl maskingService) {
         this.name = maskingService.maskData(this.name);
         this.accountNumber = maskingService.maskData(this.accountNumber);
         this.balance = maskingService.maskBalance(new BigDecimal(this.balance));

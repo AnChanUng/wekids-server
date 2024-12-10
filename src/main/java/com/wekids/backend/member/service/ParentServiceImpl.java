@@ -15,7 +15,7 @@ import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.design.repository.DesignRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
-import com.wekids.backend.utils.masking.service.DataMaskingService;
+import com.wekids.backend.utils.masking.service.DataMaskingServiceImpl;
 import com.wekids.backend.member.domain.Member;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.domain.enums.MemberState;
@@ -48,7 +48,7 @@ public class ParentServiceImpl implements ParentService {
     private final BaasService baasService;
     private final AccountService accountService;
     private final PasswordEncoder passwordEncoder;
-    private final DataMaskingService maskingService;
+    private final DataMaskingServiceImpl maskingService;
 
     @Override
     @Transactional
