@@ -11,13 +11,13 @@ import org.springframework.context.annotation.Profile;
 public class MaskingStrategyConfig {
 
     @Bean
-    @Profile("test")
+    @Profile("release")
     public DataMaskingStrategy noMaskingStrategy() {
         return new NoMaskingStrategy();
     }
 
     @Bean
-    @Profile({"dev", "release"})
+    @Profile({"dev", "test"})
     public DataMaskingStrategy maskingStrategy() {
         return new MaskingStrategy();
     }
