@@ -75,13 +75,8 @@ public class ParentServiceImpl implements ParentService {
                     Account childAccount = findAccountByMember(child);
                     Design childDesign = findDesignByMemberId(child.getId());
                     if (childAccount != null) accountService.updateAccount(childAccount);
-
-                    // ChildResponse 생성
                     ChildResponse childResponse = ChildResponse.of(child, childAccount, childDesign);
-
-                    // 마스킹 적용
                     childResponse.applyMasking(maskingService);
-
                     return childResponse;
                 })
                 .collect(Collectors.toList());
