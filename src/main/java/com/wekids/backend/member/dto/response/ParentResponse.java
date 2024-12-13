@@ -1,10 +1,10 @@
 package com.wekids.backend.member.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wekids.backend.account.domain.Account;
 import com.wekids.backend.design.domain.Design;
 import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.design.domain.enums.ColorType;
+import com.wekids.backend.utils.masking.service.DataMaskingServiceImpl;
 import com.wekids.backend.member.domain.Parent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +21,16 @@ public class ParentResponse {
     String name;
     String accountNumber;
     String profile;
-    BigDecimal balance;
+    String balance;
     ColorType color;
     CharacterType character;
     Long accountId;
+
+    public void applyMasking(DataMaskingServiceImpl maskingService) {
+        this.name = maskingService.maskData(this.name);
+        this.accountNumber = maskingService.maskData(this.accountNumber);
+        this.balance = maskingService.maskBalance(new BigDecimal(this.balance));
+    }
 
     public static ParentResponse of(Parent parent, Account account, Design design) {
         ParentResponse.ParentResponseBuilder builder = ParentResponse.builder()
@@ -34,7 +40,7 @@ public class ParentResponse {
         if (account != null) {
             builder.accountId(account.getId())
                     .accountNumber(account.getAccountNumber())
-                    .balance(account.getBalance());
+                    .balance(account.getBalance().toPlainString());
         }
 
         if (design != null) {
@@ -44,5 +50,4 @@ public class ParentResponse {
 
         return builder.build();
     }
-
 }

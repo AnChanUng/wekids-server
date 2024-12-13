@@ -15,6 +15,7 @@ import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.design.repository.DesignRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
+import com.wekids.backend.utils.masking.service.DataMaskingServiceImpl;
 import com.wekids.backend.member.domain.Member;
 import com.wekids.backend.member.domain.Parent;
 import com.wekids.backend.member.domain.enums.MemberState;
@@ -47,6 +48,7 @@ public class ParentServiceImpl implements ParentService {
     private final BaasService baasService;
     private final AccountService accountService;
     private final PasswordEncoder passwordEncoder;
+    private final DataMaskingServiceImpl maskingService;
 
     @Override
     @Transactional
@@ -58,6 +60,9 @@ public class ParentServiceImpl implements ParentService {
         if(parentAccount != null) accountService.updateAccount(parentAccount);
 
         ParentResponse parentResponse = ParentResponse.of(parent, parentAccount, design);
+
+        parentResponse.applyMasking(maskingService);
+
         List<ChildResponse> childResponses = showChildAccount(parentId);
 
         return ParentAccountResponse.of(parentResponse, childResponses);
@@ -69,8 +74,10 @@ public class ParentServiceImpl implements ParentService {
                 .map(child -> {
                     Account childAccount = findAccountByMember(child);
                     Design childDesign = findDesignByMemberId(child.getId());
-                    if(childAccount != null) accountService.updateAccount(childAccount);
-                    return ChildResponse.of(child, childAccount, childDesign);
+                    if (childAccount != null) accountService.updateAccount(childAccount);
+                    ChildResponse childResponse = ChildResponse.of(child, childAccount, childDesign);
+                    childResponse.applyMasking(maskingService);
+                    return childResponse;
                 })
                 .collect(Collectors.toList());
     }
