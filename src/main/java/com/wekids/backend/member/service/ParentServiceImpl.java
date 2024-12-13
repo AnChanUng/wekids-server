@@ -62,7 +62,7 @@ public class ParentServiceImpl implements ParentService {
 
         ParentResponse parentResponse = ParentResponse.of(parent, parentAccount, design);
 
-        parentResponse.applyMasking(maskingService);
+        if(parentAccount != null) parentResponse.applyMasking(maskingService);
 
         List<ChildResponse> childResponses = showChildAccount(parentId);
 
