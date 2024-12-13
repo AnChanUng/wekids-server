@@ -21,7 +21,6 @@ public class ParentResponse {
     String name;
     String accountNumber;
     CharacterType profile;
-    BigDecimal balance;
     String balance;
     ColorType color;
     CharacterType character;
