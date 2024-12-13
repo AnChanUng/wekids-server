@@ -67,3 +67,5 @@ baas:
     product-id: 5
   api:
     baas-url: ${BAAS_URL}
+client:
+  url: https://we-kids-fe-gold.vercel.app
