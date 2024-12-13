@@ -15,7 +15,6 @@ import com.wekids.backend.design.domain.enums.ColorType;
 import com.wekids.backend.design.repository.DesignRepository;
 import com.wekids.backend.exception.ErrorCode;
 import com.wekids.backend.exception.WekidsException;
-import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.utils.masking.service.DataMaskingServiceImpl;
 import com.wekids.backend.member.domain.Member;
 import com.wekids.backend.member.domain.Parent;
@@ -62,7 +61,7 @@ public class ParentServiceImpl implements ParentService {
 
         ParentResponse parentResponse = ParentResponse.of(parent, parentAccount, design);
 
-        parentResponse.applyMasking(maskingService);
+        if (parentAccount != null) parentResponse.applyMasking(maskingService);
 
         List<ChildResponse> childResponses = showChildAccount(parentId);
 
