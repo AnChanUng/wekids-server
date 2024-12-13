@@ -1,5 +1,6 @@
 package com.wekids.backend.admin.dto.response;
 
+import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.member.domain.Member;
 import com.wekids.backend.member.domain.enums.MemberState;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ public class MemberResponse {
     private String name;
     private String phone;
     private LocalDate birthday;
-    private String profile;
+    private CharacterType profile;
     private String email;
     private String role;
     private MemberState memberState;

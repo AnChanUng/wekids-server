@@ -48,7 +48,9 @@ public class DesignServiceImpl implements DesignService {
 
         Design newDesign = Design.create(child, request.getColor(), request.getCharacter());
 
-        designRepository.save(newDesign);
+        Design savedDesign = designRepository.save(newDesign);
+
+        child.saveProfile(savedDesign.getCharacter());
 
         Alarm alarm = Alarm.createCardDesignedAlarm(child, parent);
         alarmRepository.save(alarm);

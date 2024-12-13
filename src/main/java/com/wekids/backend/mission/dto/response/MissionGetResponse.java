@@ -1,5 +1,6 @@
 package com.wekids.backend.mission.dto.response;
 
+import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.member.domain.Child;
 import com.wekids.backend.mission.domain.Mission;
 import com.wekids.backend.mission.domain.enums.MissionCategory;
@@ -26,7 +27,7 @@ public class MissionGetResponse {
     private Long amount;
     private MissionCategory category;
     private String childName;
-    private String childProfile;
+    private CharacterType childProfile;
     private String image;
     private String memo;
 

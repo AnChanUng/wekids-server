@@ -47,15 +47,21 @@ public class MissionServiceImpl implements MissionService {
     @Transactional
     public void createMission(MissionCreateRequest request, Long parentId) {
         Parent parent = getParent(parentId);
-        Child child = getChild(request.getChildId());
+        List<Child> children = getChildrenById(request.getChildrenId());
 
-        validateMemberRelationship(parent.getId(), child.getId());
+        for (Child child : children) {
+            validateMemberRelationship(parent.getId(), child.getId());
 
-        Mission mission = Mission.createNewMission(request, parent, child);
-        Mission savedMission = missionRepository.save(mission);
+            Mission mission = Mission.createNewMission(request, parent, child);
+            Mission savedMission = missionRepository.save(mission);
 
-        Alarm alarm = Alarm.createMissionAlarm(savedMission, child);
-        alarmRepository.save(alarm);
+            Alarm alarm = Alarm.createMissionAlarm(savedMission, child);
+            alarmRepository.save(alarm);
+        }
+    }
+
+    private List<Child> getChildrenById(List<Long> childrenId) {
+        return childRepository.findChildrenByIdIn(childrenId);
     }
 
     private void validateMemberRelationship(Long parentId, Long childId) {

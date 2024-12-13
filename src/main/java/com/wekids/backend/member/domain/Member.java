@@ -1,6 +1,7 @@
 package com.wekids.backend.member.domain;
 
 import com.wekids.backend.common.entity.BaseTime;
+import com.wekids.backend.design.domain.enums.CharacterType;
 import com.wekids.backend.member.domain.enums.CardState;
 import com.wekids.backend.member.domain.enums.MemberState;
 import jakarta.persistence.*;
@@ -33,7 +34,10 @@ public abstract class Member extends BaseTime {
     @Column(nullable = false)
     private LocalDate birthday;
 
-    private String profile;
+//    private String profile;
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private CharacterType profile = CharacterType.DADAPING;
 
     @Column(nullable = false)
     private String email;
@@ -80,7 +84,10 @@ public abstract class Member extends BaseTime {
         this.phone = phone;
         this.email = email;
         this.birthday = birthday;
-        this.profile = profile;
+//        this.profile = profile;
     }
 
+    public void saveProfile(CharacterType profile) {
+        this.profile = profile;
+    }
 }
