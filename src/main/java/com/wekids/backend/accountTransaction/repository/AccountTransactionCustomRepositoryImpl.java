@@ -76,19 +76,24 @@ public class AccountTransactionCustomRepositoryImpl implements AccountTransactio
                 )
                 .orderBy(accountTransaction.createdAt.desc())
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1);
+                .limit(pageable.getPageSize());
 
         List<TransactionResult> results = query.fetch();
 
-        boolean hasNext = results.size() > pageable.getPageSize();
+        long total = jpaQueryFactory
+                .select(accountTransaction.count())
+                .from(accountTransaction)
+                .where(
+                        accountTransaction.account.id.eq(accountId)
+                                .and(buildTransactionTypeCondition(transactionRequestType))
+                                .and(accountTransaction.createdAt.between(start, end))
+                )
+                .fetchOne();
 
-        return new SliceImpl<>(
-                hasNext ? results.subList(0, pageable.getPageSize()) : results,
-                pageable,
-                hasNext
-        );
+        boolean hasNext = pageable.getOffset() + pageable.getPageSize() < total;
+
+        return new SliceImpl<>(results, pageable, hasNext);
     }
-
 
     private BooleanExpression buildTransactionTypeCondition(TransactionRequestType transactionRequestType) {
         if (transactionRequestType == TransactionRequestType.ALL) {

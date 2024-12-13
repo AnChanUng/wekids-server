@@ -127,19 +127,21 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
             accountService.updateAccount(account);
 
             LocalDateTime mostRecentDateTime = accountTransactionRepository
-                    .findMostRecentTransactionDateTime(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX)).orElse(start.atStartOfDay());
+                    .findMostRecentTransactionDateTime(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX).minusSeconds(1)).orElse(start.atStartOfDay());
 
-            AccountTransactionGetRequest request = AccountTransactionGetRequest.of(
-                    account.getAccountNumber(), mostRecentDateTime.plusSeconds(1), end.atTime(LocalTime.MAX), type.toString(), pageable);
+            if(mostRecentDateTime.isBefore(end.atTime(LocalTime.MAX))){
+                AccountTransactionGetRequest request = AccountTransactionGetRequest.of(
+                        account.getAccountNumber(), mostRecentDateTime.plusSeconds(1), end.atTime(LocalTime.MAX), type.toString(), pageable);
 
-            List<AccountTransactionResponse> accountTransactionGetResponses = baasService.getAccountTransactionList(request);
+                List<AccountTransactionResponse> accountTransactionGetResponses = baasService.getAccountTransactionList(request);
 
-            accountTransactionGetResponses.forEach(accountTransactionGetResponse -> {
-                accountTransactionRepository.save(AccountTransaction.of(account, accountTransactionGetResponse));
-            });
+                accountTransactionGetResponses.forEach(accountTransactionGetResponse -> {
+                    accountTransactionRepository.save(AccountTransaction.of(account, accountTransactionGetResponse));
+                });
+            }
         }
 
-        Slice<TransactionResult> transactionResultSlice = accountTransactionRepository.findAccountTransactionByTypeSortedByTimeDesc(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX), pageable);
+        Slice<TransactionResult> transactionResultSlice = accountTransactionRepository.findAccountTransactionByTypeSortedByTimeDesc(accountId, type, start.atStartOfDay(), end.atTime(LocalTime.MAX).minusSeconds(1), pageable);
 
         return TransactionHistoryResponse.of(
                 account.getBalance().longValue(),
