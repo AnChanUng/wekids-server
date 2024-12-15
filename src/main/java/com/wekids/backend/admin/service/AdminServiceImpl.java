@@ -14,11 +14,13 @@ import com.wekids.backend.member.repository.MemberRepository;
 import com.wekids.backend.member.repository.ParentChildRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminServiceImpl implements AdminService {
     private final MemberRepository memberRepository;
     private final AccountRepository accountRepository;
